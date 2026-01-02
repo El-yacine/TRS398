@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TRS-398 History</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --ink: #0f172a;
+            --muted: #475569;
+            --accent: #1f4e78;
+            --accent-2: #2e6cb8;
+            --surface: #ffffff;
+            --border: #e2e8f0;
+            --bg: radial-gradient(circle at 10% 20%, #f3f6ff 0%, #e5ecf6 45%, #f7fbff 100%);
+            --green: #d9f2dd;
+            --blue: #e7f0ff;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Space Grotesk', 'Segoe UI', system-ui, sans-serif;
+            background: var(--bg);
+            padding: 24px;
+            color: var(--ink);
+        }
+        .page {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            box-shadow: 0 12px 45px rgba(15, 23, 42, 0.08);
+            padding: 26px;
+        }
+        .hero {
+            display: flex;
+            justify-content: space-between;
+            gap: 18px;
+            align-items: flex-start;
+        }
+        .eyebrow {
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--accent-2);
+            font-weight: 700;
+            font-size: 12px;
+        }
+        h1 {
+            margin-top: 4px;
+            font-size: 26px;
+            line-height: 1.25;
+            color: var(--ink);
+        }
+        .subtitle {
+            margin-top: 6px;
+            color: var(--muted);
+            font-size: 14px;
+        }
+        .pill-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            align-items: flex-end;
+        }
+        .pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 14px;
+            border-radius: 999px;
+            border: 1px solid var(--border);
+            background: #f8fbff;
+            color: var(--accent);
+            font-weight: 600;
+            font-size: 12px;
+        }
+        .pill.accent {
+            background: #e8f0ff;
+            border-color: #d1def9;
+        }
+        .pill.quiet {
+            color: var(--muted);
+            background: #f7f7fb;
+        }
+        .surface {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 16px;
+            box-shadow: 0 6px 24px rgba(15, 23, 42, 0.06);
+            margin-top: 18px;
+        }
+        .filterbar {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+            align-items: end;
+        }
+        .filter-group label {
+            font-size: 12px;
+            color: var(--muted);
+            display: block;
+            margin-bottom: 6px;
+            letter-spacing: 0.02em;
+        }
+        .filter-group input,
+        .filter-group select {
+            width: 100%;
+            padding: 8px 10px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            background: #f8fafc;
+            font-size: 13px;
+        }
+        .filter-group input:focus,
+        .filter-group select:focus {
+            outline: none;
+            border-color: var(--accent-2);
+            box-shadow: 0 0 0 3px rgba(46, 108, 184, 0.16);
+            background: #fff;
+        }
+        .toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .toolbar-title {
+            font-weight: 700;
+            color: var(--accent);
+            font-size: 16px;
+        }
+        .buttons {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .btn {
+            padding: 10px 16px;
+            border-radius: 10px;
+            border: 1px solid transparent;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 13px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: transform 0.08s ease, box-shadow 0.12s ease;
+        }
+        .btn:hover { transform: translateY(-1px); }
+        .btn:active { transform: translateY(0); }
+        .btn.primary {
+            background: linear-gradient(135deg, #1f4e78, #2e6cb8);
+            color: #fff;
+            box-shadow: 0 10px 25px rgba(31, 78, 120, 0.25);
+        }
+        .btn.ghost {
+            background: #f7f9fc;
+            border-color: var(--border);
+            color: var(--ink);
+        }
+        .btn.warn {
+            background: #fdf2e9;
+            border-color: #f5c58a;
+            color: #9c4215;
+        }
+        .btn.soft {
+            background: #e9f7ef;
+            border-color: #b7e4c7;
+            color: #256e3f;
+        }
+        .table-wrap { overflow-x: auto; margin-top: 12px; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 1000px;
+            font-size: 12px;
+        }
+        th, td {
+            border: 1px solid var(--border);
+            padding: 8px 10px;
+            text-align: center;
+        }
+        th {
+            background: linear-gradient(135deg, #1f4e78, #2e6cb8);
+            color: white;
+            position: sticky;
+            top: 0;
+            z-index: 1;
+        }
+        tr:hover { background: #f8fafc; }
+        .chip {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 4px 8px;
+            border-radius: 999px;
+            font-weight: 700;
+            font-size: 11px;
+        }
+        .chip.blue { background: var(--blue); color: var(--accent); }
+        .chip.green { background: var(--green); color: #0f5132; }
+        .chip.red { background: #fdecec; color: #b32020; }
+        .delete-btn {
+            background: #fdecec;
+            border: 1px solid #f3b6b6;
+            color: #b32020;
+            padding: 6px 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 700;
+        }
+        .pdf-btn {
+            background: #e7f0ff;
+            border: 1px solid #c8d8f5;
+            color: #1f4e78;
+            padding: 6px 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 700;
+        }
+        .row-actions {
+            display: flex;
+            gap: 6px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .meta {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+            color: var(--muted);
+            font-size: 12px;
+        }
+        @media (max-width: 900px) {
+            .hero { flex-direction: column; }
+            .pill-stack { align-items: flex-start; }
+            .page { padding: 18px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="page">
+        <div class="hero">
+            <div>
+                <div class="eyebrow">TRS-398 archive</div>
+                <h1>Measurement History</h1>
+                <p class="subtitle">Latest saved entries · Filter by energy or user · Export to CSV</p>
+            </div>
+            <div class="pill-stack">
+                <span class="pill accent">Live feed from SQLite</span>
+                <span class="pill quiet">Most recent 100 measurements</span>
+            </div>
+        </div>
+
+        <div class="surface filterbar">
+            <div class="filter-group">
+                <label for="searchInput">Search</label>
+                <input id="searchInput" type="search" placeholder="Search user, energy, notes..." oninput="renderHistory()">
+            </div>
+            <div class="filter-group">
+                <label for="energyFilter">Energy</label>
+                <select id="energyFilter" onchange="renderHistory()">
+                    <option value="all">All energies</option>
+                    <option value="6X">6X</option>
+                    <option value="10X">10X</option>
+                    <option value="15X">15X</option>
+                    <option value="18X">18X</option>
+                </select>
+            </div>
+            <div class="buttons" style="justify-content:flex-end;">
+                <button class="btn ghost" onclick="window.location.href='index.html'">← Back to Measurements</button>
+                <button class="btn primary" onclick="loadHistory()">🔄 Refresh</button>
+                <button class="btn soft" onclick="exportCSV()">📥 Export CSV</button>
+            </div>
+        </div>
+
+        <div class="surface">
+            <div class="toolbar">
+                <div>
+                    <div class="toolbar-title">Latest measurements</div>
+                    <div class="meta">
+                        <span id="recordCount">0 rows</span>
+                        <span>UTC timestamps shown in browser local time</span>
+                    </div>
+                </div>
+                <span class="pill accent" id="energyTag">All energies</span>
+            </div>
+
+            <div class="table-wrap">
+                <table id="historyTable">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Clinic</th>
+                            <th>User</th>
+                            <th>Energy</th>
+                            <th>LINAC</th>
+                            <th>Field</th>
+                            <th>Chamber</th>
+                            <th>TPR20/10</th>
+                            <th>Nd,w</th>
+                            <th>T(°C)</th>
+                            <th>P</th>
+                            <th>kQ</th>
+                            <th>Kpol</th>
+                            <th>DW,Zref</th>
+                            <th>Ecart(%)</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="historyBody">
+                        <tr><td colspan="16">Loading...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let measurements = [];
+
+        async function loadHistory() {
+            try {
+                const resp = await fetch('/api/trs/measurements');
+                measurements = await resp.json();
+                renderHistory();
+            } catch (e) {
+                console.error(e);
+                alert('Error loading history');
+            }
+        }
+
+        function renderHistory() {
+            const tbody = document.getElementById('historyBody');
+            if (!measurements || measurements.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="16">No measurements found</td></tr>';
+                document.getElementById('recordCount').textContent = '0 rows';
+                document.getElementById('energyTag').textContent = 'All energies';
+                return;
+            }
+
+            const searchTerm = (document.getElementById('searchInput').value || '').toLowerCase().trim();
+            const energyFilter = document.getElementById('energyFilter').value;
+
+            const filtered = measurements.filter(m => {
+                const matchesEnergy = energyFilter === 'all' || m.energy === energyFilter;
+                const matchesSearch = !searchTerm || [m.userName, m.energy, m.notes || '', m.linacName || '', m.clinicName || '', m.linacId || '', m.chamber || '']
+                    .some(v => (v || '').toLowerCase().includes(searchTerm));
+                return matchesEnergy && matchesSearch;
+            });
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="16">No measurements match your filter</td></tr>';
+            } else {
+                tbody.innerHTML = filtered.map(m => `
+                    <tr>
+                        <td>${new Date(m.date).toLocaleString()}</td>
+                        <td>${m.clinicName || '-'}</td>
+                        <td>${m.userName}</td>
+                        <td><span class="chip blue">${m.energy}</span></td>
+                        <td>${m.linacName || '-'}${m.linacId ? ` (${m.linacId})` : ''}</td>
+                        <td>${m.fieldSize || '-'}</td>
+                        <td>${m.chamber || '-'}</td>
+                        <td>${m.tpr2010 ? m.tpr2010.toFixed(3) : '-'}</td>
+                        <td>${m.ndw ? m.ndw.toFixed(5) : '-'}</td>
+                        <td>${m.t.toFixed(2)}</td>
+                        <td>${m.p.toFixed(1)}</td>
+                        <td>${m.kQ.toFixed(3)}</td>
+                        <td><span class="chip blue">${m.kpol.toFixed(4)}</span></td>
+                        <td><span class="chip red">${m.dW_Zref.toFixed(4)}</span></td>
+                        <td><span class="chip red">${m.ecart.toFixed(2)}%</span></td>
+                        <td>
+                            <div class="row-actions">
+                                <button class="pdf-btn" onclick="exportPdf(${m.id})">PDF</button>
+                                <button class="delete-btn" onclick="deleteMeasurement(${m.id})">Delete</button>
+                            </div>
+                        </td>
+                    </tr>
+                `).join('');
+            }
+
+            document.getElementById('recordCount').textContent = `${filtered.length} row(s) shown`;
+            document.getElementById('energyTag').textContent = energyFilter === 'all' ? 'All energies' : energyFilter;
+        }
+
+        async function deleteMeasurement(id) {
+            if (!confirm('Delete this measurement?')) return;
+            try {
+                await fetch(`/api/trs/measurements/${id}`, { method: 'DELETE' });
+                loadHistory();
+            } catch (e) {
+                alert('Error deleting measurement');
+            }
+        }
+
+        function exportPdf(id) {
+            window.open(`/api/trs/report/${id}`, '_blank');
+        }
+
+        function exportCSV() {
+            window.open('/api/trs/export', '_blank');
+        }
+
+        loadHistory();
+    </script>
+</body>
+</html>

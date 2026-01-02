@@ -1,0 +1,2608 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TRS-398 Calibration</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --ink: #ffffff;
+            --muted: #c1c1c1;
+            --accent: #69be28;
+            --accent-2: #009fda;
+            --surface: #444444;
+            --card: #333333;
+            --border: #555555;
+            --bg: #444444;
+            --header-bg: #000000;
+            --header-primary: #cccccc;
+            --sidebar-bg: #444444;
+            --sidebar-primary: #c1c1c1;
+            --topbar-bg: #333333;
+            --panel: #333333;
+            --glow: 0 16px 48px rgba(0, 0, 0, 0.35);
+        }
+        [data-theme="light"] {
+            --ink: #333333;
+            --muted: #5e5e5e;
+            --accent: #69be28;
+            --accent-2: #009fda;
+            --surface: #f8f8f8;
+            --card: #ffffff;
+            --border: #dbdbdb;
+            --bg: #ffffff;
+            --header-bg: #ffffff;
+            --header-primary: #5e5e5e;
+            --sidebar-bg: #ffffff;
+            --sidebar-primary: #5e5e5e;
+            --topbar-bg: #ebebeb;
+            --panel: #ffffff;
+            --glow: 0 12px 36px rgba(15, 23, 42, 0.08);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Space Grotesk', 'Segoe UI', system-ui, sans-serif;
+            background: var(--bg);
+            color: var(--ink);
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+        .app-shell {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            background: var(--surface);
+        }
+        .app-header {
+            grid-column: 1 / -1;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 20px;
+            background: var(--header-bg);
+            color: var(--header-primary);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 5;
+        }
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--header-primary);
+            font-weight: 800;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+        }
+        .brand-logo {
+            width: 34px;
+            height: 34px;
+            border-radius: 8px;
+            object-fit: cover;
+            border: 1px solid var(--border);
+            display: none;
+            background: var(--card);
+        }
+        .nav-links {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .nav-btn {
+            padding: 10px 14px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            background: var(--card);
+            color: var(--ink);
+            font-weight: 700;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: transform 0.08s ease, box-shadow 0.12s ease;
+        }
+        .nav-btn:hover { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(0,0,0,0.15); }
+        .nav-btn.primary { border-color: var(--accent); background: var(--accent); color: #0b1a0c; }
+        .main {
+            padding: 20px;
+            background: var(--surface);
+        }
+        .hero {
+            display: flex;
+            justify-content: space-between;
+            gap: 18px;
+            align-items: flex-start;
+        }
+        .eyebrow {
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--accent-2);
+            font-weight: 700;
+            font-size: 12px;
+        }
+        h1 {
+            margin-top: 4px;
+            font-size: 28px;
+            line-height: 1.2;
+            color: var(--ink);
+        }
+        .subtitle {
+            margin-top: 6px;
+            color: var(--muted);
+            font-size: 14px;
+        }
+        .pill-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            align-items: flex-end;
+        }
+        .pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 14px;
+            border-radius: 999px;
+            border: 1px solid var(--border);
+            background: var(--card);
+            color: var(--ink);
+            font-weight: 600;
+            font-size: 12px;
+        }
+        .pill.accent {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: #0b1a0c;
+        }
+        .pill.quiet {
+            color: var(--muted);
+            background: var(--card);
+        }
+        .surface {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 16px;
+            box-shadow: var(--glow);
+            margin-top: 18px;
+        }
+        .metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 12px;
+        }
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 12px;
+        }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .form-group label {
+            font-size: 12px;
+            color: var(--muted);
+            letter-spacing: 0.03em;
+        }
+        .tag-label {
+            padding: 6px 10px;
+            border-radius: 999px;
+            background: #f5f7fb;
+            color: var(--accent);
+            font-weight: 700;
+            font-size: 11px;
+            display: inline-flex;
+            gap: 6px;
+            align-items: center;
+        }
+        .metric-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 14px;
+            color: var(--ink);
+        }
+        .metric-label {
+            font-size: 12px;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+        .metric-value {
+            font-size: 18px;
+            font-weight: 700;
+            margin-top: 6px;
+        }
+        .metric-note {
+            font-size: 12px;
+            color: #91a2c7;
+            margin-top: 4px;
+        }
+        .toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .toolbar-title {
+            font-weight: 700;
+            color: var(--accent);
+            font-size: 16px;
+        }
+        .buttons {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .btn {
+            padding: 10px 16px;
+            border-radius: 10px;
+            border: 1px solid transparent;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 13px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: transform 0.08s ease, box-shadow 0.12s ease;
+        }
+        .btn:hover { transform: translateY(-1px); }
+        .btn:active { transform: translateY(0); }
+        .btn.primary {
+            background: linear-gradient(135deg, var(--accent), var(--accent-2));
+            color: #0b1a0c;
+            border-color: var(--accent);
+            box-shadow: 0 10px 25px rgba(0, 159, 218, 0.25);
+        }
+        .btn.ghost {
+            background: var(--panel);
+            border-color: var(--border);
+            color: var(--ink);
+        }
+        .btn.warn {
+            background: rgba(227, 73, 69, 0.12);
+            border-color: rgba(227, 73, 69, 0.4);
+            color: #e34945;
+        }
+        .btn.soft {
+            background: rgba(105, 190, 40, 0.12);
+            border-color: rgba(105, 190, 40, 0.45);
+            color: var(--accent);
+        }
+        .quick-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin: 12px 0 6px;
+        }
+        .icon-btn {
+            padding: 10px 14px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            background: var(--card);
+            color: var(--ink);
+            font-weight: 700;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: transform 0.08s ease, box-shadow 0.12s ease;
+        }
+        .icon-btn:hover { transform: translateY(-1px); box-shadow: 0 8px 20px rgba(15,23,42,0.18); }
+        .icon-btn.primary { background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: #0b1a0c; border-color: transparent; box-shadow: 0 10px 25px rgba(0, 159, 218, 0.25); }
+        .row-stack { display: flex; flex-direction: column; gap: 14px; margin-top: 12px; }
+        .row-card {
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 14px;
+            background: var(--card);
+            box-shadow: var(--glow);
+            color: var(--ink);
+        }
+        .row-head {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        .row-id {
+            padding: 10px;
+            border-radius: 12px;
+            background: var(--accent);
+            color: #0b1a0c;
+            font-weight: 700;
+            text-align: center;
+        }
+        .row-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 12px;
+        }
+        .measure-card {
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 12px;
+            background: var(--panel);
+            box-shadow: var(--glow);
+        }
+        .measure-card h4 {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+            color: var(--accent);
+            margin-bottom: 8px;
+        }
+        .measure-inputs {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(70px, 1fr));
+            gap: 8px;
+        }
+        .measure-mean {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 10px;
+            background: rgba(105,190,40,0.15);
+            color: var(--ink);
+            font-weight: 800;
+            text-align: center;
+        }
+        .result-card {
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 12px;
+            background: linear-gradient(145deg, rgba(105, 190, 40, 0.12), rgba(0, 159, 218, 0.14));
+            color: var(--ink);
+            box-shadow: var(--glow);
+        }
+        .result-card h4 {
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+        .result-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 8px;
+        }
+        .result-pill {
+            padding: 10px;
+            border-radius: 12px;
+            background: var(--card);
+            border: 1px solid var(--border);
+        }
+        .result-pill label {
+            display: block;
+            font-size: 11px;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            color: var(--muted);
+        }
+        .result-pill span {
+            display: block;
+            font-size: 14px;
+            font-weight: 800;
+            color: var(--ink);
+        }
+        .chip { font-weight: 700; }
+        select {
+            width: 100%;
+            padding: 10px 10px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            font-size: 13px;
+            background: linear-gradient(135deg, #f8fbff, #ffffff);
+        }
+        input {
+            width: 100%;
+            border: 1px solid var(--border);
+            background: linear-gradient(135deg, #f8fafc, #ffffff);
+            text-align: center;
+            padding: 10px 10px;
+            font-size: 13px;
+            border-radius: 10px;
+        }
+        .form-group input[type="text"] { text-align: left; }
+        textarea {
+            width: 100%;
+            border: 1px solid var(--border);
+            background: #f8fafc;
+            padding: 8px 10px;
+            font-size: 12px;
+            border-radius: 8px;
+            min-height: 70px;
+            resize: vertical;
+        }
+        input:focus {
+            outline: none;
+            border-color: var(--accent-2);
+            box-shadow: 0 0 0 3px rgba(46, 108, 184, 0.18);
+            background: #fff;
+        }
+        .modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.55);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 20;
+            padding: 20px;
+        }
+        .modal.open { display: flex; }
+        .modal-content {
+            width: min(1100px, 95vw);
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            box-shadow: var(--glow);
+            padding: 18px;
+            color: var(--ink);
+        }
+        .modal-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        .modal-head h3 { margin: 0; }
+        .auth-label { color: var(--muted); font-size: 12px; }
+        .readonly { font-weight: 700; color: #0f172a; }
+        .result {
+            font-weight: 800;
+            color: #b32020;
+            font-size: 13px;
+        }
+        .legend {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 12px;
+            font-size: 12px;
+            color: var(--muted);
+        }
+        .legend span {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 10px;
+            background: var(--card);
+            border-radius: 999px;
+            border: 1px solid var(--border);
+        }
+        .formula-box {
+            margin-top: 18px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 14px;
+            background: linear-gradient(135deg, rgba(105, 190, 40, 0.08), rgba(0, 159, 218, 0.12));
+            color: var(--ink);
+            font-size: 13px;
+        }
+        .formula-box strong {
+            color: var(--accent);
+        }
+        .photon-only { display: block; }
+        .electron-only { display: none; }
+        body.electron-mode .photon-only { display: none; }
+        body.electron-mode .electron-only { display: block; }
+        .signature-box {
+            margin-top: 16px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 14px;
+            background: var(--panel);
+            color: var(--ink);
+            box-shadow: var(--glow);
+        }
+        .signature-box .name { font-weight: 800; font-size: 14px; }
+        .signature-box .role { color: var(--muted); font-size: 12px; }
+        .history-content {
+            width: min(1200px, 96vw);
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            box-shadow: var(--glow);
+            padding: 16px;
+            color: var(--ink);
+        }
+        .history-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 12px;
+        }
+        .history-filters {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        .history-filters label {
+            font-size: 12px;
+            color: var(--muted);
+            display: block;
+            margin-bottom: 4px;
+        }
+        .history-filters input,
+        .history-filters select {
+            width: 100%;
+            padding: 8px 10px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            background: var(--card);
+            color: var(--ink);
+        }
+        .history-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+            margin-top: 10px;
+        }
+        .history-table th,
+        .history-table td {
+            border: 1px solid var(--border);
+            padding: 8px 10px;
+            text-align: center;
+        }
+        .history-table th {
+            background: linear-gradient(135deg, var(--accent), var(--accent-2));
+            color: #0b1a0c;
+            position: sticky;
+            top: 0;
+            z-index: 1;
+        }
+        .history-table tr:hover { background: rgba(0, 159, 218, 0.08); }
+        .history-chip {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 4px 8px;
+            border-radius: 999px;
+            font-weight: 700;
+            font-size: 11px;
+            background: rgba(105, 190, 40, 0.16);
+            color: var(--accent);
+        }
+        .history-actions {
+            display: flex;
+            gap: 6px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .history-actions .btn {
+            padding: 8px 10px;
+            font-size: 12px;
+        }
+        /* Toast Notification System */
+        #toastContainer {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            pointer-events: none;
+        }
+        .toast {
+            padding: 12px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            min-width: 250px;
+            font-weight: 600;
+            pointer-events: auto;
+            animation: slideIn 0.3s ease;
+        }
+        .toast.success { background: #10b981; color: #fff; }
+        .toast.error { background: #ef4444; color: #fff; }
+        .toast.warning { background: #f59e0b; color: #fff; }
+        .toast.info { background: #3b82f6; color: #fff; }
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        @keyframes slideOut {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(100%); opacity: 0; }
+        }
+
+        /* Input Validation */
+        .form-group {
+            position: relative;
+        }
+        .form-group.valid input {
+            border-color: #10b981;
+            background: linear-gradient(135deg, #f0fdf4, #ffffff);
+        }
+        .form-group.invalid input {
+            border-color: #ef4444;
+            background: linear-gradient(135deg, #fef2f2, #ffffff);
+        }
+        .form-group.valid::after {
+            content: '✓';
+            position: absolute;
+            right: 12px;
+            top: 32px;
+            color: #10b981;
+            font-weight: bold;
+            font-size: 16px;
+        }
+        .form-group.invalid::after {
+            content: '✗';
+            position: absolute;
+            right: 12px;
+            top: 32px;
+            color: #ef4444;
+            font-weight: bold;
+            font-size: 16px;
+        }
+        .error-message {
+            font-size: 11px;
+            color: #ef4444;
+            margin-top: 4px;
+        }
+
+        /* Loading States */
+        .loading {
+            position: relative;
+            pointer-events: none;
+            opacity: 0.6;
+        }
+        .loading::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 20px;
+            height: 20px;
+            margin: -10px 0 0 -10px;
+            border: 3px solid var(--accent);
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Enhanced Results Display */
+        .result-card.enhanced {
+            background: linear-gradient(135deg, rgba(105, 190, 40, 0.15), rgba(0, 159, 218, 0.15));
+            border: 2px solid var(--accent);
+            padding: 20px;
+        }
+        .result-item.highlight {
+            background: var(--card);
+            border: 2px solid var(--accent);
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+            grid-column: 1 / -1;
+        }
+        .value-large {
+            font-size: 32px;
+            font-weight: 800;
+            color: var(--accent);
+            display: block;
+            margin: 8px 0;
+        }
+        .tolerance-indicator {
+            height: 4px;
+            background: #e5e7eb;
+            border-radius: 2px;
+            margin-top: 8px;
+            overflow: hidden;
+        }
+        .tolerance-indicator::after {
+            content: '';
+            display: block;
+            height: 100%;
+            width: 0%;
+            background: var(--accent);
+            transition: width 0.3s ease;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 700;
+            margin-top: 8px;
+        }
+        .status-badge.pass {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        .status-badge.fail {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+        .corrections-summary {
+            display: flex;
+            gap: 12px;
+            margin-top: 16px;
+            justify-content: space-around;
+            flex-wrap: wrap;
+        }
+        .correction-item {
+            text-align: center;
+            padding: 12px;
+            background: var(--card);
+            border-radius: 8px;
+            flex: 1;
+            min-width: 80px;
+        }
+        .correction-item span {
+            display: block;
+            font-size: 11px;
+            color: var(--muted);
+            margin-bottom: 4px;
+        }
+        .correction-item strong {
+            display: block;
+            font-size: 18px;
+            color: var(--ink);
+        }
+
+        /* History Table Improvements */
+        .history-table .status-pass {
+            background: #d1fae5;
+            color: #065f46;
+            font-weight: 700;
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+        .history-table .status-fail {
+            background: #fee2e2;
+            color: #991b1b;
+            font-weight: 700;
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+        .history-table tr {
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+        .history-table tr:hover {
+            background: rgba(0, 159, 218, 0.08);
+        }
+        .history-table .action-cell {
+            white-space: nowrap;
+        }
+        .history-table .action-cell button {
+            pointer-events: auto;
+        }
+
+        /* Settings Modal Tabs */
+        .settings-tabs {
+            display: flex;
+            gap: 8px;
+            border-bottom: 2px solid var(--border);
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        .settings-tab {
+            padding: 12px 20px;
+            background: transparent;
+            border: none;
+            border-bottom: 3px solid transparent;
+            color: var(--muted);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 14px;
+        }
+        .settings-tab:hover {
+            color: var(--ink);
+            background: rgba(105, 190, 40, 0.1);
+        }
+        .settings-tab.active {
+            color: var(--accent);
+            border-bottom-color: var(--accent);
+            background: rgba(105, 190, 40, 0.15);
+        }
+        .settings-tab-content {
+            display: none;
+        }
+        .settings-tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Settings Sections */
+        .settings-section {
+            margin-bottom: 24px;
+        }
+        .settings-section-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .settings-section-desc {
+            font-size: 12px;
+            color: var(--muted);
+            margin-bottom: 16px;
+            line-height: 1.5;
+        }
+        .settings-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 16px;
+        }
+        .setting-item {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .setting-item label {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--ink);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .setting-item .help-text {
+            font-size: 11px;
+            color: var(--muted);
+            margin-top: -4px;
+        }
+        .setting-item input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+        .setting-item select,
+        .setting-item input[type="text"],
+        .setting-item input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: var(--card);
+            color: var(--ink);
+            font-size: 13px;
+        }
+        .settings-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 24px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+        }
+        .settings-preset {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .settings-preset:hover {
+            background: rgba(105, 190, 40, 0.1);
+            border-color: var(--accent);
+        }
+        body.compact-mode .surface {
+            padding: 12px;
+            margin-top: 12px;
+        }
+        body.compact-mode .form-grid,
+        body.compact-mode .settings-grid {
+            gap: 10px;
+        }
+        body.compact-mode .settings-section {
+            margin-bottom: 16px;
+        }
+
+        /* Mobile Improvements */
+        @media (max-width: 900px) {
+            .hero { flex-direction: column; }
+            .pill-stack { align-items: flex-start; }
+            .page { padding: 18px; }
+            .btn, .nav-btn, .icon-btn {
+                min-height: 44px;
+                min-width: 44px;
+                padding: 12px 16px;
+            }
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            .measure-inputs {
+                grid-template-columns: 1fr;
+            }
+            .result-grid {
+                grid-template-columns: 1fr;
+            }
+            .modal-content {
+                width: 95vw;
+                max-height: 90vh;
+                overflow-y: auto;
+            }
+            .history-table {
+                font-size: 11px;
+            }
+            .history-table th,
+            .history-table td {
+                padding: 6px 4px;
+            }
+            #toastContainer {
+                top: 10px;
+                right: 10px;
+                left: 10px;
+            }
+            .toast {
+                min-width: auto;
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Toast Container -->
+    <div id="toastContainer"></div>
+
+    <div class="app-shell">
+        <header class="app-header">
+            <div class="brand">
+                <img id="brandLogo" class="brand-logo" alt="Logo">
+                <span>TRS-398 · Photon</span>
+            </div>
+            <div class="nav-links">
+                <button class="nav-btn primary" onclick="scrollToMeasurement()">Measurement</button>
+                <button class="nav-btn" onclick="openHistory()">History</button>
+                <button class="nav-btn" onclick="openSetup()">Settings</button>
+                <button class="nav-btn" onclick="downloadCSV()">Export CSV</button>
+                <button class="nav-btn" onclick="toggleTheme()">Theme <span id="themeLabel">Dark</span></button>
+                <button class="nav-btn" onclick="handleAuth()" id="authBtn">Login</button>
+            </div>
+        </header>
+        <main class="main">
+        <div class="hero">
+            <div>
+                <div class="eyebrow">TRS-398 photon calibration</div>
+                <h1>Photon Beam Calibration</h1>
+                <p class="subtitle">Flexible chamber selection · Nd,w defaults to 0.04789 Gy/nC</p>
+                <p class="subtitle">Field 10×10 cm² · SSD 100 cm · Depth z = zref = 10 cm · 100 UM</p>
+            </div>
+            <div class="pill-stack">
+                <span class="pill accent">One measurement card · choose any energy</span>
+                <span class="pill quiet">Live calculations · History · CSV/PDF</span>
+            </div>
+        </div>
+
+        <div class="surface metrics">
+            <div class="metric-card">
+                <div class="metric-label">Reference</div>
+                <div class="metric-value">Nd,w = 0.04789</div>
+                <div class="metric-note">Gy/nC · FC65P</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Measurement set</div>
+                <div class="metric-value">M+, M-, M100V</div>
+                <div class="metric-note">3 measurements each</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Corrections</div>
+                <div class="metric-value">Ktp · Kpol · Ks</div>
+                <div class="metric-note">Auto-calculated live</div>
+            </div>
+        </div>
+
+        <div class="surface" id="measurementCard">
+            <div class="toolbar">
+                <div class="toolbar-title">Measurement grid</div>
+                <div class="buttons">
+                    <button class="btn primary" onclick="saveAll()">Save</button>
+                    <button class="btn warn" onclick="clearAll()">Clear</button>
+                </div>
+            </div>
+
+            <div class="row-stack">
+                    <div class="row-card">
+                        <div class="row-head">
+                            <div class="form-group">
+                                <label for="Mode">Mode</label>
+                                <select id="Mode" onchange="setMode(this.value)">
+                                    <option value="photon" selected>Photon TRS-398</option>
+                                    <option value="electron">Electron TRS-398</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="e1">Energy</label>
+                            <select id="e1" onchange="handleEnergyChange()">
+                                    <option value="6X" selected>6X</option>
+                                    <option value="6FFF">6FFF</option>
+                                    <option value="10X">10X</option>
+                                    <option value="15X">15X</option>
+                                    <option value="18X">18X</option>
+                                    <option value="6E">6E</option>
+                                    <option value="9E">9E</option>
+                                    <option value="12E">12E</option>
+                                    <option value="15E">15E</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="T1">T (°C)</label>
+                                <input type="number" id="T1" step="0.01" oninput="calc(1)"/>
+                        </div>
+                            <div class="form-group">
+                                <label for="P1">P (mBar)</label>
+                                <input type="number" id="P1" step="0.1" oninput="calc(1)"/>
+                            </div>
+                            <div class="form-group photon-only">
+                                <label for="Chamber">Chamber</label>
+                                <select id="Chamber" onchange="autoKQ()">
+                                    <option value="">Select chamber</option>
+                                </select>
+                            </div>
+                            <div class="form-group photon-only">
+                                <label for="TPR">TPR20,10</label>
+                                <input type="number" id="TPR" step="0.0001" placeholder="0.6800" oninput="autoKQ()" />
+                            </div>
+                            <div class="form-group electron-only">
+                                <label for="Chamber">Chamber</label>
+                                <select id="Chamber" onchange="autoKQ()">
+                                    <option value="">Select chamber</option>
+                                </select>
+                            </div>
+                            <div class="form-group electron-only">
+                                <label for="ChamberType">Chamber Type</label>
+                                <select id="ChamberType" onchange="autoKQ()">
+                                    <option value="cylindrical" selected>Cylindrical</option>
+                                    <option value="planeParallel">Plane-parallel</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="kQ1">kQ (auto-calculated)</label>
+                                <input type="number" id="kQ1" step="0.0001" readonly style="background: var(--card); opacity: 0.7; cursor: not-allowed;" oninput="calc(1)"/>
+                            </div>
+                            <div class="form-group electron-only">
+                                <label for="R50">Beam quality index, R50 (g/cm²)</label>
+                                <input type="number" id="R50" step="0.01" oninput="handleR50Change()"/>
+                            </div>
+                            <div class="form-group electron-only">
+                                <label for="Zref">zref (cm)</label>
+                                <input type="number" id="Zref" step="0.01" oninput="calc(1)"/>
+                            </div>
+                        </div>
+                    <div class="row-grid">
+                        <div class="measure-card">
+                            <h4>M+ (+300V) <span class="chip">Mean</span></h4>
+                            <div class="measure-inputs">
+                                <input type="number" id="Mp1_1" step="0.001" oninput="calc(1)" placeholder="M1"/>
+                                <input type="number" id="Mp1_2" step="0.001" oninput="calc(1)" placeholder="M2"/>
+                                <input type="number" id="Mp1_3" step="0.001" oninput="calc(1)" placeholder="M3"/>
+                            </div>
+                            <div class="measure-mean" id="MeanP1">-</div>
+                        </div>
+                        <div class="measure-card">
+                            <h4>M- (-300V) <span class="chip">Mean</span></h4>
+                            <div class="measure-inputs">
+                                <input type="number" id="Mm1_1" step="0.001" oninput="calc(1)" placeholder="M1"/>
+                                <input type="number" id="Mm1_2" step="0.001" oninput="calc(1)" placeholder="M2"/>
+                                <input type="number" id="Mm1_3" step="0.001" oninput="calc(1)" placeholder="M3"/>
+                            </div>
+                            <div class="measure-mean" id="MeanM1">-</div>
+                        </div>
+                        <div class="measure-card">
+                            <h4>M100V (100V) <span class="chip">Mean</span></h4>
+                            <div class="measure-inputs">
+                                <input type="number" id="M1001_1" step="0.001" oninput="calc(1)" placeholder="M1"/>
+                                <input type="number" id="M1001_2" step="0.001" oninput="calc(1)" placeholder="M2"/>
+                                <input type="number" id="M1001_3" step="0.001" oninput="calc(1)" placeholder="M3"/>
+                            </div>
+                            <div class="measure-mean" id="Mean1001">-</div>
+                        </div>
+                        <div class="result-card enhanced">
+                            <h4>Corrections & results</h4>
+                            <div class="result-grid">
+                                <div class="result-item highlight">
+                                    <label>DW,Zref</label>
+                                    <span class="value-large" id="DW1">-</span>
+                                    <div class="tolerance-indicator" id="tolerance1"></div>
+                                </div>
+                                <div class="result-item highlight">
+                                    <label>Ecart (%)</label>
+                                    <span class="value-large" id="Ecart1">-</span>
+                                    <div class="status-badge" id="status1"></div>
+                                </div>
+                            </div>
+                            <div class="corrections-summary">
+                                <div class="correction-item">
+                                    <span>Ktp</span>
+                                    <strong id="Ktp1">-</strong>
+                                </div>
+                                <div class="correction-item">
+                                    <span>Kpol</span>
+                                    <strong id="Kpol1">-</strong>
+                                </div>
+                                <div class="correction-item">
+                                    <span>Ks</span>
+                                    <strong id="Ks1">-</strong>
+                                </div>
+                                <div class="correction-item">
+                                    <span>M_corr</span>
+                                    <strong id="Mcorr1">-</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="legend">
+                <span style="background: var(--yellow); border-color: #f1c232;">Environment & kQ inputs</span>
+                <span style="background: #fff; border-color: var(--border);">Raw measurements</span>
+                <span style="background: var(--green); border-color: #b7dfc0;">Means</span>
+                <span style="background: var(--blue); border-color: #c4d8f1;">Corrections (Ktp, Kpol, Ks)</span>
+                <span style="background: #fdecec; border-color: #f3b6b6;">Final dose & deviation</span>
+            </div>
+        </div>
+
+        <div class="formula-box">
+            <strong>TRS-398 Formulas</strong><br><br>
+            • <strong>Ktp</strong> = (1013/P) × (273.2 + T) / 293.2<br>
+            • <strong>Kpol</strong> = (|Mean M+| + |Mean M-|) / (2 × |Mean M+|) ← polarity correction<br>
+            • <strong>Ks</strong> = 1.198 - (0.875 × Mean M+/Mean 100V) + (0.677 × (Mean M+/Mean 100V)²)<br>
+            • <strong>M_corr</strong> = Mean M+ × Ktp × <strong>Kpol</strong> × Ks<br>
+            • <strong>DW,Zref</strong> = M_corr × kQ × Nd,w<br>
+            • <strong>Ecart (%)</strong> = 100 × (1 - DW,Zref)
+        </div>
+
+        </main>
+    </div>
+
+    <div class="modal" id="setupModal">
+        <div class="modal-content" style="max-width: 1200px;">
+            <div class="modal-head">
+                <h3>⚙️ Settings & Configuration</h3>
+                <button class="btn ghost" onclick="closeSetup()">✕ Close</button>
+            </div>
+            
+            <div class="settings-tabs">
+                <button class="settings-tab active" onclick="switchSettingsTab('clinic')">🏥 Clinic</button>
+                <button class="settings-tab" onclick="switchSettingsTab('equipment')">🔬 Equipment</button>
+                <button class="settings-tab" onclick="switchSettingsTab('defaults')">📋 Defaults</button>
+                <button class="settings-tab" onclick="switchSettingsTab('preferences')">🎨 Preferences</button>
+                <button class="settings-tab" onclick="switchSettingsTab('advanced')">⚙️ Advanced</button>
+            </div>
+
+            <!-- Clinic Tab -->
+            <div id="tab-clinic" class="settings-tab-content active">
+                <div class="settings-section">
+                    <div class="settings-section-title">Clinic Information</div>
+                    <div class="settings-section-desc">Organization details used in reports and measurements</div>
+                    <div class="settings-grid">
+                        <div class="setting-item">
+                            <label for="ClinicName">🏥 Clinic Name *</label>
+                            <input id="ClinicName" type="text" placeholder="City Oncology Center" />
+                            <div class="help-text">Primary clinic or facility name</div>
+                        </div>
+                        <div class="setting-item">
+                            <label for="ClinicAddress">📍 Department / Address</label>
+                            <input id="ClinicAddress" type="text" placeholder="Radiation Oncology · Level 2" />
+                            <div class="help-text">Department or physical location</div>
+                        </div>
+                        <div class="setting-item">
+                            <label for="UserName">👤 Physicist / User</label>
+                            <input id="UserName" type="text" placeholder="Dr. A. Physicist" />
+                            <div class="help-text">Default user name for measurements</div>
+                        </div>
+                        <div class="setting-item">
+                            <label for="ClinicPhone">📞 Contact Phone</label>
+                            <input id="ClinicPhone" type="text" placeholder="+1 (555) 123-4567" />
+                            <div class="help-text">Optional contact information</div>
+                        </div>
+                        <div class="setting-item">
+                            <label for="ClinicEmail">📧 Contact Email</label>
+                            <input id="ClinicEmail" type="email" placeholder="physicist@clinic.com" />
+                            <div class="help-text">Optional email address</div>
+                        </div>
+                        <div class="setting-item">
+                            <label for="Notes">📝 Notes / Equipment Change</label>
+                            <textarea id="Notes" placeholder="E.g. chamber changed, electrometer recalibrated" style="min-height: 80px;"></textarea>
+                            <div class="help-text">General notes or equipment change log</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Equipment Tab -->
+            <div id="tab-equipment" class="settings-tab-content">
+                <div class="settings-section">
+                    <div class="settings-section-title">LINAC & Beam Setup</div>
+                    <div class="settings-section-desc">Equipment configuration for measurements</div>
+                    <div class="settings-grid">
+                        <div class="setting-item">
+                            <label for="LinacName">⚡ LINAC Name</label>
+                            <input id="LinacName" type="text" placeholder="Varian TrueBeam" />
+                            <div class="help-text">LINAC model or manufacturer</div>
+                        </div>
+                        <div class="setting-item">
+                            <label for="LinacId">🆔 LINAC ID</label>
+                            <input id="LinacId" type="text" placeholder="TB-01" />
+                            <div class="help-text">Unique identifier or serial number</div>
+                        </div>
+                        <div class="setting-item">
+                            <label for="FieldSize">📐 Field Size (cm²)</label>
+                            <input id="FieldSize" type="text" placeholder="10×10" />
+                            <div class="help-text">Standard field size (e.g., 10×10, 15×15)</div>
+                        </div>
+                        <div class="setting-item">
+                            <label for="Chamber">🔬 Chamber (Library Lookup)</label>
+                            <select id="Chamber" onchange="autoKQ()">
+                                <option value="">Select chamber</option>
+                            </select>
+                            <div class="help-text">Select from detector library</div>
+                        </div>
+                        <div class="setting-item photon-only">
+                            <label for="TPR">📊 TPR20/10</label>
+                            <input id="TPR" type="number" step="0.0001" placeholder="0.6800" oninput="autoKQ()" />
+                            <div class="help-text">Tissue Phantom Ratio for kQ calculation</div>
+                        </div>
+                        <div class="setting-item electron-only">
+                            <label for="SSD">📏 SSD (cm)</label>
+                            <input id="SSD" type="number" step="0.1" value="100" oninput="calc(1)" />
+                            <div class="help-text">Source-to-Surface Distance</div>
+                        </div>
+                        <div class="setting-item electron-only">
+                            <label for="ChamberType">🔬 Chamber Type</label>
+                            <select id="ChamberType" onchange="autoKQ()">
+                                <option value="cylindrical" selected>Cylindrical</option>
+                                <option value="planeParallel">Plane-parallel</option>
+                            </select>
+                            <div class="help-text">Chamber geometry type</div>
+                        </div>
+                        <div class="setting-item electron-only">
+                            <label for="NdwCross">📈 Nd,w,Qcross (Gy/nC)</label>
+                            <input id="NdwCross" type="number" step="0.00001" placeholder="Cross-cal factor" oninput="calc(1)" />
+                            <div class="help-text">Cross-calibration factor for plane-parallel</div>
+                        </div>
+                        <div class="setting-item electron-only">
+                            <label for="R50Cross">📏 R50 (cross-cal cm)</label>
+                            <input id="R50Cross" type="number" step="0.01" placeholder="R50 at cross-cal" oninput="calc(1)" />
+                            <div class="help-text">R50 used for cross-calibration reference</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Defaults Tab -->
+            <div id="tab-defaults" class="settings-tab-content">
+                <div class="settings-section">
+                    <div class="settings-section-title">Default Values</div>
+                    <div class="settings-section-desc">Pre-filled values for new measurements</div>
+                    <div class="settings-grid">
+                        <div class="setting-item">
+                            <label for="NdwInput">📊 Nd,w (Gy/nC)</label>
+                            <input id="NdwInput" type="number" step="0.00001" value="0.04789" oninput="recalcAll()" />
+                            <div class="help-text">Chamber calibration factor (default: 0.04789)</div>
+                        </div>
+                        <div class="setting-item">
+                            <label for="DefaultTemp">🌡️ Default Temperature (°C)</label>
+                            <input id="DefaultTemp" type="number" step="0.1" value="22.0" />
+                            <div class="help-text">Typical room temperature</div>
+                        </div>
+                        <div class="setting-item">
+                            <label for="DefaultPressure">🌬️ Default Pressure (mBar)</label>
+                            <input id="DefaultPressure" type="number" step="0.1" value="1013.0" />
+                            <div class="help-text">Standard atmospheric pressure</div>
+                        </div>
+                        <div class="setting-item">
+                            <label for="DefaultEnergy">⚡ Default Energy</label>
+                            <select id="DefaultEnergy">
+                                <option value="6X" selected>6X</option>
+                                <option value="6FFF">6FFF</option>
+                                <option value="10X">10X</option>
+                                <option value="15X">15X</option>
+                                <option value="18X">18X</option>
+                                <option value="6E">6E</option>
+                                <option value="9E">9E</option>
+                                <option value="12E">12E</option>
+                                <option value="15E">15E</option>
+                            </select>
+                            <div class="help-text">Default energy for new measurements</div>
+                        </div>
+                        <div class="setting-item">
+                            <label for="DefaultMode">🔬 Default Mode</label>
+                            <select id="DefaultMode">
+                                <option value="photon" selected>Photon TRS-398</option>
+                                <option value="electron">Electron TRS-398</option>
+                            </select>
+                            <div class="help-text">Default measurement mode</div>
+                        </div>
+                        <div class="setting-item">
+                            <label>
+                                <input type="checkbox" id="AutoFillDefaults" checked />
+                                Auto-fill defaults on new measurement
+                            </label>
+                            <div class="help-text">Automatically populate default values</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Preferences Tab -->
+            <div id="tab-preferences" class="settings-tab-content">
+                <div class="settings-section">
+                    <div class="settings-section-title">Display & Appearance</div>
+                    <div class="settings-section-desc">Customize the interface appearance</div>
+                    <div class="settings-grid">
+                        <div class="setting-item">
+                            <label>🎨 Theme</label>
+                            <button class="btn ghost" onclick="toggleTheme()" style="width: 100%;">Switch to <span id="themeLabelSettings">Light</span></button>
+                            <div class="help-text">Toggle between dark and light theme</div>
+                        </div>
+                        <div class="setting-item">
+                            <label for="LogoUpload">🖼️ Header Logo</label>
+                            <input id="LogoUpload" type="file" accept="image/*" onchange="handleLogoUpload(event)" />
+                            <button class="btn ghost" style="margin-top:6px; width: 100%;" onclick="clearLogo()">Remove logo</button>
+                            <div class="help-text">Logo is stored in your browser only</div>
+                        </div>
+                        <div class="setting-item">
+                            <label>
+                                <input type="checkbox" id="ShowFormulas" checked />
+                                Show formula box
+                            </label>
+                            <div class="help-text">Display TRS-398 calculation formulas</div>
+                        </div>
+                        <div class="setting-item">
+                            <label>
+                                <input type="checkbox" id="ShowSignature" checked />
+                                Show signature box
+                            </label>
+                            <div class="help-text">Display signature section</div>
+                        </div>
+                        <div class="setting-item">
+                            <label>
+                                <input type="checkbox" id="CompactMode" />
+                                Compact mode
+                            </label>
+                            <div class="help-text">Reduce spacing for smaller screens</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="settings-section">
+                    <div class="settings-section-title">Behavior & Features</div>
+                    <div class="settings-section-desc">Control application behavior</div>
+                    <div class="settings-grid">
+                        <div class="setting-item">
+                            <label>
+                                <input type="checkbox" id="AutoSaveDraft" checked />
+                                Auto-save draft
+                            </label>
+                            <div class="help-text">Automatically save form data every 30 seconds</div>
+                        </div>
+                        <div class="setting-item">
+                            <label>
+                                <input type="checkbox" id="AutoCalculate" checked />
+                                Auto-calculate on input
+                            </label>
+                            <div class="help-text">Calculate results as you type</div>
+                        </div>
+                        <div class="setting-item">
+                            <label>
+                                <input type="checkbox" id="ShowTooltips" checked />
+                                Show tooltips
+                            </label>
+                            <div class="help-text">Display helpful tooltips on hover</div>
+                        </div>
+                        <div class="setting-item">
+                            <label>
+                                <input type="checkbox" id="ConfirmDelete" checked />
+                                Confirm before delete
+                            </label>
+                            <div class="help-text">Ask for confirmation before deleting measurements</div>
+                        </div>
+                        <div class="setting-item">
+                            <label>
+                                <input type="checkbox" id="ShowNotifications" checked />
+                                Show notifications
+                            </label>
+                            <div class="help-text">Display toast notifications for actions</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Advanced Tab -->
+            <div id="tab-advanced" class="settings-tab-content">
+                <div class="settings-section">
+                    <div class="settings-section-title">Advanced Options</div>
+                    <div class="settings-section-desc">Expert settings and utilities</div>
+                    <div class="settings-grid">
+                        <div class="setting-item">
+                            <label for="Tolerance">📏 Tolerance (%)</label>
+                            <input id="Tolerance" type="number" step="0.1" value="2.0" />
+                            <div class="help-text">Pass/fail tolerance for Ecart (default: ±2%)</div>
+                        </div>
+                        <div class="setting-item">
+                            <label>
+                                <input type="checkbox" id="DebugMode" />
+                                Debug mode
+                            </label>
+                            <div class="help-text">Show console logs and debug information</div>
+                        </div>
+                        <div class="setting-item">
+                            <label>🔧 Utilities</label>
+                            <div style="display: flex; flex-direction: column; gap: 8px;">
+                                <button class="btn soft" onclick="pickSampleChamber()">Fill example chamber</button>
+                                <button class="btn ghost" onclick="exportSettings()">Export settings</button>
+                                <button class="btn ghost" onclick="importSettings()">Import settings</button>
+                                <button class="btn warn" onclick="resetSettings()">Reset to defaults</button>
+                            </div>
+                        </div>
+                        <div class="setting-item">
+                            <label>ℹ️ About</label>
+                            <textarea readonly style="background: var(--card); color: var(--ink); min-height: 100px; font-size: 12px;">TRS-398 photon/electron calibration with live Kpol/Ktp/Ks calculations, SQLite history, CSV/PDF export. Use the chamber library + TPR to auto-calculate kQ. Version 1.0.0</textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="settings-actions">
+                <button class="btn ghost" onclick="resetSettings()">Reset</button>
+                <button class="btn soft" onclick="saveSettings()">Save Settings</button>
+                <button class="btn primary" onclick="closeSetup()">Done</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="historyModal">
+        <div class="history-content">
+            <div class="history-head">
+                <div>
+                    <div class="toolbar-title">History</div>
+                    <span class="tag-label">Latest 100 saved measurements</span>
+                </div>
+                <div class="buttons">
+                    <button class="btn ghost" onclick="exportHistoryCsv()">Export CSV</button>
+                    <button class="btn primary" onclick="closeHistory()">Close</button>
+                </div>
+            </div>
+            <div class="history-filters">
+                <div>
+                    <label for="historySearch">Search</label>
+                    <input id="historySearch" type="search" placeholder="User, energy, chamber, notes..." oninput="renderHistory()" />
+                </div>
+                <div>
+                    <label for="historyEnergy">Energy</label>
+                    <select id="historyEnergy" onchange="renderHistory()">
+                        <option value="all">All energies</option>
+                        <option value="6X">6X</option>
+                        <option value="6FFF">6FFF</option>
+                        <option value="10X">10X</option>
+                        <option value="15X">15X</option>
+                        <option value="18X">18X</option>
+                    </select>
+                </div>
+                <div style="display:flex;align-items:flex-end;gap:8px;">
+                    <button class="btn ghost" onclick="refreshHistory()">Refresh</button>
+                    <span class="pill quiet" id="historyEnergyTag">All energies</span>
+                    <span class="pill quiet" id="historyCount">0 rows</span>
+                </div>
+            </div>
+            <div style="overflow-x:auto;">
+                <table class="history-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Clinic</th>
+                            <th>User</th>
+                            <th>Mode</th>
+                            <th>Energy</th>
+                            <th>R50</th>
+                            <th>zref</th>
+                            <th>LINAC</th>
+                            <th>Field</th>
+                            <th>Chamber</th>
+                            <th>TPR20/10</th>
+                            <th>Nd,w</th>
+                            <th>T (°C)</th>
+                            <th>P</th>
+                            <th>kQ</th>
+                            <th>Kpol</th>
+                            <th>DW,Zref</th>
+                            <th>Ecart (%)</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="historyBody">
+                        <tr><td colspan="20">Loading...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="loginModal">
+        <div class="modal-content" style="max-width:420px;">
+            <div class="modal-head">
+                <h3>Sign in</h3>
+                <button class="btn ghost" onclick="closeLogin()">Close</button>
+            </div>
+            <div class="form-grid" style="margin-top:10px;">
+                <div class="form-group">
+                    <label for="LoginUser">User name</label>
+                    <input id="LoginUser" type="text" placeholder="physicist" />
+                </div>
+                <div class="form-group">
+                    <label for="LoginPassword">Password</label>
+                    <input id="LoginPassword" type="password" placeholder="password" />
+                    <div class="auth-label">Default: user phys or any name with password <strong>trs398!</strong></div>
+                </div>
+                <div class="form-group">
+                    <button class="btn primary" onclick="submitLogin()">Login</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const defaultNdw = 0.04789;
+        const electronDefaults = { "6E": 2.3, "9E": 3.6, "12E": 5.0, "15E": 6.5 };
+        const electronR50Nodes = [1.5, 2.5, 3.5, 4.5, 5.5, 6.5, 7.5];
+        const electronKqCyl = [0.998, 0.996, 0.994, 0.993, 0.992, 0.991, 0.990];
+        const electronKqPP = [1.000, 0.999, 0.998, 0.997, 0.996, 0.995, 0.994];
+        let detectorLibrary = {};
+        let chambersLoaded = false;
+        let theme = localStorage.getItem('trs-theme') || 'dark';
+        let currentUser = localStorage.getItem('trs-user') || '';
+        let historyData = [];
+        let logoData = localStorage.getItem('trs-logo') || '';
+        let currentMode = 'photon';
+        const defaultPassword = 'trs398!';
+        let autoSaveInterval = null;
+
+        // Toast Notification System
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            if (!container) return;
+            
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.textContent = message;
+            container.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // Input Validation
+        function validateField(fieldId, value, type = 'number', min = 0, max = null) {
+            const field = document.getElementById(fieldId);
+            if (!field) return true;
+            
+            const group = field.closest('.form-group');
+            if (!group) return true;
+            
+            let errorMsg = group.querySelector('.error-message');
+            if (!errorMsg) {
+                errorMsg = document.createElement('div');
+                errorMsg.className = 'error-message';
+            }
+            
+            let isValid = true;
+            let errorText = '';
+            
+            if (type === 'number') {
+                const num = parseFloat(value);
+                if (value && (isNaN(num) || num < min || (max !== null && num > max))) {
+                    isValid = false;
+                    if (isNaN(num)) {
+                        errorText = 'Enter a valid number';
+                    } else if (num < min) {
+                        errorText = `Value must be at least ${min}`;
+                    } else if (max !== null && num > max) {
+                        errorText = `Value must be at most ${max}`;
+                    }
+                }
+            } else if (type === 'required' && !value.trim()) {
+                isValid = false;
+                errorText = 'This field is required';
+            }
+            
+            if (isValid) {
+                group.classList.remove('invalid');
+                group.classList.add('valid');
+                errorMsg.remove();
+            } else {
+                group.classList.remove('valid');
+                group.classList.add('invalid');
+                errorMsg.textContent = errorText;
+                if (!group.querySelector('.error-message')) {
+                    group.appendChild(errorMsg);
+                }
+            }
+            
+            return isValid;
+        }
+
+        // Loading State Management
+        function setLoading(element, isLoading) {
+            if (!element) return;
+            if (isLoading) {
+                element.classList.add('loading');
+                element.disabled = true;
+            } else {
+                element.classList.remove('loading');
+                element.disabled = false;
+            }
+        }
+
+        // Update Result Status
+        function updateResultStatus(ecart) {
+            const statusEl = document.getElementById('status1');
+            const toleranceEl = document.getElementById('tolerance1');
+            if (!statusEl || !toleranceEl) return;
+            
+            const settings = JSON.parse(localStorage.getItem('trs-settings') || '{}');
+            const tolerance = parseFloat(settings.tolerance || 2.0); // ±2% default
+            const absEcart = Math.abs(ecart);
+            
+            if (absEcart <= tolerance) {
+                statusEl.textContent = 'PASS';
+                statusEl.className = 'status-badge pass';
+                toleranceEl.style.width = '100%';
+                toleranceEl.style.background = '#10b981';
+            } else {
+                statusEl.textContent = 'FAIL';
+                statusEl.className = 'status-badge fail';
+                const percent = Math.min(100, (absEcart / tolerance) * 100);
+                toleranceEl.style.width = percent + '%';
+                toleranceEl.style.background = '#ef4444';
+            }
+        }
+
+        // Auto-save Draft
+        function saveDraft() {
+            const draft = {
+                mode: document.getElementById('Mode')?.value || '',
+                energy: document.getElementById('e1')?.value || '',
+                T: document.getElementById('T1')?.value || '',
+                P: document.getElementById('P1')?.value || '',
+                kQ: document.getElementById('kQ1')?.value || '',
+                R50: document.getElementById('R50')?.value || '',
+                Zref: document.getElementById('Zref')?.value || '',
+                Mp1_1: document.getElementById('Mp1_1')?.value || '',
+                Mp1_2: document.getElementById('Mp1_2')?.value || '',
+                Mp1_3: document.getElementById('Mp1_3')?.value || '',
+                Mm1_1: document.getElementById('Mm1_1')?.value || '',
+                Mm1_2: document.getElementById('Mm1_2')?.value || '',
+                Mm1_3: document.getElementById('Mm1_3')?.value || '',
+                M1001_1: document.getElementById('M1001_1')?.value || '',
+                M1001_2: document.getElementById('M1001_2')?.value || '',
+                M1001_3: document.getElementById('M1001_3')?.value || '',
+                chamber: document.getElementById('Chamber')?.value || '',
+                tpr: document.getElementById('TPR')?.value || '',
+                ndw: document.getElementById('NdwInput')?.value || ''
+            };
+            localStorage.setItem('trs-draft', JSON.stringify(draft));
+        }
+
+        function loadDraft() {
+            const draftStr = localStorage.getItem('trs-draft');
+            if (!draftStr) return false;
+            
+            try {
+                const draft = JSON.parse(draftStr);
+                if (confirm('Restore unsaved draft?')) {
+                    if (draft.mode) document.getElementById('Mode').value = draft.mode;
+                    if (draft.energy) document.getElementById('e1').value = draft.energy;
+                    if (draft.T) document.getElementById('T1').value = draft.T;
+                    if (draft.P) document.getElementById('P1').value = draft.P;
+                    if (draft.kQ) document.getElementById('kQ1').value = draft.kQ;
+                    if (draft.R50) document.getElementById('R50').value = draft.R50;
+                    if (draft.Zref) document.getElementById('Zref').value = draft.Zref;
+                    if (draft.Mp1_1) document.getElementById('Mp1_1').value = draft.Mp1_1;
+                    if (draft.Mp1_2) document.getElementById('Mp1_2').value = draft.Mp1_2;
+                    if (draft.Mp1_3) document.getElementById('Mp1_3').value = draft.Mp1_3;
+                    if (draft.Mm1_1) document.getElementById('Mm1_1').value = draft.Mm1_1;
+                    if (draft.Mm1_2) document.getElementById('Mm1_2').value = draft.Mm1_2;
+                    if (draft.Mm1_3) document.getElementById('Mm1_3').value = draft.Mm1_3;
+                    if (draft.M1001_1) document.getElementById('M1001_1').value = draft.M1001_1;
+                    if (draft.M1001_2) document.getElementById('M1001_2').value = draft.M1001_2;
+                    if (draft.M1001_3) document.getElementById('M1001_3').value = draft.M1001_3;
+                    if (draft.chamber) document.getElementById('Chamber').value = draft.chamber;
+                    if (draft.tpr) document.getElementById('TPR').value = draft.tpr;
+                    if (draft.ndw) document.getElementById('NdwInput').value = draft.ndw;
+                    
+                    if (draft.mode) setMode(draft.mode);
+                    calc(1);
+                    showToast('Draft restored', 'info');
+                    return true;
+                }
+            } catch (e) {
+                console.error('Error loading draft:', e);
+            }
+            return false;
+        }
+
+        // Keyboard Shortcuts
+        document.addEventListener('keydown', function(e) {
+            // Ctrl+S or Cmd+S: Save
+            if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+                e.preventDefault();
+                saveAll();
+            }
+            
+            // Ctrl+E or Cmd+E: Export
+            if ((e.ctrlKey || e.metaKey) && e.key === 'e') {
+                e.preventDefault();
+                downloadCSV();
+            }
+            
+            // Ctrl+H or Cmd+H: History
+            if ((e.ctrlKey || e.metaKey) && e.key === 'h') {
+                e.preventDefault();
+                openHistory();
+            }
+            
+            // Esc: Close modals
+            if (e.key === 'Escape') {
+                closeHistory();
+                closeSetup();
+                closeLogin();
+            }
+        });
+
+        function getNdw() {
+            const chamberType = (document.getElementById('ChamberType')?.value || 'cylindrical').toLowerCase();
+            const ndwCross = parseFloat(document.getElementById('NdwCross')?.value);
+            if (currentMode === 'electron' && chamberType.includes('plane') && ndwCross > 0) {
+                return ndwCross;
+            }
+            return parseFloat(document.getElementById('NdwInput').value) || defaultNdw;
+        }
+        
+        function calc(row = 1) {
+            const T = parseFloat(document.getElementById('T'+row).value) || 0;
+            const P = parseFloat(document.getElementById('P'+row).value) || 0;
+            const kQ = parseFloat(document.getElementById('kQ'+row).value) || 0;
+            const Ndw = getNdw();
+            
+            const Mp1 = parseFloat(document.getElementById('Mp'+row+'_1').value) || 0;
+            const Mp2 = parseFloat(document.getElementById('Mp'+row+'_2').value) || 0;
+            const Mp3 = parseFloat(document.getElementById('Mp'+row+'_3').value) || 0;
+            
+            const Mm1 = parseFloat(document.getElementById('Mm'+row+'_1').value) || 0;
+            const Mm2 = parseFloat(document.getElementById('Mm'+row+'_2').value) || 0;
+            const Mm3 = parseFloat(document.getElementById('Mm'+row+'_3').value) || 0;
+            
+            const M1001 = parseFloat(document.getElementById('M100'+row+'_1').value) || 0;
+            const M1002 = parseFloat(document.getElementById('M100'+row+'_2').value) || 0;
+            const M1003 = parseFloat(document.getElementById('M100'+row+'_3').value) || 0;
+            
+            if (!T || !P || !Ndw) return;
+            
+            const MeanP = (Mp1 + Mp2 + Mp3) / 3;
+            const MeanM = (Mm1 + Mm2 + Mm3) / 3;
+            const Mean100 = (M1001 + M1002 + M1003) / 3;
+
+            if (MeanP === 0 || Mean100 === 0) return;
+            
+            const Ktp = (1013 / P) * (273.2 + T) / 293.2;
+            const Kpol = (Math.abs(MeanP) + Math.abs(MeanM)) / (2 * Math.abs(MeanP));
+            const ratio = MeanP / Mean100;
+            const Ks = 1.198 - (0.875 * ratio) + (0.677 * ratio * ratio);
+            const Mcorr = MeanP * Ktp * Kpol * Ks;
+            const DW = Mcorr * kQ * Ndw;
+            const Ecart = 100 * (1 - DW);
+            
+            document.getElementById('MeanP'+row).textContent = MeanP.toFixed(3);
+            document.getElementById('MeanM'+row).textContent = MeanM.toFixed(3);
+            document.getElementById('Mean100'+row).textContent = Mean100.toFixed(3);
+            document.getElementById('Ktp'+row).textContent = Ktp.toFixed(4);
+            document.getElementById('Kpol'+row).textContent = Kpol.toFixed(4);
+            document.getElementById('Ks'+row).textContent = Ks.toFixed(4);
+            document.getElementById('Mcorr'+row).textContent = Mcorr.toFixed(4);
+            document.getElementById('DW'+row).textContent = DW.toFixed(4);
+            document.getElementById('Ecart'+row).textContent = Ecart.toFixed(2);
+            
+            // Update result status
+            updateResultStatus(Ecart);
+        }
+        
+        function recalcAll() {
+            calc(1);
+        }
+
+        async function loadChambers(force = false) {
+            if (chambersLoaded && !force) return;
+            try {
+                const resp = await fetch('/api/detectors');
+                if (!resp.ok) return;
+                detectorLibrary = await resp.json();
+                const select = document.getElementById('Chamber');
+                select.innerHTML = '<option value=\"\">Select chamber</option>';
+                Object.keys(detectorLibrary).forEach(name => {
+                    const opt = document.createElement('option');
+                    opt.value = name;
+                    opt.textContent = name;
+                    select.appendChild(opt);
+                });
+                chambersLoaded = true;
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        // Improved interpolation function for any type of nodes
+        function interpolateValue(x, nodes, values) {
+            if (!nodes || !values || nodes.length === 0 || values.length === 0) return null;
+            if (nodes.length !== values.length) return null;
+            
+            // Exact match
+            const exactIndex = nodes.indexOf(x);
+            if (exactIndex !== -1) return values[exactIndex];
+            
+            // Below minimum
+            if (x <= nodes[0]) return values[0];
+            
+            // Above maximum
+            if (x >= nodes[nodes.length - 1]) return values[values.length - 1];
+            
+            // Linear interpolation
+            for (let i = 0; i < nodes.length - 1; i++) {
+                if (x >= nodes[i] && x <= nodes[i+1]) {
+                    const t = (x - nodes[i]) / (nodes[i+1] - nodes[i]);
+                    return values[i] + t * (values[i+1] - values[i]);
+                }
+            }
+            
+            return values[values.length - 1];
+        }
+
+        function autoKQ() {
+            if (currentMode === 'electron') {
+                autoElectronKQ();
+                return;
+            }
+            if (!chambersLoaded) return;
+            const chamberName = document.getElementById('Chamber').value;
+            const tpr = parseFloat(document.getElementById('TPR').value);
+            if (!chamberName || !tpr || isNaN(tpr)) return;
+            
+            const chamber = detectorLibrary[chamberName];
+            if (!chamber) return;
+            
+            // Check for TPR-based kQ (photons)
+            if (Array.isArray(chamber.tpr_nodes) && Array.isArray(chamber.kq_values)) {
+                const kq = interpolateValue(tpr, chamber.tpr_nodes, chamber.kq_values);
+                if (kq !== null) {
+                    document.getElementById('kQ1').value = kq.toFixed(4);
+                    calc(1);
+                }
+            }
+        }
+
+        function setMode(mode) {
+            currentMode = mode;
+            document.body.classList.toggle('electron-mode', mode === 'electron');
+            const modeSelect = document.getElementById('Mode');
+            if (modeSelect) modeSelect.value = mode;
+            if (mode === 'electron') {
+                const energy = document.getElementById('e1').value;
+                if (electronDefaults[energy]) {
+                    document.getElementById('R50').value = electronDefaults[energy].toFixed(2);
+                    handleR50Change();
+                }
+                document.getElementById('SSD').value = '100';
+            } else {
+                document.getElementById('R50').value = '';
+                document.getElementById('Zref').value = '';
+            }
+            autoKQ();
+        }
+
+        function handleR50Change() {
+            const r50 = parseFloat(document.getElementById('R50').value);
+            if (r50 > 0) {
+                const zref = (0.6 * r50) - 0.1;
+                document.getElementById('Zref').value = zref.toFixed(2);
+            }
+            autoKQ();
+        }
+
+        function handleEnergyChange() {
+            if (currentMode !== 'electron') return;
+            const energy = document.getElementById('e1').value;
+            if (electronDefaults[energy]) {
+                document.getElementById('R50').value = electronDefaults[energy].toFixed(2);
+                handleR50Change();
+            }
+        }
+
+        function autoElectronKQ() {
+            const r50 = parseFloat(document.getElementById('R50').value);
+            if (!r50 || isNaN(r50)) return;
+            
+            const chamberName = document.getElementById('Chamber').value;
+            const chamberType = (document.getElementById('ChamberType').value || 'cylindrical').toLowerCase();
+            
+            // First, try to get kQ from detector library
+            if (chamberName && chambersLoaded) {
+                const chamber = detectorLibrary[chamberName];
+                if (chamber && Array.isArray(chamber.r50_nodes) && Array.isArray(chamber.kq_values)) {
+                    const kq = interpolateValue(r50, chamber.r50_nodes, chamber.kq_values);
+                    if (kq !== null) {
+                        document.getElementById('kQ1').value = kq.toFixed(4);
+                        calc(1);
+                        return;
+                    }
+                }
+            }
+            
+            // Fallback to default tables if chamber not found in library
+            const table = chamberType.includes('plane') ? electronKqPP : electronKqCyl;
+            const kq = interpolateValue(r50, electronR50Nodes, table);
+            if (kq !== null) {
+                document.getElementById('kQ1').value = kq.toFixed(4);
+                calc(1);
+            }
+        }
+
+        function clearAll() {
+            if (confirm('Clear all data?')) {
+                document.querySelectorAll('input[type=\"number\"]').forEach(i => {
+                    i.value = '';
+                    const group = i.closest('.form-group');
+                    if (group) {
+                        group.classList.remove('valid', 'invalid');
+                        const errorMsg = group.querySelector('.error-message');
+                        if (errorMsg) errorMsg.remove();
+                    }
+                });
+                ['MeanP1','MeanM1','Mean1001','Ktp1','Kpol1','Ks1','Mcorr1','DW1','Ecart1'].forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) el.textContent = '-';
+                });
+                document.getElementById('NdwInput').value = defaultNdw;
+                document.getElementById('Notes').value = '';
+                const chamberSelect = document.getElementById('Chamber');
+                if (chamberSelect) chamberSelect.value = '';
+                const statusEl = document.getElementById('status1');
+                const toleranceEl = document.getElementById('tolerance1');
+                if (statusEl) statusEl.textContent = '';
+                if (toleranceEl) {
+                    toleranceEl.style.width = '0%';
+                    toleranceEl.style.background = '';
+                }
+                localStorage.removeItem('trs-draft');
+                showToast('Form cleared', 'info');
+            }
+        }
+        
+        async function saveAll() {
+            const T = parseFloat(document.getElementById('T1').value);
+            if (!T) {
+                showToast('Enter measurement values first', 'warning');
+                return;
+            }
+            if (!currentUser) {
+                showToast('Please login first', 'warning');
+                openLogin();
+                return;
+            }
+
+            const saveBtn = document.querySelector('button[onclick="saveAll()"]');
+            setLoading(saveBtn, true);
+
+            const data = {
+                Mode: currentMode,
+                UserName: currentUser,
+                LinacName: document.getElementById('LinacName').value || '',
+                LinacId: document.getElementById('LinacId').value || '',
+                FieldSize: document.getElementById('FieldSize').value || '',
+                Chamber: document.getElementById('Chamber').value || '',
+                TPR2010: parseFloat(document.getElementById('TPR').value) || 0,
+                R50: parseFloat(document.getElementById('R50').value) || 0,
+                Zref: parseFloat(document.getElementById('Zref').value) || 0,
+                SSD: parseFloat(document.getElementById('SSD').value) || 100,
+                ChamberType: document.getElementById('ChamberType').value || '',
+                Ndw_Qcross: parseFloat(document.getElementById('NdwCross').value) || 0,
+                R50_cross: parseFloat(document.getElementById('R50Cross').value) || 0,
+                ClinicName: document.getElementById('ClinicName').value || '',
+                ClinicAddress: document.getElementById('ClinicAddress').value || '',
+                Ndw: getNdw(),
+                Notes: document.getElementById('Notes').value || '',
+                Energy: document.getElementById('e1').value,
+                T: T,
+                P: parseFloat(document.getElementById('P1').value) || 0,
+                kQ: parseFloat(document.getElementById('kQ1').value) || 0,
+                M_plus_1: parseFloat(document.getElementById('Mp1_1').value) || 0,
+                M_plus_2: parseFloat(document.getElementById('Mp1_2').value) || 0,
+                M_plus_3: parseFloat(document.getElementById('Mp1_3').value) || 0,
+                M_minus_1: parseFloat(document.getElementById('Mm1_1').value) || 0,
+                M_minus_2: parseFloat(document.getElementById('Mm1_2').value) || 0,
+                M_minus_3: parseFloat(document.getElementById('Mm1_3').value) || 0,
+                M100V_1: parseFloat(document.getElementById('M1001_1').value) || 0,
+                M100V_2: parseFloat(document.getElementById('M1001_2').value) || 0,
+                M100V_3: parseFloat(document.getElementById('M1001_3').value) || 0
+            };
+            
+            try {
+                const resp = await fetch('/api/trs/save', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(data)
+                });
+                if(resp.ok) {
+                    showToast('Measurement saved successfully!', 'success');
+                    localStorage.removeItem('trs-draft');
+                } else {
+                    showToast('Failed to save measurement', 'error');
+                }
+            } catch(e) {
+                console.error(e);
+                showToast('Save failed: ' + e.message, 'error');
+            } finally {
+                setLoading(saveBtn, false);
+            }
+        }
+        
+        function exportCSV() {
+            window.open('/api/trs/export', '_blank');
+        }
+
+        function downloadCSV() {
+            window.location.href = '/api/trs/export';
+        }
+
+        async function openHistory() {
+            document.getElementById('historyModal').classList.add('open');
+            const tbody = document.getElementById('historyBody');
+            if (tbody) tbody.innerHTML = '<tr><td colspan="20">Loading...</td></tr>';
+            const search = document.getElementById('historySearch');
+            const energy = document.getElementById('historyEnergy');
+            if (search) search.value = '';
+            if (energy) energy.value = 'all';
+            await refreshHistory();
+        }
+
+        async function refreshHistory() {
+            try {
+                const resp = await fetch('/api/trs/measurements');
+                historyData = await resp.json();
+                renderHistory();
+            } catch (e) {
+                console.error(e);
+                const tbody = document.getElementById('historyBody');
+                if (tbody) tbody.innerHTML = '<tr><td colspan="20">Error loading history</td></tr>';
+            }
+        }
+
+        function renderHistory() {
+            const tbody = document.getElementById('historyBody');
+            if (!tbody) return;
+            if (!historyData || historyData.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="20">No measurements found</td></tr>';
+                document.getElementById('historyCount').textContent = '0 rows';
+                document.getElementById('historyEnergyTag').textContent = 'All energies';
+                return;
+            }
+
+            const searchTerm = (document.getElementById('historySearch').value || '').toLowerCase().trim();
+            const energyFilter = document.getElementById('historyEnergy').value;
+
+            const filtered = historyData.filter(m => {
+                const matchesEnergy = energyFilter === 'all' || m.energy === energyFilter;
+                const matchesSearch = !searchTerm || [
+                    m.userName || m.UserName, m.energy || m.Energy, m.notes || m.Notes || '', m.linacName || m.LinacName || '', m.clinicName || m.ClinicName || '', m.linacId || m.LinacId || '', m.chamber || m.Chamber || '', m.mode || m.Mode || ''
+                ].some(v => (v || '').toLowerCase().includes(searchTerm));
+                return matchesEnergy && matchesSearch;
+            });
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="20">No measurements match your filter</td></tr>';
+            } else {
+                tbody.innerHTML = filtered.map(m => {
+                    const ecart = m.ecart ?? m.Ecart ?? 0;
+                    const status = Math.abs(ecart) <= 2.0 ? 'pass' : 'fail';
+                    const statusClass = `status-${status}`;
+                    const statusText = status === 'pass' ? 'PASS' : 'FAIL';
+                    
+                    return `
+                        <tr>
+                            <td>${new Date(m.date).toLocaleString()}</td>
+                            <td>${m.clinicName || '-'}</td>
+                            <td>${m.userName || '-'}</td>
+                            <td>${(m.mode || m.Mode || 'photon')}</td>
+                            <td><span class="history-chip">${m.energy}</span></td>
+                            <td>${m.r50 ? m.r50.toFixed(2) : (m.R50 ? m.R50.toFixed(2) : '-')}</td>
+                            <td>${m.zref ? m.zref.toFixed(2) : (m.Zref ? m.Zref.toFixed(2) : '-')}</td>
+                            <td>${m.linacName || '-'}${m.linacId ? ` (${m.linacId})` : ''}</td>
+                            <td>${m.fieldSize || '-'}</td>
+                            <td>${m.chamber || '-'}${m.chamberType ? ` (${m.chamberType})` : (m.ChamberType ? ` (${m.ChamberType})` : '')}</td>
+                            <td>${m.tpr2010 ? m.tpr2010.toFixed(3) : (m.TPR2010 ? m.TPR2010.toFixed(3) : '-')}</td>
+                            <td>${m.ndw ? m.ndw.toFixed(5) : (m.Ndw ? m.Ndw.toFixed(5) : '-')}</td>
+                            <td>${m.t?.toFixed ? m.t.toFixed(2) : (m.T?.toFixed ? m.T.toFixed(2) : '-')}</td>
+                            <td>${m.p?.toFixed ? m.p.toFixed(1) : (m.P?.toFixed ? m.P.toFixed(1) : '-')}</td>
+                            <td>${(m.kQ ?? m.kq ?? m.kQUsed ?? m.kqUsed ?? null) !== null ? (m.kQ ?? m.kq ?? m.kQUsed ?? m.kqUsed).toFixed(3) : '-'}</td>
+                            <td>${(m.kpol ?? m.Kpol ?? null) !== null ? (m.kpol ?? m.Kpol).toFixed(4) : '-'}</td>
+                            <td>${(m.dW_Zref ?? m.dw_Zref ?? m.DW_Zref ?? null) !== null ? (m.dW_Zref ?? m.dw_Zref ?? m.DW_Zref).toFixed(4) : '-'}</td>
+                            <td><span class="${statusClass}">${ecart.toFixed(2)}%</span></td>
+                            <td><span class="${statusClass}">${statusText}</span></td>
+                            <td class="action-cell" onclick="event.stopPropagation()">
+                                <div class="history-actions">
+                                    <button class="btn ghost" onclick="exportHistoryPdf(${m.id})">PDF</button>
+                                    <button class="btn warn" onclick="deleteHistory(${m.id})">Delete</button>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            }
+
+            document.getElementById('historyCount').textContent = `${filtered.length} row(s)`;
+            document.getElementById('historyEnergyTag').textContent = energyFilter === 'all' ? 'All energies' : energyFilter;
+        }
+
+        function closeHistory() {
+            document.getElementById('historyModal').classList.remove('open');
+        }
+
+        async function deleteHistory(id) {
+            const settings = JSON.parse(localStorage.getItem('trs-settings') || '{}');
+            if (settings.confirmDelete !== false && !confirm('Delete this measurement?')) return;
+            try {
+                const resp = await fetch(`/api/trs/measurements/${id}`, { method: 'DELETE' });
+                if (resp.ok) {
+                    showToast('Measurement deleted', 'success');
+                    await refreshHistory();
+                } else {
+                    showToast('Error deleting measurement', 'error');
+                }
+            } catch (e) {
+                showToast('Error deleting measurement: ' + e.message, 'error');
+            }
+        }
+
+        function exportHistoryPdf(id) {
+            window.open(`/api/trs/report/${id}`, '_blank');
+        }
+
+        function exportHistoryCsv() {
+            window.open('/api/trs/export', '_blank');
+        }
+
+        function handleAuth() {
+            if (currentUser) {
+                if (confirm(`Logout ${currentUser}?`)) logout();
+            } else {
+                openLogin();
+            }
+        }
+
+        function openLogin() {
+            document.getElementById('loginModal').classList.add('open');
+            document.getElementById('LoginUser').focus();
+        }
+
+        function closeLogin() {
+            document.getElementById('loginModal').classList.remove('open');
+        }
+
+        function submitLogin() {
+            const user = document.getElementById('LoginUser').value.trim();
+            const pass = document.getElementById('LoginPassword').value;
+            if (!user || pass !== defaultPassword) {
+                showToast('Invalid credentials. Password is trs398!', 'error');
+                return;
+            }
+            currentUser = user;
+            localStorage.setItem('trs-user', currentUser);
+            document.getElementById('UserName').value = currentUser;
+            closeLogin();
+            updateAuthUI();
+            showToast('Logged in as ' + user, 'success');
+        }
+
+        function logout() {
+            currentUser = '';
+            localStorage.removeItem('trs-user');
+            document.getElementById('UserName').value = '';
+            updateAuthUI();
+        }
+
+        function updateAuthUI() {
+            const btn = document.getElementById('authBtn');
+            if (btn) btn.textContent = currentUser ? `Logout (${currentUser})` : 'Login';
+            const link = document.getElementById('authLink');
+            if (link) link.textContent = currentUser ? `Logout (${currentUser})` : 'Login';
+            const label = document.querySelector('.eyebrow');
+            if (label) label.textContent = currentUser ? `Signed in as ${currentUser}` : 'TRS-398 photon calibration';
+        }
+
+        // Settings Management
+        function switchSettingsTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.settings-tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.settings-tab').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Show selected tab
+            const tabContent = document.getElementById('tab-' + tabName);
+            if (tabContent) {
+                tabContent.classList.add('active');
+            }
+            
+            // Activate clicked tab button
+            const tabs = document.querySelectorAll('.settings-tab');
+            tabs.forEach((tab, index) => {
+                const tabNames = ['clinic', 'equipment', 'defaults', 'preferences', 'advanced'];
+                if (tabNames[index] === tabName) {
+                    tab.classList.add('active');
+                }
+            });
+        }
+
+        function loadSettings() {
+            const settings = JSON.parse(localStorage.getItem('trs-settings') || '{}');
+            
+            // Load clinic settings
+            if (settings.clinicName) document.getElementById('ClinicName').value = settings.clinicName;
+            if (settings.clinicAddress) document.getElementById('ClinicAddress').value = settings.clinicAddress;
+            if (settings.userName) document.getElementById('UserName').value = settings.userName;
+            if (settings.clinicPhone) document.getElementById('ClinicPhone').value = settings.clinicPhone;
+            if (settings.clinicEmail) document.getElementById('ClinicEmail').value = settings.clinicEmail;
+            if (settings.notes) document.getElementById('Notes').value = settings.notes;
+            
+            // Load equipment settings
+            if (settings.linacName) document.getElementById('LinacName').value = settings.linacName;
+            if (settings.linacId) document.getElementById('LinacId').value = settings.linacId;
+            if (settings.fieldSize) document.getElementById('FieldSize').value = settings.fieldSize;
+            
+            // Load defaults
+            if (settings.defaultTemp) document.getElementById('DefaultTemp').value = settings.defaultTemp;
+            if (settings.defaultPressure) document.getElementById('DefaultPressure').value = settings.defaultPressure;
+            if (settings.defaultEnergy) document.getElementById('DefaultEnergy').value = settings.defaultEnergy;
+            if (settings.defaultMode) document.getElementById('DefaultMode').value = settings.defaultMode;
+            if (settings.ndw) document.getElementById('NdwInput').value = settings.ndw;
+            
+            // Load preferences
+            if (settings.autoFillDefaults !== undefined) document.getElementById('AutoFillDefaults').checked = settings.autoFillDefaults;
+            if (settings.showFormulas !== undefined) document.getElementById('ShowFormulas').checked = settings.showFormulas;
+            if (settings.showSignature !== undefined) document.getElementById('ShowSignature').checked = settings.showSignature;
+            if (settings.compactMode !== undefined) document.getElementById('CompactMode').checked = settings.compactMode;
+            if (settings.autoSaveDraft !== undefined) document.getElementById('AutoSaveDraft').checked = settings.autoSaveDraft;
+            if (settings.autoCalculate !== undefined) document.getElementById('AutoCalculate').checked = settings.autoCalculate;
+            if (settings.showTooltips !== undefined) document.getElementById('ShowTooltips').checked = settings.showTooltips;
+            if (settings.confirmDelete !== undefined) document.getElementById('ConfirmDelete').checked = settings.confirmDelete;
+            if (settings.showNotifications !== undefined) document.getElementById('ShowNotifications').checked = settings.showNotifications;
+            
+            // Load advanced
+            if (settings.tolerance) document.getElementById('Tolerance').value = settings.tolerance;
+            if (settings.debugMode !== undefined) document.getElementById('DebugMode').checked = settings.debugMode;
+            
+            // Apply preferences
+            applyPreferences();
+        }
+
+        function saveSettings() {
+            const settings = {
+                clinicName: document.getElementById('ClinicName').value,
+                clinicAddress: document.getElementById('ClinicAddress').value,
+                userName: document.getElementById('UserName').value,
+                clinicPhone: document.getElementById('ClinicPhone').value,
+                clinicEmail: document.getElementById('ClinicEmail').value,
+                notes: document.getElementById('Notes').value,
+                linacName: document.getElementById('LinacName').value,
+                linacId: document.getElementById('LinacId').value,
+                fieldSize: document.getElementById('FieldSize').value,
+                defaultTemp: document.getElementById('DefaultTemp').value,
+                defaultPressure: document.getElementById('DefaultPressure').value,
+                defaultEnergy: document.getElementById('DefaultEnergy').value,
+                defaultMode: document.getElementById('DefaultMode').value,
+                ndw: document.getElementById('NdwInput').value,
+                autoFillDefaults: document.getElementById('AutoFillDefaults').checked,
+                showFormulas: document.getElementById('ShowFormulas').checked,
+                showSignature: document.getElementById('ShowSignature').checked,
+                compactMode: document.getElementById('CompactMode').checked,
+                autoSaveDraft: document.getElementById('AutoSaveDraft').checked,
+                autoCalculate: document.getElementById('AutoCalculate').checked,
+                showTooltips: document.getElementById('ShowTooltips').checked,
+                confirmDelete: document.getElementById('ConfirmDelete').checked,
+                showNotifications: document.getElementById('ShowNotifications').checked,
+                tolerance: document.getElementById('Tolerance').value,
+                debugMode: document.getElementById('DebugMode').checked
+            };
+            
+            localStorage.setItem('trs-settings', JSON.stringify(settings));
+            showToast('Settings saved successfully!', 'success');
+            applyPreferences();
+        }
+
+        function resetSettings() {
+            if (!confirm('Reset all settings to defaults? This cannot be undone.')) return;
+            
+            // Reset form fields
+            document.getElementById('ClinicName').value = '';
+            document.getElementById('ClinicAddress').value = '';
+            document.getElementById('ClinicPhone').value = '';
+            document.getElementById('ClinicEmail').value = '';
+            document.getElementById('Notes').value = '';
+            document.getElementById('LinacName').value = '';
+            document.getElementById('LinacId').value = '';
+            document.getElementById('FieldSize').value = '';
+            document.getElementById('DefaultTemp').value = '22.0';
+            document.getElementById('DefaultPressure').value = '1013.0';
+            document.getElementById('DefaultEnergy').value = '6X';
+            document.getElementById('DefaultMode').value = 'photon';
+            document.getElementById('NdwInput').value = '0.04789';
+            document.getElementById('Tolerance').value = '2.0';
+            
+            // Reset checkboxes
+            document.getElementById('AutoFillDefaults').checked = true;
+            document.getElementById('ShowFormulas').checked = true;
+            document.getElementById('ShowSignature').checked = true;
+            document.getElementById('CompactMode').checked = false;
+            document.getElementById('AutoSaveDraft').checked = true;
+            document.getElementById('AutoCalculate').checked = true;
+            document.getElementById('ShowTooltips').checked = true;
+            document.getElementById('ConfirmDelete').checked = true;
+            document.getElementById('ShowNotifications').checked = true;
+            document.getElementById('DebugMode').checked = false;
+            
+            localStorage.removeItem('trs-settings');
+            showToast('Settings reset to defaults', 'info');
+            applyPreferences();
+        }
+
+        function exportSettings() {
+            const settings = localStorage.getItem('trs-settings');
+            if (!settings) {
+                showToast('No settings to export', 'warning');
+                return;
+            }
+            
+            const blob = new Blob([settings], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'trs398-settings.json';
+            a.click();
+            URL.revokeObjectURL(url);
+            showToast('Settings exported', 'success');
+        }
+
+        function importSettings() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'application/json';
+            input.onchange = (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    try {
+                        const settings = JSON.parse(e.target.result);
+                        localStorage.setItem('trs-settings', JSON.stringify(settings));
+                        loadSettings();
+                        showToast('Settings imported successfully', 'success');
+                    } catch (err) {
+                        showToast('Invalid settings file', 'error');
+                    }
+                };
+                reader.readAsText(file);
+            };
+            input.click();
+        }
+
+        function applyPreferences() {
+            const settings = JSON.parse(localStorage.getItem('trs-settings') || '{}');
+            
+            // Apply formula box visibility
+            const formulaBox = document.querySelector('.formula-box');
+            if (formulaBox) {
+                formulaBox.style.display = (settings.showFormulas !== false) ? 'block' : 'none';
+            }
+            
+            // Apply signature box visibility
+            const signatureBox = document.querySelector('.signature-box');
+            if (signatureBox) {
+                signatureBox.style.display = (settings.showSignature !== false) ? 'block' : 'none';
+            }
+            
+            // Apply compact mode
+            if (settings.compactMode) {
+                document.body.classList.add('compact-mode');
+            } else {
+                document.body.classList.remove('compact-mode');
+            }
+            
+            // Update tolerance
+            if (settings.tolerance) {
+                window.toleranceValue = parseFloat(settings.tolerance);
+            }
+        }
+
+        function applyDefaults() {
+            const settings = JSON.parse(localStorage.getItem('trs-settings') || '{}');
+            
+            if (settings.autoFillDefaults !== false) {
+                if (settings.defaultTemp) document.getElementById('T1').value = settings.defaultTemp;
+                if (settings.defaultPressure) document.getElementById('P1').value = settings.defaultPressure;
+                if (settings.defaultEnergy) document.getElementById('e1').value = settings.defaultEnergy;
+                if (settings.defaultMode) {
+                    document.getElementById('Mode').value = settings.defaultMode;
+                    setMode(settings.defaultMode);
+                }
+                if (settings.ndw) document.getElementById('NdwInput').value = settings.ndw;
+            }
+        }
+
+        function openSetup() {
+            document.getElementById('setupModal').classList.add('open');
+            syncThemeLabels();
+            loadSettings();
+        }
+
+        function closeSetup() {
+            saveSettings(); // Auto-save on close
+            document.getElementById('setupModal').classList.remove('open');
+        }
+
+        function scrollToMeasurement() {
+            const card = document.getElementById('measurementCard');
+            if (card) card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        function applyLogo() {
+            const img = document.getElementById('brandLogo');
+            if (!img) return;
+            if (logoData) {
+                img.src = logoData;
+                img.style.display = 'block';
+            } else {
+                img.removeAttribute('src');
+                img.style.display = 'none';
+            }
+        }
+
+        function handleLogoUpload(evt) {
+            const file = evt.target?.files?.[0];
+            if (!file) return;
+            if (!file.type.startsWith('image/')) {
+                showToast('Please upload an image file', 'error');
+                return;
+            }
+            const reader = new FileReader();
+            reader.onload = () => {
+                logoData = reader.result;
+                localStorage.setItem('trs-logo', logoData);
+                applyLogo();
+                showToast('Logo uploaded successfully', 'success');
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function clearLogo() {
+            logoData = '';
+            localStorage.removeItem('trs-logo');
+            const input = document.getElementById('LogoUpload');
+            if (input) input.value = '';
+            applyLogo();
+        }
+
+        function applyTheme() {
+            document.body.setAttribute('data-theme', theme);
+            syncThemeLabels();
+        }
+
+        function toggleTheme() {
+            theme = theme === 'dark' ? 'light' : 'dark';
+            localStorage.setItem('trs-theme', theme);
+            applyTheme();
+        }
+
+        function syncThemeLabels() {
+            const labelMain = document.getElementById('themeLabel');
+            const labelSettings = document.getElementById('themeLabelSettings');
+            if (labelMain) labelMain.textContent = theme === 'dark' ? 'Dark' : 'Light';
+            if (labelSettings) labelSettings.textContent = theme === 'dark' ? 'Light' : 'Dark';
+        }
+
+        function pickSampleChamber() {
+            if (!chambersLoaded) return;
+            const select = document.getElementById('Chamber');
+            if (select && select.options.length > 1) {
+                select.selectedIndex = 1;
+                autoKQ();
+            }
+        }
+
+        // Add validation to input fields
+        function setupValidation() {
+            document.querySelectorAll('input[type="number"]').forEach(input => {
+                input.addEventListener('blur', function() {
+                    const value = this.value;
+                    if (value) {
+                        validateField(this.id, value, 'number', 0);
+                    } else {
+                        const group = this.closest('.form-group');
+                        if (group) {
+                            group.classList.remove('valid', 'invalid');
+                            const errorMsg = group.querySelector('.error-message');
+                            if (errorMsg) errorMsg.remove();
+                        }
+                    }
+                });
+                
+                // Auto-save on input
+                input.addEventListener('input', function() {
+                    saveDraft();
+                });
+            });
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            applyTheme();
+            applyLogo();
+            loadChambers();
+            updateAuthUI();
+            loadSettings(); // Load saved settings
+            applyPreferences(); // Apply preferences
+            
+            if (currentUser) document.getElementById('UserName').value = currentUser;
+            const modeSelect = document.getElementById('Mode');
+            if (modeSelect) setMode(modeSelect.value);
+            
+            // Apply defaults if enabled
+            applyDefaults();
+            
+            // Setup validation
+            setupValidation();
+            
+            // Load draft if available
+            setTimeout(() => {
+                if (!loadDraft()) {
+                    // Start auto-save interval (every 30 seconds) if enabled
+                    const settings = JSON.parse(localStorage.getItem('trs-settings') || '{}');
+                    if (settings.autoSaveDraft !== false) {
+                        autoSaveInterval = setInterval(saveDraft, 30000);
+                    }
+                } else {
+                    // Start auto-save after draft is loaded
+                    setTimeout(() => {
+                        const settings = JSON.parse(localStorage.getItem('trs-settings') || '{}');
+                        if (settings.autoSaveDraft !== false) {
+                            autoSaveInterval = setInterval(saveDraft, 30000);
+                        }
+                    }, 1000);
+                }
+            }, 500);
+        });
+    </script>
+</body>
+</html>
