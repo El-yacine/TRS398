@@ -18,3 +18,5 @@ appsettings.*.json
 
 # SQLite / local DB (optional: decide)
 *.db
+CHANGES_SUMMARY.md
+server/wwwroot/logos/
