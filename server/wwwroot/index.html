@@ -1756,6 +1756,8 @@
                                 <label for="kQ1">kQ (auto-calculated)</label>
                                 <input type="number" id="kQ1" step="0.0001" readonly style="background: var(--card); opacity: 0.7; cursor: not-allowed;" oninput="calc(1)"/>
                             </div>
+                            <!-- Hidden Ndw input for calculations -->
+                            <input type="hidden" id="NdwInput" value="0.04789" />
                             <div class="form-group electron-only">
                                 <label for="R50">Beam quality index, R50 (g/cm²)</label>
                                 <input type="number" id="R50" step="0.01" oninput="handleR50Change()"/>
@@ -2561,60 +2563,135 @@
         });
 
         function getNdw() {
+            // First check for electron mode with plane-parallel chamber cross-calibration
             const chamberType = (document.getElementById('ChamberType')?.value || 'cylindrical').toLowerCase();
             const ndwCross = parseFloat(document.getElementById('NdwCross')?.value);
             if (currentMode === 'electron' && chamberType.includes('plane') && ndwCross > 0) {
                 return ndwCross;
             }
-            return parseFloat(document.getElementById('NdwInput').value) || defaultNdw;
+            
+            // Try to get from Chamber Library (Settings modal)
+            const chamberNdw = parseFloat(document.getElementById('ChamberNdw')?.value);
+            if (chamberNdw && chamberNdw > 0) {
+                return chamberNdw;
+            }
+            
+            // Try to get from hidden input (if it exists)
+            const ndwInput = document.getElementById('NdwInput');
+            if (ndwInput && ndwInput.value) {
+                return parseFloat(ndwInput.value);
+            }
+            
+            // Default value
+            return defaultNdw || 0.04789;
         }
         
         function calc(row = 1) {
-            const T = parseFloat(document.getElementById('T'+row).value) || 0;
-            const P = parseFloat(document.getElementById('P'+row).value) || 0;
-            const kQ = parseFloat(document.getElementById('kQ'+row).value) || 0;
-            const Ndw = getNdw();
-            
-            const Mp1 = parseFloat(document.getElementById('Mp'+row+'_1').value) || 0;
-            const Mp2 = parseFloat(document.getElementById('Mp'+row+'_2').value) || 0;
-            const Mp3 = parseFloat(document.getElementById('Mp'+row+'_3').value) || 0;
-            
-            const Mm1 = parseFloat(document.getElementById('Mm'+row+'_1').value) || 0;
-            const Mm2 = parseFloat(document.getElementById('Mm'+row+'_2').value) || 0;
-            const Mm3 = parseFloat(document.getElementById('Mm'+row+'_3').value) || 0;
-            
-            const M1001 = parseFloat(document.getElementById('M100'+row+'_1').value) || 0;
-            const M1002 = parseFloat(document.getElementById('M100'+row+'_2').value) || 0;
-            const M1003 = parseFloat(document.getElementById('M100'+row+'_3').value) || 0;
-            
-            if (!T || !P || !Ndw) return;
-            
-            const MeanP = (Mp1 + Mp2 + Mp3) / 3;
-            const MeanM = (Mm1 + Mm2 + Mm3) / 3;
-            const Mean100 = (M1001 + M1002 + M1003) / 3;
-
-            if (MeanP === 0 || Mean100 === 0) return;
-            
-            const Ktp = (1013 / P) * (273.2 + T) / 293.2;
-            const Kpol = (Math.abs(MeanP) + Math.abs(MeanM)) / (2 * Math.abs(MeanP));
-            const ratio = MeanP / Mean100;
-            const Ks = 1.198 - (0.875 * ratio) + (0.677 * ratio * ratio);
-            const Mcorr = MeanP * Ktp * Kpol * Ks;
-            const DW = Mcorr * kQ * Ndw;
-            const Ecart = 100 * (1 - DW);
-            
-            document.getElementById('MeanP'+row).textContent = MeanP.toFixed(3);
-            document.getElementById('MeanM'+row).textContent = MeanM.toFixed(3);
-            document.getElementById('Mean100'+row).textContent = Mean100.toFixed(3);
-            document.getElementById('Ktp'+row).textContent = Ktp.toFixed(4);
-            document.getElementById('Kpol'+row).textContent = Kpol.toFixed(4);
-            document.getElementById('Ks'+row).textContent = Ks.toFixed(4);
-            document.getElementById('Mcorr'+row).textContent = Mcorr.toFixed(4);
-            document.getElementById('DW'+row).textContent = DW.toFixed(4);
-            document.getElementById('Ecart'+row).textContent = Ecart.toFixed(2);
-            
-            // Update result status
-            updateResultStatus(Ecart);
+            try {
+                const T = parseFloat(document.getElementById('T'+row)?.value) || 0;
+                const P = parseFloat(document.getElementById('P'+row)?.value) || 0;
+                const kQ = parseFloat(document.getElementById('kQ'+row)?.value) || 0;
+                const Ndw = getNdw();
+                
+                const Mp1 = parseFloat(document.getElementById('Mp'+row+'_1')?.value) || 0;
+                const Mp2 = parseFloat(document.getElementById('Mp'+row+'_2')?.value) || 0;
+                const Mp3 = parseFloat(document.getElementById('Mp'+row+'_3')?.value) || 0;
+                
+                const Mm1 = parseFloat(document.getElementById('Mm'+row+'_1')?.value) || 0;
+                const Mm2 = parseFloat(document.getElementById('Mm'+row+'_2')?.value) || 0;
+                const Mm3 = parseFloat(document.getElementById('Mm'+row+'_3')?.value) || 0;
+                
+                const M1001 = parseFloat(document.getElementById('M100'+row+'_1')?.value) || 0;
+                const M1002 = parseFloat(document.getElementById('M100'+row+'_2')?.value) || 0;
+                const M1003 = parseFloat(document.getElementById('M100'+row+'_3')?.value) || 0;
+                
+                // Always calculate means if we have any values
+                const MeanP = (Mp1 + Mp2 + Mp3) / 3;
+                const MeanM = (Mm1 + Mm2 + Mm3) / 3;
+                const Mean100 = (M1001 + M1002 + M1003) / 3;
+                
+                // Update means immediately if we have values
+                const meanPEl = document.getElementById('MeanP'+row);
+                const meanMEl = document.getElementById('MeanM'+row);
+                const mean100El = document.getElementById('Mean100'+row);
+                
+                if (meanPEl) {
+                    if (Mp1 || Mp2 || Mp3) {
+                        meanPEl.textContent = MeanP > 0 ? MeanP.toFixed(3) : '-';
+                    } else {
+                        meanPEl.textContent = '-';
+                    }
+                }
+                
+                if (meanMEl) {
+                    if (Mm1 || Mm2 || Mm3) {
+                        meanMEl.textContent = MeanM !== 0 ? MeanM.toFixed(3) : '-';
+                    } else {
+                        meanMEl.textContent = '-';
+                    }
+                }
+                
+                if (mean100El) {
+                    if (M1001 || M1002 || M1003) {
+                        mean100El.textContent = Mean100 > 0 ? Mean100.toFixed(3) : '-';
+                    } else {
+                        mean100El.textContent = '-';
+                    }
+                }
+                
+                // Check if we have enough data for full calculation
+                if (!T || !P || !Ndw) {
+                    // Clear correction values if required fields are missing
+                    const ktpEl = document.getElementById('Ktp'+row);
+                    const kpolEl = document.getElementById('Kpol'+row);
+                    const ksEl = document.getElementById('Ks'+row);
+                    const mcorrEl = document.getElementById('Mcorr'+row);
+                    const dwEl = document.getElementById('DW'+row);
+                    const ecartEl = document.getElementById('Ecart'+row);
+                    
+                    if (ktpEl) ktpEl.textContent = '-';
+                    if (kpolEl) kpolEl.textContent = '-';
+                    if (ksEl) ksEl.textContent = '-';
+                    if (mcorrEl) mcorrEl.textContent = '-';
+                    if (dwEl) dwEl.textContent = '-';
+                    if (ecartEl) ecartEl.textContent = '-';
+                    return;
+                }
+                
+                // Need both MeanP and Mean100 for calculations
+                if (MeanP === 0 || Mean100 === 0) {
+                    return;
+                }
+                
+                // Calculate correction factors
+                const Ktp = (1013 / P) * (273.2 + T) / 293.2;
+                const Kpol = MeanM !== 0 ? (Math.abs(MeanP) + Math.abs(MeanM)) / (2 * Math.abs(MeanP)) : 1.0;
+                const ratio = MeanP / Mean100;
+                const Ks = 1.198 - (0.875 * ratio) + (0.677 * ratio * ratio);
+                const Mcorr = MeanP * Ktp * Kpol * Ks;
+                const DW = Mcorr * kQ * Ndw;
+                const Ecart = 100 * (1 - DW);
+                
+                // Update all result elements
+                const ktpEl = document.getElementById('Ktp'+row);
+                const kpolEl = document.getElementById('Kpol'+row);
+                const ksEl = document.getElementById('Ks'+row);
+                const mcorrEl = document.getElementById('Mcorr'+row);
+                const dwEl = document.getElementById('DW'+row);
+                const ecartEl = document.getElementById('Ecart'+row);
+                
+                if (ktpEl) ktpEl.textContent = Ktp.toFixed(4);
+                if (kpolEl) kpolEl.textContent = Kpol.toFixed(4);
+                if (ksEl) ksEl.textContent = Ks.toFixed(4);
+                if (mcorrEl) mcorrEl.textContent = Mcorr.toFixed(4);
+                if (dwEl) dwEl.textContent = DW.toFixed(4);
+                if (ecartEl) ecartEl.textContent = Ecart.toFixed(2);
+                
+                // Update result status
+                updateResultStatus(Ecart);
+            } catch (error) {
+                console.error('Calculation error:', error);
+            }
         }
         
         function recalcAll() {
@@ -2793,18 +2870,18 @@
                 showToast('Enter measurement values first', 'warning');
                 return;
             }
-            if (!currentUser) {
-                showToast('Please login first', 'warning');
-                openLogin();
-                return;
-            }
+            // Use current user or default to 'User'
+            const userName = currentUser || document.getElementById('UserName')?.value || 'User';
 
             const saveBtn = document.querySelector('button[onclick="saveAll()"]');
             setLoading(saveBtn, true);
 
+            // Get settings as fallback for clinic info
+            const settings = JSON.parse(localStorage.getItem('trs-settings') || '{}');
+            
             const data = {
                 Mode: currentMode,
-                UserName: currentUser,
+                UserName: userName,
                 LinacName: document.getElementById('LinacName').value || '',
                 LinacId: document.getElementById('LinacId').value || '',
                 FieldSize: document.getElementById('FieldSize').value || '',
@@ -2816,8 +2893,8 @@
                 ChamberType: document.getElementById('ChamberType').value || '',
                 Ndw_Qcross: parseFloat(document.getElementById('NdwCross').value) || 0,
                 R50_cross: parseFloat(document.getElementById('R50Cross').value) || 0,
-                ClinicName: document.getElementById('ClinicName').value || '',
-                ClinicAddress: document.getElementById('ClinicAddress').value || '',
+                ClinicName: document.getElementById('ClinicName').value || settings.clinicName || '',
+                ClinicAddress: document.getElementById('ClinicAddress').value || settings.clinicAddress || '',
                 Ndw: getNdw(),
                 Notes: document.getElementById('Notes').value || '',
                 Energy: document.getElementById('e1').value,
@@ -3165,7 +3242,13 @@
                 const ndwInput = document.getElementById('NdwInput');
                 if (ndwInput) {
                     ndwInput.value = chamberNdw;
+                    // Update the displayed metric value
+                    const metricValue = document.querySelector('.metric-value');
+                    if (metricValue && metricValue.textContent.includes('Nd,w')) {
+                        metricValue.textContent = `Nd,w = ${chamberNdw}`;
+                    }
                     recalcAll();
+                } else {
                 }
             }
         }
@@ -3530,7 +3613,6 @@
                     localStorage.setItem('clinic-logo-path', logo.path);
                 }
             } catch (error) {
-                console.log('No existing logos found');
             }
         }
 

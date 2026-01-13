@@ -439,6 +439,7 @@
             <!-- Quick Actions -->
             <div class="quick-actions">
                 <button class="action-btn primary" onclick="location.href='index.html'">➕ New Calibration</button>
+                <button class="action-btn" onclick="downloadAllReportsPDF()">📄 Download All Reports PDF</button>
                 <button class="action-btn" onclick="backupDatabase()">💾 Backup Database</button>
                 <button class="action-btn" onclick="exportExcel()">📊 Export Excel</button>
                 <button class="action-btn" onclick="exportCSV()">📄 Export CSV</button>
@@ -767,6 +768,50 @@
         
         async function exportCSV() {
             window.location.href = '/api/trs/export';
+        }
+        
+        async function downloadAllReportsPDF() {
+            try {
+                const btn = event?.target || document.querySelector('button[onclick="downloadAllReportsPDF()"]');
+                if (btn) {
+                    btn.disabled = true;
+                    btn.textContent = '⏳ Generating PDF...';
+                }
+                
+                const response = await fetch('/api/trs/report/all');
+                if (!response.ok) {
+                    throw new Error('Failed to generate PDF report');
+                }
+                
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `trs398_summary_report_${new Date().toISOString().slice(0,10)}.pdf`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+                
+                if (btn) {
+                    btn.disabled = false;
+                    btn.textContent = '📄 Download All Reports PDF';
+                }
+                
+                if (typeof showToast === 'function') {
+                    showToast('PDF report downloaded successfully!', 'success');
+                } else {
+                    alert('PDF report downloaded successfully!');
+                }
+            } catch (error) {
+                console.error('Error downloading PDF:', error);
+                alert('Error generating PDF report: ' + error.message);
+                const btn = document.querySelector('button[onclick="downloadAllReportsPDF()"]');
+                if (btn) {
+                    btn.disabled = false;
+                    btn.textContent = '📄 Download All Reports PDF';
+                }
+            }
         }
         
         function exportData() {

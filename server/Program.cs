@@ -11,6 +11,12 @@ using System.Security.Cryptography;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Configure JSON serialization to use camelCase
+builder.Services.ConfigureHttpJsonOptions(options =>
+{
+    options.SerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase;
+});
+
 builder.Services.AddDbContext<MyQCDbContext>(options =>
     options.UseSqlite("Data Source=trs398.db"));
 
@@ -227,9 +233,22 @@ app.MapGet("/api/trs/report/{id}", async (int id, MyQCDbContext db, PdfReportSer
     var measurement = await db.TRSMeasurements.FindAsync(id);
     if (measurement is null) return Results.NotFound();
     
-    // Pass signature to PDF service if provided
     var bytes = pdfService.Build(measurement, signature);
     var filename = $"trs398_report_{id}.pdf";
+    return Results.File(bytes, "application/pdf", filename);
+});
+
+app.MapGet("/api/trs/report/all", async (MyQCDbContext db, PdfReportService pdfService) =>
+{
+    var measurements = await db.TRSMeasurements
+        .OrderByDescending(m => m.Date)
+        .ToListAsync();
+    
+    if (measurements.Count == 0)
+        return Results.BadRequest(new { error = "No measurements found" });
+    
+    var bytes = pdfService.BuildSummaryReport(measurements);
+    var filename = $"trs398_summary_report_{DateTime.Now:yyyyMMdd}.pdf";
     return Results.File(bytes, "application/pdf", filename);
 });
 
@@ -391,7 +410,7 @@ app.MapGet("/api/backup/list", () =>
 });
 
 // ============================================================================
-// EMAIL REPORT (Placeholder - requires SMTP configuration)
+// EMAIL REPORT
 // ============================================================================
 app.MapPost("/api/email/report", async (HttpRequest request, MyQCDbContext db, PdfReportService pdfService) =>
 {
@@ -403,12 +422,9 @@ app.MapPost("/api/email/report", async (HttpRequest request, MyQCDbContext db, P
     if (measurement == null)
         return Results.NotFound(new { error = "Measurement not found" });
 
-    // Generate PDF
     var pdfBytes = pdfService.Build(measurement, body.Signature);
-
-    // In a real implementation, you would configure SMTP here
-    // For now, we'll just return success with the PDF as base64
-    // This allows the frontend to handle email via mailto: or external service
+    
+    // Returns PDF as base64 for frontend email handling
     
     return Results.Ok(new {
         success = true,

@@ -691,28 +691,38 @@
         async function loadHistory() {
             try {
                 const resp = await fetch('/api/trs/measurements');
+                if (!resp.ok) {
+                    throw new Error(`HTTP error! status: ${resp.status}`);
+                }
                 measurements = await resp.json();
                 renderHistory();
                 updateStats();
             } catch (e) {
-                console.error(e);
-                document.getElementById('historyBody').innerHTML = `
-                    <tr>
-                        <td colspan="8">
-                            <div class="empty-state">
-                                <div class="empty-state-icon">❌</div>
-                                <h3>${t('errorLoading')}</h3>
-                                <p>${t('tryAgain')}</p>
-                            </div>
-                        </td>
-                    </tr>
-                `;
+                console.error('Error loading history:', e);
+                const tbody = document.getElementById('historyBody');
+                if (tbody) {
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="8">
+                                <div class="empty-state">
+                                    <div class="empty-state-icon">❌</div>
+                                    <h3>${t('errorLoading')}</h3>
+                                    <p>${t('tryAgain')}</p>
+                                    <p style="font-size: 12px; color: var(--muted); margin-top: 8px;">${e.message}</p>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                }
             }
         }
         
         function updateStats() {
             const total = measurements.length;
-            const pass = measurements.filter(m => Math.abs(m.ecart) <= 2.0).length;
+            const pass = measurements.filter(m => {
+                const ecart = m.ecart !== undefined ? m.ecart : (m.Ecart !== undefined ? m.Ecart : 0);
+                return Math.abs(ecart) <= 2.0;
+            }).length;
             const fail = total - pass;
             
             document.getElementById('totalCount').textContent = total;
@@ -743,22 +753,28 @@
             const statusFilter = document.getElementById('statusFilter').value;
             
             const filtered = measurements.filter(m => {
-                // Mode filter
+                // Mode filter - handle both PascalCase and camelCase
                 if (modeFilter !== 'all') {
-                    const isPhoton = !m.mode || m.mode === 'Photon' || m.mode.toLowerCase().includes('photon');
+                    const mode = m.mode || m.Mode || 'photon';
+                    const isPhoton = !mode || mode === 'Photon' || mode.toLowerCase().includes('photon');
                     if (modeFilter === 'Photon' && !isPhoton) return false;
                     if (modeFilter === 'Electron' && isPhoton) return false;
                 }
                 
-                // Status filter
-                const isPassing = Math.abs(m.ecart) <= 2.0;
+                // Status filter - handle both PascalCase and camelCase
+                const ecart = m.ecart !== undefined ? m.ecart : (m.Ecart !== undefined ? m.Ecart : 0);
+                const isPassing = Math.abs(ecart) <= 2.0;
                 if (statusFilter === 'pass' && !isPassing) return false;
                 if (statusFilter === 'fail' && isPassing) return false;
                 
-                // Search filter
+                // Search filter - handle both PascalCase and camelCase
                 if (searchTerm) {
                     const searchFields = [
-                        m.userName, m.energy, m.linacName, m.mode, m.chamber
+                        m.userName || m.UserName,
+                        m.energy || m.Energy,
+                        m.linacName || m.LinacName,
+                        m.mode || m.Mode,
+                        m.chamber || m.Chamber
                     ].map(v => (v || '').toLowerCase());
                     if (!searchFields.some(f => f.includes(searchTerm))) return false;
                 }
@@ -782,12 +798,22 @@
             }
             
             tbody.innerHTML = filtered.map(m => {
-                const date = new Date(m.date);
+                // Handle both PascalCase and camelCase property names
+                const dateValue = m.date || m.Date;
+                const ecartValue = m.ecart !== undefined ? m.ecart : (m.Ecart !== undefined ? m.Ecart : 0);
+                const modeValue = m.mode || m.Mode || 'photon';
+                const userNameValue = m.userName || m.UserName || 'User';
+                const energyValue = m.energy || m.Energy || '-';
+                const linacNameValue = m.linacName || m.LinacName || '-';
+                const chamberValue = m.chamber || m.Chamber || '-';
+                const idValue = m.id || m.Id;
+                
+                const date = new Date(dateValue);
                 const dateStr = date.toLocaleDateString(currentLanguage === 'fr' ? 'fr-FR' : 'en-US');
                 const timeStr = date.toLocaleTimeString(currentLanguage === 'fr' ? 'fr-FR' : 'en-US', { hour: '2-digit', minute: '2-digit' });
-                const isPassing = Math.abs(m.ecart) <= 2.0;
-                const isPhoton = !m.mode || m.mode === 'Photon' || m.mode.toLowerCase().includes('photon');
-                const userInitial = (m.userName || 'U').charAt(0).toUpperCase();
+                const isPassing = Math.abs(ecartValue) <= 2.0;
+                const isPhoton = !modeValue || modeValue === 'Photon' || modeValue.toLowerCase().includes('photon');
+                const userInitial = (userNameValue || 'U').charAt(0).toUpperCase();
                 
                 return `
                     <tr>
@@ -800,7 +826,7 @@
                         <td>
                             <div class="user-cell">
                                 <div class="user-avatar">${userInitial}</div>
-                                <span>${m.userName || 'Unknown'}</span>
+                                <span>${userNameValue || 'Unknown'}</span>
                             </div>
                         </td>
                         <td>
@@ -809,9 +835,9 @@
                             </span>
                         </td>
                         <td>
-                            <span class="energy-badge">${m.energy || '-'}</span>
+                            <span class="energy-badge">${energyValue || '-'}</span>
                         </td>
-                        <td>${m.linacName || '-'}</td>
+                        <td>${linacNameValue || '-'}</td>
                         <td>
                             <span class="status-badge ${isPassing ? 'pass' : 'fail'}">
                                 ${isPassing ? `✅ ${t('statusPass')}` : `❌ ${t('statusFail')}`}
@@ -819,15 +845,15 @@
                         </td>
                         <td>
                             <strong style="color: ${isPassing ? 'var(--success)' : 'var(--error)'}">
-                                ${m.ecart >= 0 ? '+' : ''}${m.ecart.toFixed(2)}%
+                                ${ecartValue >= 0 ? '+' : ''}${ecartValue.toFixed(2)}%
                             </strong>
                         </td>
                         <td>
                             <div class="actions-cell">
-                                <button class="action-btn pdf" onclick="exportPdf(${m.id})">
+                                <button class="action-btn pdf" onclick="exportPdf(${idValue})">
                                     📄 PDF
                                 </button>
-                                <button class="action-btn delete" onclick="deleteMeasurement(${m.id})">
+                                <button class="action-btn delete" onclick="deleteMeasurement(${idValue})">
                                     🗑️
                                 </button>
                             </div>
