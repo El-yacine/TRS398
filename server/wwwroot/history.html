@@ -3,394 +3,843 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TRS-398 History</title>
+    <title>TRS-398 Pro - History</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --ink: #0f172a;
-            --muted: #475569;
-            --accent: #1f4e78;
-            --accent-2: #2e6cb8;
-            --surface: #ffffff;
-            --border: #e2e8f0;
-            --bg: radial-gradient(circle at 10% 20%, #f3f6ff 0%, #e5ecf6 45%, #f7fbff 100%);
-            --green: #d9f2dd;
-            --blue: #e7f0ff;
+            --ink: #f1f5f9;
+            --muted: #94a3b8;
+            --accent: #10b981;
+            --accent-2: #06b6d4;
+            --accent-glow: rgba(16, 185, 129, 0.25);
+            --surface: #0f172a;
+            --card: #1e293b;
+            --card-hover: #273548;
+            --border: rgba(148, 163, 184, 0.12);
+            --bg: #0a0f1c;
+            --header-bg: rgba(15, 23, 42, 0.85);
+            --success: #10b981;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            --gradient-primary: linear-gradient(135deg, #10b981 0%, #06b6d4 100%);
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4);
         }
+        
+        [data-theme="light"] {
+            --ink: #1e293b;
+            --muted: #64748b;
+            --accent: #059669;
+            --accent-2: #0891b2;
+            --surface: #f8fafc;
+            --card: #ffffff;
+            --card-hover: #f1f5f9;
+            --border: rgba(148, 163, 184, 0.25);
+            --bg: #f1f5f9;
+            --header-bg: rgba(255, 255, 255, 0.9);
+        }
+        
         * { margin: 0; padding: 0; box-sizing: border-box; }
+        
         body {
-            font-family: 'Space Grotesk', 'Segoe UI', system-ui, sans-serif;
+            font-family: 'Space Grotesk', system-ui, sans-serif;
             background: var(--bg);
-            padding: 24px;
             color: var(--ink);
+            min-height: 100vh;
         }
-        .page {
-            max-width: 1400px;
-            margin: 0 auto;
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 18px;
-            box-shadow: 0 12px 45px rgba(15, 23, 42, 0.08);
-            padding: 26px;
-        }
-        .hero {
-            display: flex;
-            justify-content: space-between;
-            gap: 18px;
-            align-items: flex-start;
-        }
-        .eyebrow {
-            text-transform: uppercase;
-            letter-spacing: 0.08em;
-            color: var(--accent-2);
-            font-weight: 700;
-            font-size: 12px;
-        }
-        h1 {
-            margin-top: 4px;
-            font-size: 26px;
-            line-height: 1.25;
-            color: var(--ink);
-        }
-        .subtitle {
-            margin-top: 6px;
-            color: var(--muted);
-            font-size: 14px;
-        }
-        .pill-stack {
+        
+        .app-shell {
             display: flex;
             flex-direction: column;
-            gap: 8px;
-            align-items: flex-end;
+            min-height: 100vh;
+            background: var(--bg);
+            background-image: radial-gradient(ellipse 80% 50% at 50% -20%, var(--accent-glow), transparent);
         }
-        .pill {
+        
+        .app-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 28px;
+            background: var(--header-bg);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 700;
+            font-size: 15px;
+        }
+        
+        .brand span {
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        
+        .nav-btn {
+            padding: 10px 16px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border);
+            background: var(--card);
+            color: var(--ink);
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            padding: 10px 14px;
-            border-radius: 999px;
-            border: 1px solid var(--border);
-            background: #f8fbff;
-            color: var(--accent);
-            font-weight: 600;
-            font-size: 12px;
+            transition: all 0.2s;
+            text-decoration: none;
         }
-        .pill.accent {
-            background: #e8f0ff;
-            border-color: #d1def9;
+        
+        .nav-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--accent);
         }
-        .pill.quiet {
-            color: var(--muted);
-            background: #f7f7fb;
+        
+        .nav-btn.primary {
+            background: var(--gradient-primary);
+            color: white;
+            border: none;
         }
-        .surface {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 14px;
-            padding: 16px;
-            box-shadow: 0 6px 24px rgba(15, 23, 42, 0.06);
-            margin-top: 18px;
+        
+        .lang-select {
+            width: 70px !important;
+            min-width: 70px !important;
         }
-        .filterbar {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 12px;
-            align-items: end;
-        }
-        .filter-group label {
-            font-size: 12px;
-            color: var(--muted);
-            display: block;
-            margin-bottom: 6px;
-            letter-spacing: 0.02em;
-        }
-        .filter-group input,
-        .filter-group select {
+        
+        .main {
+            flex: 1;
+            padding: 24px;
+            max-width: 1200px;
+            margin: 0 auto;
             width: 100%;
-            padding: 8px 10px;
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            background: #f8fafc;
-            font-size: 13px;
         }
-        .filter-group input:focus,
-        .filter-group select:focus {
-            outline: none;
-            border-color: var(--accent-2);
-            box-shadow: 0 0 0 3px rgba(46, 108, 184, 0.16);
-            background: #fff;
-        }
-        .toolbar {
+        
+        .page-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            gap: 10px;
+            margin-bottom: 24px;
             flex-wrap: wrap;
+            gap: 16px;
         }
-        .toolbar-title {
+        
+        .page-title {
+            font-size: 28px;
             font-weight: 700;
-            color: var(--accent);
-            font-size: 16px;
         }
-        .buttons {
+        
+        .page-title span {
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .stats-bar {
             display: flex;
-            gap: 8px;
+            gap: 16px;
             flex-wrap: wrap;
         }
-        .btn {
-            padding: 10px 16px;
-            border-radius: 10px;
-            border: 1px solid transparent;
-            font-weight: 700;
-            cursor: pointer;
+        
+        .stat-badge {
+            padding: 8px 16px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
             font-size: 13px;
-            display: inline-flex;
+            display: flex;
             align-items: center;
-            gap: 6px;
-            transition: transform 0.08s ease, box-shadow 0.12s ease;
+            gap: 8px;
         }
-        .btn:hover { transform: translateY(-1px); }
-        .btn:active { transform: translateY(0); }
-        .btn.primary {
-            background: linear-gradient(135deg, #1f4e78, #2e6cb8);
-            color: #fff;
-            box-shadow: 0 10px 25px rgba(31, 78, 120, 0.25);
+        
+        .stat-badge strong {
+            color: var(--accent);
         }
-        .btn.ghost {
-            background: #f7f9fc;
-            border-color: var(--border);
+        
+        .filter-bar {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        
+        .search-box {
+            flex: 1;
+            min-width: 200px;
+            padding: 12px 16px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            background: var(--card);
             color: var(--ink);
+            font-size: 14px;
         }
-        .btn.warn {
-            background: #fdf2e9;
-            border-color: #f5c58a;
-            color: #9c4215;
+        
+        .search-box:focus {
+            outline: none;
+            border-color: var(--accent);
         }
-        .btn.soft {
-            background: #e9f7ef;
-            border-color: #b7e4c7;
-            color: #256e3f;
+        
+        .filter-select {
+            padding: 12px 16px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            background: var(--card);
+            color: var(--ink);
+            font-size: 14px;
+            cursor: pointer;
         }
-        .table-wrap { overflow-x: auto; margin-top: 12px; }
+        
+        .table-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+        }
+        
+        .table-wrap {
+            overflow-x: auto;
+        }
+        
         table {
             width: 100%;
             border-collapse: collapse;
-            min-width: 1000px;
-            font-size: 12px;
+            font-size: 14px;
         }
-        th, td {
-            border: 1px solid var(--border);
-            padding: 8px 10px;
-            text-align: center;
-        }
+        
         th {
-            background: linear-gradient(135deg, #1f4e78, #2e6cb8);
-            color: white;
-            position: sticky;
-            top: 0;
-            z-index: 1;
+            background: var(--surface);
+            color: var(--muted);
+            font-weight: 600;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding: 16px 20px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
         }
-        tr:hover { background: #f8fafc; }
-        .chip {
+        
+        td {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border);
+            vertical-align: middle;
+        }
+        
+        tr:hover {
+            background: var(--card-hover);
+        }
+        
+        tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .status-badge {
             display: inline-flex;
             align-items: center;
-            justify-content: center;
-            padding: 4px 8px;
+            gap: 6px;
+            padding: 6px 12px;
             border-radius: 999px;
             font-weight: 700;
-            font-size: 11px;
-        }
-        .chip.blue { background: var(--blue); color: var(--accent); }
-        .chip.green { background: var(--green); color: #0f5132; }
-        .chip.red { background: #fdecec; color: #b32020; }
-        .delete-btn {
-            background: #fdecec;
-            border: 1px solid #f3b6b6;
-            color: #b32020;
-            padding: 6px 10px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 700;
-        }
-        .pdf-btn {
-            background: #e7f0ff;
-            border: 1px solid #c8d8f5;
-            color: #1f4e78;
-            padding: 6px 10px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 700;
-        }
-        .row-actions {
-            display: flex;
-            gap: 6px;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-        .meta {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            align-items: center;
-            color: var(--muted);
             font-size: 12px;
         }
-        @media (max-width: 900px) {
-            .hero { flex-direction: column; }
-            .pill-stack { align-items: flex-start; }
-            .page { padding: 18px; }
+        
+        .status-badge.pass {
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--success);
+        }
+        
+        .status-badge.fail {
+            background: rgba(239, 68, 68, 0.15);
+            color: var(--error);
+        }
+        
+        .mode-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            font-size: 12px;
+        }
+        
+        .mode-badge.photon {
+            background: rgba(59, 130, 246, 0.15);
+            color: #3b82f6;
+        }
+        
+        .mode-badge.electron {
+            background: rgba(168, 85, 247, 0.15);
+            color: #a855f7;
+        }
+        
+        .energy-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 6px 12px;
+            border-radius: var(--radius-md);
+            background: rgba(6, 182, 212, 0.15);
+            color: var(--accent-2);
+            font-weight: 700;
+            font-size: 13px;
+        }
+        
+        .action-btn {
+            padding: 8px 14px;
+            border-radius: var(--radius-md);
+            border: none;
+            font-weight: 600;
+            font-size: 12px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+        }
+        
+        .action-btn.pdf {
+            background: var(--gradient-primary);
+            color: white;
+        }
+        
+        .action-btn.pdf:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px var(--accent-glow);
+        }
+        
+        .action-btn.delete {
+            background: rgba(239, 68, 68, 0.15);
+            color: var(--error);
+        }
+        
+        .action-btn.delete:hover {
+            background: var(--error);
+            color: white;
+        }
+        
+        .actions-cell {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--muted);
+        }
+        
+        .empty-state-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+        
+        .empty-state h3 {
+            font-size: 18px;
+            color: var(--ink);
+            margin-bottom: 8px;
+        }
+        
+        .user-cell {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--gradient-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 12px;
+        }
+        
+        .date-cell {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+        
+        .date-main {
+            font-weight: 600;
+        }
+        
+        .date-time {
+            font-size: 12px;
+            color: var(--muted);
+        }
+        
+        @media (max-width: 768px) {
+            .main {
+                padding: 16px;
+            }
+            
+            .app-header {
+                padding: 12px 16px;
+                flex-wrap: wrap;
+                gap: 12px;
+            }
+            
+            .nav-links {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            th, td {
+                padding: 12px;
+            }
+            
+            .actions-cell {
+                flex-direction: column;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="page">
-        <div class="hero">
-            <div>
-                <div class="eyebrow">TRS-398 archive</div>
-                <h1>Measurement History</h1>
-                <p class="subtitle">Latest saved entries · Filter by energy or user · Export to CSV</p>
+    <div class="app-shell">
+        <header class="app-header">
+            <div class="brand">
+                📋 <span>TRS-398 Pro</span> <span id="brandSuffix">History</span>
             </div>
-            <div class="pill-stack">
-                <span class="pill accent">Live feed from SQLite</span>
-                <span class="pill quiet">Most recent 100 measurements</span>
-            </div>
-        </div>
-
-        <div class="surface filterbar">
-            <div class="filter-group">
-                <label for="searchInput">Search</label>
-                <input id="searchInput" type="search" placeholder="Search user, energy, notes..." oninput="renderHistory()">
-            </div>
-            <div class="filter-group">
-                <label for="energyFilter">Energy</label>
-                <select id="energyFilter" onchange="renderHistory()">
-                    <option value="all">All energies</option>
-                    <option value="6X">6X</option>
-                    <option value="10X">10X</option>
-                    <option value="15X">15X</option>
-                    <option value="18X">18X</option>
+            <nav class="nav-links">
+                <a href="dashboard.html" class="nav-btn" id="navDashboard">📊 Dashboard</a>
+                <a href="index.html" class="nav-btn primary" id="navNewCalibration">📝 New Calibration</a>
+                <button class="nav-btn" onclick="toggleTheme()">🌓 <span id="themeLabel">Dark</span></button>
+                <select class="nav-btn lang-select" id="langSelect" onchange="setLanguage(this.value)">
+                    <option value="en">🇬🇧 EN</option>
+                    <option value="fr">🇫🇷 FR</option>
                 </select>
-            </div>
-            <div class="buttons" style="justify-content:flex-end;">
-                <button class="btn ghost" onclick="window.location.href='index.html'">← Back to Measurements</button>
-                <button class="btn primary" onclick="loadHistory()">🔄 Refresh</button>
-                <button class="btn soft" onclick="exportCSV()">📥 Export CSV</button>
-            </div>
-        </div>
-
-        <div class="surface">
-            <div class="toolbar">
-                <div>
-                    <div class="toolbar-title">Latest measurements</div>
-                    <div class="meta">
-                        <span id="recordCount">0 rows</span>
-                        <span>UTC timestamps shown in browser local time</span>
+                <button class="nav-btn" onclick="exportCSV()" id="btnExportCsv">📤 Export CSV</button>
+            </nav>
+        </header>
+        
+        <main class="main">
+            <div class="page-header">
+                <h1 class="page-title">📋 <span id="pageTitle">Measurement History</span></h1>
+                <div class="stats-bar">
+                    <div class="stat-badge">
+                        📊 <span id="labelTotal">Total</span>: <strong id="totalCount">0</strong>
+                    </div>
+                    <div class="stat-badge">
+                        ✅ <span id="labelPass">Pass</span>: <strong id="passCount">0</strong>
+                    </div>
+                    <div class="stat-badge">
+                        ❌ <span id="labelFail">Fail</span>: <strong id="failCount">0</strong>
                     </div>
                 </div>
-                <span class="pill accent" id="energyTag">All energies</span>
             </div>
-
-            <div class="table-wrap">
-                <table id="historyTable">
-                    <thead>
-                        <tr>
-                            <th>Date</th>
-                            <th>Clinic</th>
-                            <th>User</th>
-                            <th>Energy</th>
-                            <th>LINAC</th>
-                            <th>Field</th>
-                            <th>Chamber</th>
-                            <th>TPR20/10</th>
-                            <th>Nd,w</th>
-                            <th>T(°C)</th>
-                            <th>P</th>
-                            <th>kQ</th>
-                            <th>Kpol</th>
-                            <th>DW,Zref</th>
-                            <th>Ecart(%)</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="historyBody">
-                        <tr><td colspan="16">Loading...</td></tr>
-                    </tbody>
-                </table>
+            
+            <!-- Filter Bar -->
+            <div class="filter-bar">
+                <input type="search" class="search-box" id="searchInput" placeholder="🔍 Search by user, energy, machine..." oninput="renderHistory()">
+                <select class="filter-select" id="modeFilter" onchange="renderHistory()">
+                    <option value="all" id="optAllModes">All Modes</option>
+                    <option value="Photon">☢️ Photon</option>
+                    <option value="Electron">⚡ Electron</option>
+                </select>
+                <select class="filter-select" id="statusFilter" onchange="renderHistory()">
+                    <option value="all" id="optAllStatus">All Status</option>
+                    <option value="pass" id="optPass">✅ Pass</option>
+                    <option value="fail" id="optFail">❌ Fail</option>
+                </select>
+                <button class="nav-btn" onclick="loadHistory()" id="btnRefresh">🔄 Refresh</button>
             </div>
-        </div>
+            
+            <!-- Table -->
+            <div class="table-card">
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th id="thDate">Date</th>
+                                <th id="thUser">User</th>
+                                <th id="thMode">Mode</th>
+                                <th id="thEnergy">Energy</th>
+                                <th id="thMachine">Machine</th>
+                                <th id="thStatus">Status</th>
+                                <th id="thDeviation">Deviation</th>
+                                <th id="thActions">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="historyBody">
+                            <tr>
+                                <td colspan="8">
+                                    <div class="empty-state">
+                                        <div class="empty-state-icon">⏳</div>
+                                        <h3 id="loadingText">Loading...</h3>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
     </div>
-
+    
     <script>
         let measurements = [];
-
+        let theme = localStorage.getItem('trs-theme') || 'dark';
+        let currentLanguage = localStorage.getItem('trs-language') || 'en';
+        
+        // Translation dictionary
+        const translations = {
+            en: {
+                // Navigation
+                dashboard: "Dashboard",
+                newCalibration: "New Calibration",
+                exportCsv: "Export CSV",
+                
+                // Page
+                history: "History",
+                measurementHistory: "Measurement History",
+                
+                // Stats
+                total: "Total",
+                pass: "Pass",
+                fail: "Fail",
+                
+                // Filters
+                searchPlaceholder: "🔍 Search by user, energy, machine...",
+                allModes: "All Modes",
+                allStatus: "All Status",
+                refresh: "Refresh",
+                
+                // Table headers
+                date: "Date",
+                user: "User",
+                mode: "Mode",
+                energy: "Energy",
+                machine: "Machine",
+                status: "Status",
+                deviation: "Deviation",
+                actions: "Actions",
+                
+                // Status badges
+                statusPass: "PASS",
+                statusFail: "FAIL",
+                
+                // Mode badges
+                photon: "Photon",
+                electron: "Electron",
+                
+                // Empty states
+                loading: "Loading...",
+                noMeasurements: "No measurements yet",
+                startCreating: "Start by creating a new calibration",
+                noResults: "No results found",
+                adjustFilters: "Try adjusting your filters",
+                errorLoading: "Error loading history",
+                tryAgain: "Please try again",
+                
+                // Theme
+                dark: "Dark",
+                light: "Light",
+                
+                // Confirm
+                deleteConfirm: "Are you sure you want to delete this measurement?"
+            },
+            fr: {
+                // Navigation
+                dashboard: "Tableau de bord",
+                newCalibration: "Nouvel étalonnage",
+                exportCsv: "Exporter CSV",
+                
+                // Page
+                history: "Historique",
+                measurementHistory: "Historique des mesures",
+                
+                // Stats
+                total: "Total",
+                pass: "Conforme",
+                fail: "Non conforme",
+                
+                // Filters
+                searchPlaceholder: "🔍 Rechercher par utilisateur, énergie, machine...",
+                allModes: "Tous les modes",
+                allStatus: "Tous les statuts",
+                refresh: "Actualiser",
+                
+                // Table headers
+                date: "Date",
+                user: "Utilisateur",
+                mode: "Mode",
+                energy: "Énergie",
+                machine: "Machine",
+                status: "Statut",
+                deviation: "Écart",
+                actions: "Actions",
+                
+                // Status badges
+                statusPass: "CONFORME",
+                statusFail: "NON CONFORME",
+                
+                // Mode badges
+                photon: "Photon",
+                electron: "Électron",
+                
+                // Empty states
+                loading: "Chargement...",
+                noMeasurements: "Aucune mesure",
+                startCreating: "Commencez par créer un nouvel étalonnage",
+                noResults: "Aucun résultat trouvé",
+                adjustFilters: "Essayez d'ajuster vos filtres",
+                errorLoading: "Erreur lors du chargement",
+                tryAgain: "Veuillez réessayer",
+                
+                // Theme
+                dark: "Sombre",
+                light: "Clair",
+                
+                // Confirm
+                deleteConfirm: "Êtes-vous sûr de vouloir supprimer cette mesure?"
+            }
+        };
+        
+        function t(key) {
+            return translations[currentLanguage]?.[key] || translations['en']?.[key] || key;
+        }
+        
+        function applyTheme() {
+            document.body.setAttribute('data-theme', theme);
+            document.getElementById('themeLabel').textContent = theme === 'dark' ? t('dark') : t('light');
+        }
+        
+        function toggleTheme() {
+            theme = theme === 'dark' ? 'light' : 'dark';
+            localStorage.setItem('trs-theme', theme);
+            applyTheme();
+        }
+        
+        function setLanguage(lang) {
+            currentLanguage = lang;
+            localStorage.setItem('trs-language', lang);
+            document.getElementById('langSelect').value = lang;
+            applyTranslations();
+            renderHistory(); // Re-render table with new language
+        }
+        
+        function applyTranslations() {
+            // Brand
+            document.getElementById('brandSuffix').textContent = t('history');
+            
+            // Navigation
+            document.getElementById('navDashboard').innerHTML = `📊 ${t('dashboard')}`;
+            document.getElementById('navNewCalibration').innerHTML = `📝 ${t('newCalibration')}`;
+            document.getElementById('btnExportCsv').innerHTML = `📤 ${t('exportCsv')}`;
+            
+            // Theme label
+            document.getElementById('themeLabel').textContent = theme === 'dark' ? t('dark') : t('light');
+            
+            // Page title
+            document.getElementById('pageTitle').textContent = t('measurementHistory');
+            
+            // Stats
+            document.getElementById('labelTotal').textContent = t('total');
+            document.getElementById('labelPass').textContent = t('pass');
+            document.getElementById('labelFail').textContent = t('fail');
+            
+            // Search placeholder
+            document.getElementById('searchInput').placeholder = t('searchPlaceholder');
+            
+            // Filter options
+            document.getElementById('optAllModes').textContent = t('allModes');
+            document.getElementById('optAllStatus').textContent = t('allStatus');
+            document.getElementById('optPass').textContent = `✅ ${t('pass')}`;
+            document.getElementById('optFail').textContent = `❌ ${t('fail')}`;
+            document.getElementById('btnRefresh').innerHTML = `🔄 ${t('refresh')}`;
+            
+            // Table headers
+            document.getElementById('thDate').textContent = t('date');
+            document.getElementById('thUser').textContent = t('user');
+            document.getElementById('thMode').textContent = t('mode');
+            document.getElementById('thEnergy').textContent = t('energy');
+            document.getElementById('thMachine').textContent = t('machine');
+            document.getElementById('thStatus').textContent = t('status');
+            document.getElementById('thDeviation').textContent = t('deviation');
+            document.getElementById('thActions').textContent = t('actions');
+        }
+        
         async function loadHistory() {
             try {
                 const resp = await fetch('/api/trs/measurements');
                 measurements = await resp.json();
                 renderHistory();
+                updateStats();
             } catch (e) {
                 console.error(e);
-                alert('Error loading history');
-            }
-        }
-
-        function renderHistory() {
-            const tbody = document.getElementById('historyBody');
-            if (!measurements || measurements.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="16">No measurements found</td></tr>';
-                document.getElementById('recordCount').textContent = '0 rows';
-                document.getElementById('energyTag').textContent = 'All energies';
-                return;
-            }
-
-            const searchTerm = (document.getElementById('searchInput').value || '').toLowerCase().trim();
-            const energyFilter = document.getElementById('energyFilter').value;
-
-            const filtered = measurements.filter(m => {
-                const matchesEnergy = energyFilter === 'all' || m.energy === energyFilter;
-                const matchesSearch = !searchTerm || [m.userName, m.energy, m.notes || '', m.linacName || '', m.clinicName || '', m.linacId || '', m.chamber || '']
-                    .some(v => (v || '').toLowerCase().includes(searchTerm));
-                return matchesEnergy && matchesSearch;
-            });
-
-            if (filtered.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="16">No measurements match your filter</td></tr>';
-            } else {
-                tbody.innerHTML = filtered.map(m => `
+                document.getElementById('historyBody').innerHTML = `
                     <tr>
-                        <td>${new Date(m.date).toLocaleString()}</td>
-                        <td>${m.clinicName || '-'}</td>
-                        <td>${m.userName}</td>
-                        <td><span class="chip blue">${m.energy}</span></td>
-                        <td>${m.linacName || '-'}${m.linacId ? ` (${m.linacId})` : ''}</td>
-                        <td>${m.fieldSize || '-'}</td>
-                        <td>${m.chamber || '-'}</td>
-                        <td>${m.tpr2010 ? m.tpr2010.toFixed(3) : '-'}</td>
-                        <td>${m.ndw ? m.ndw.toFixed(5) : '-'}</td>
-                        <td>${m.t.toFixed(2)}</td>
-                        <td>${m.p.toFixed(1)}</td>
-                        <td>${m.kQ.toFixed(3)}</td>
-                        <td><span class="chip blue">${m.kpol.toFixed(4)}</span></td>
-                        <td><span class="chip red">${m.dW_Zref.toFixed(4)}</span></td>
-                        <td><span class="chip red">${m.ecart.toFixed(2)}%</span></td>
-                        <td>
-                            <div class="row-actions">
-                                <button class="pdf-btn" onclick="exportPdf(${m.id})">PDF</button>
-                                <button class="delete-btn" onclick="deleteMeasurement(${m.id})">Delete</button>
+                        <td colspan="8">
+                            <div class="empty-state">
+                                <div class="empty-state-icon">❌</div>
+                                <h3>${t('errorLoading')}</h3>
+                                <p>${t('tryAgain')}</p>
                             </div>
                         </td>
                     </tr>
-                `).join('');
+                `;
             }
-
-            document.getElementById('recordCount').textContent = `${filtered.length} row(s) shown`;
-            document.getElementById('energyTag').textContent = energyFilter === 'all' ? 'All energies' : energyFilter;
         }
-
+        
+        function updateStats() {
+            const total = measurements.length;
+            const pass = measurements.filter(m => Math.abs(m.ecart) <= 2.0).length;
+            const fail = total - pass;
+            
+            document.getElementById('totalCount').textContent = total;
+            document.getElementById('passCount').textContent = pass;
+            document.getElementById('failCount').textContent = fail;
+        }
+        
+        function renderHistory() {
+            const tbody = document.getElementById('historyBody');
+            
+            if (!measurements || measurements.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="8">
+                            <div class="empty-state">
+                                <div class="empty-state-icon">📭</div>
+                                <h3>${t('noMeasurements')}</h3>
+                                <p>${t('startCreating')}</p>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            const searchTerm = (document.getElementById('searchInput').value || '').toLowerCase().trim();
+            const modeFilter = document.getElementById('modeFilter').value;
+            const statusFilter = document.getElementById('statusFilter').value;
+            
+            const filtered = measurements.filter(m => {
+                // Mode filter
+                if (modeFilter !== 'all') {
+                    const isPhoton = !m.mode || m.mode === 'Photon' || m.mode.toLowerCase().includes('photon');
+                    if (modeFilter === 'Photon' && !isPhoton) return false;
+                    if (modeFilter === 'Electron' && isPhoton) return false;
+                }
+                
+                // Status filter
+                const isPassing = Math.abs(m.ecart) <= 2.0;
+                if (statusFilter === 'pass' && !isPassing) return false;
+                if (statusFilter === 'fail' && isPassing) return false;
+                
+                // Search filter
+                if (searchTerm) {
+                    const searchFields = [
+                        m.userName, m.energy, m.linacName, m.mode, m.chamber
+                    ].map(v => (v || '').toLowerCase());
+                    if (!searchFields.some(f => f.includes(searchTerm))) return false;
+                }
+                
+                return true;
+            });
+            
+            if (filtered.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="8">
+                            <div class="empty-state">
+                                <div class="empty-state-icon">🔍</div>
+                                <h3>${t('noResults')}</h3>
+                                <p>${t('adjustFilters')}</p>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            tbody.innerHTML = filtered.map(m => {
+                const date = new Date(m.date);
+                const dateStr = date.toLocaleDateString(currentLanguage === 'fr' ? 'fr-FR' : 'en-US');
+                const timeStr = date.toLocaleTimeString(currentLanguage === 'fr' ? 'fr-FR' : 'en-US', { hour: '2-digit', minute: '2-digit' });
+                const isPassing = Math.abs(m.ecart) <= 2.0;
+                const isPhoton = !m.mode || m.mode === 'Photon' || m.mode.toLowerCase().includes('photon');
+                const userInitial = (m.userName || 'U').charAt(0).toUpperCase();
+                
+                return `
+                    <tr>
+                        <td>
+                            <div class="date-cell">
+                                <span class="date-main">${dateStr}</span>
+                                <span class="date-time">${timeStr}</span>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="user-cell">
+                                <div class="user-avatar">${userInitial}</div>
+                                <span>${m.userName || 'Unknown'}</span>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="mode-badge ${isPhoton ? 'photon' : 'electron'}">
+                                ${isPhoton ? `☢️ ${t('photon')}` : `⚡ ${t('electron')}`}
+                            </span>
+                        </td>
+                        <td>
+                            <span class="energy-badge">${m.energy || '-'}</span>
+                        </td>
+                        <td>${m.linacName || '-'}</td>
+                        <td>
+                            <span class="status-badge ${isPassing ? 'pass' : 'fail'}">
+                                ${isPassing ? `✅ ${t('statusPass')}` : `❌ ${t('statusFail')}`}
+                            </span>
+                        </td>
+                        <td>
+                            <strong style="color: ${isPassing ? 'var(--success)' : 'var(--error)'}">
+                                ${m.ecart >= 0 ? '+' : ''}${m.ecart.toFixed(2)}%
+                            </strong>
+                        </td>
+                        <td>
+                            <div class="actions-cell">
+                                <button class="action-btn pdf" onclick="exportPdf(${m.id})">
+                                    📄 PDF
+                                </button>
+                                <button class="action-btn delete" onclick="deleteMeasurement(${m.id})">
+                                    🗑️
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+        
         async function deleteMeasurement(id) {
-            if (!confirm('Delete this measurement?')) return;
+            if (!confirm(t('deleteConfirm'))) return;
+            
             try {
                 await fetch(`/api/trs/measurements/${id}`, { method: 'DELETE' });
                 loadHistory();
@@ -398,15 +847,34 @@
                 alert('Error deleting measurement');
             }
         }
-
+        
         function exportPdf(id) {
             window.open(`/api/trs/report/${id}`, '_blank');
         }
-
+        
         function exportCSV() {
-            window.open('/api/trs/export', '_blank');
+            window.location.href = '/api/trs/export';
         }
-
+        
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (e.target.tagName === 'INPUT') return;
+            
+            if (e.key === 't') toggleTheme();
+            if (e.key === 'n' || (e.ctrlKey && e.key === 'n')) {
+                e.preventDefault();
+                window.location.href = 'index.html';
+            }
+            if (e.ctrlKey && e.key === 'e') {
+                e.preventDefault();
+                exportCSV();
+            }
+        });
+        
+        // Initialize
+        document.getElementById('langSelect').value = currentLanguage;
+        applyTheme();
+        applyTranslations();
         loadHistory();
     </script>
 </body>

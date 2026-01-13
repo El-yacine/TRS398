@@ -1,0 +1,32 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <UseWindowsForms>true</UseWindowsForms>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AssemblyName>TRS398ProSetup</AssemblyName>
+    <Product>TRS-398 Pro Installer</Product>
+    <Company>Medical Physics</Company>
+    <Version>2.0.0</Version>
+    <Description>Installer for TRS-398 Pro Medical Physics Calibration System</Description>
+    <PublishSingleFile>true</PublishSingleFile>
+    <SelfContained>true</SelfContained>
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+    <EnableDefaultContentItems>false</EnableDefaultContentItems>
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
+  </PropertyGroup>
+
+  <!-- App files will be bundled during publish -->
+  <Target Name="CopyAppFiles" AfterTargets="Publish">
+    <ItemGroup>
+      <ServerFiles Include="..\server\**\*" />
+      <DetectorLib Include="..\detector_library.json" />
+    </ItemGroup>
+    <Copy SourceFiles="@(ServerFiles)" DestinationFolder="$(PublishDir)\AppFiles\server\%(RecursiveDir)" />
+    <Copy SourceFiles="@(DetectorLib)" DestinationFolder="$(PublishDir)\AppFiles" />
+  </Target>
+
+</Project>
+

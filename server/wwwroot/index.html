@@ -9,78 +9,199 @@
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --ink: #ffffff;
-            --muted: #c1c1c1;
-            --accent: #69be28;
-            --accent-2: #009fda;
-            --surface: #444444;
-            --card: #333333;
-            --border: #555555;
-            --bg: #444444;
-            --header-bg: #000000;
-            --header-primary: #cccccc;
-            --sidebar-bg: #444444;
-            --sidebar-primary: #c1c1c1;
-            --topbar-bg: #333333;
-            --panel: #333333;
-            --glow: 0 16px 48px rgba(0, 0, 0, 0.35);
+            --ink: #f1f5f9;
+            --muted: #94a3b8;
+            --accent: #10b981;
+            --accent-2: #06b6d4;
+            --accent-glow: rgba(16, 185, 129, 0.25);
+            --surface: #0f172a;
+            --card: #1e293b;
+            --card-hover: #273548;
+            --border: rgba(148, 163, 184, 0.12);
+            --border-accent: rgba(16, 185, 129, 0.3);
+            --bg: #0a0f1c;
+            --header-bg: rgba(15, 23, 42, 0.85);
+            --header-primary: #e2e8f0;
+            --sidebar-bg: #0f172a;
+            --sidebar-primary: #cbd5e1;
+            --topbar-bg: #1e293b;
+            --panel: #1e293b;
+            --glow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            --glass: rgba(30, 41, 59, 0.7);
+            --glass-border: rgba(148, 163, 184, 0.1);
+            --success: #10b981;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            --info: #3b82f6;
+            --gradient-primary: linear-gradient(135deg, #10b981 0%, #06b6d4 100%);
+            --gradient-subtle: linear-gradient(180deg, rgba(16, 185, 129, 0.08) 0%, transparent 100%);
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 24px;
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -2px rgba(0, 0, 0, 0.3);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -4px rgba(0, 0, 0, 0.4);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.4), 0 8px 10px -6px rgba(0, 0, 0, 0.4);
         }
         [data-theme="light"] {
-            --ink: #333333;
-            --muted: #5e5e5e;
-            --accent: #69be28;
-            --accent-2: #009fda;
-            --surface: #f8f8f8;
+            --ink: #1e293b;
+            --muted: #64748b;
+            --accent: #059669;
+            --accent-2: #0891b2;
+            --accent-glow: rgba(5, 150, 105, 0.15);
+            --surface: #f8fafc;
             --card: #ffffff;
-            --border: #dbdbdb;
-            --bg: #ffffff;
-            --header-bg: #ffffff;
-            --header-primary: #5e5e5e;
+            --card-hover: #f1f5f9;
+            --border: rgba(148, 163, 184, 0.25);
+            --border-accent: rgba(5, 150, 105, 0.4);
+            --bg: #f1f5f9;
+            --header-bg: rgba(255, 255, 255, 0.9);
+            --header-primary: #334155;
             --sidebar-bg: #ffffff;
-            --sidebar-primary: #5e5e5e;
-            --topbar-bg: #ebebeb;
+            --sidebar-primary: #475569;
+            --topbar-bg: #e2e8f0;
             --panel: #ffffff;
-            --glow: 0 12px 36px rgba(15, 23, 42, 0.08);
+            --glow: 0 25px 50px -12px rgba(15, 23, 42, 0.15);
+            --glass: rgba(255, 255, 255, 0.8);
+            --glass-border: rgba(148, 163, 184, 0.2);
+            --gradient-subtle: linear-gradient(180deg, rgba(5, 150, 105, 0.05) 0%, transparent 100%);
         }
+        
+        /* Color Theme Variations */
+        [data-color-theme="blue"] {
+            --accent: #3b82f6;
+            --accent-2: #6366f1;
+            --accent-glow: rgba(59, 130, 246, 0.25);
+            --gradient-primary: linear-gradient(135deg, #3b82f6 0%, #6366f1 100%);
+            --border-accent: rgba(59, 130, 246, 0.3);
+        }
+        [data-color-theme="blue"][data-theme="light"] {
+            --accent: #2563eb;
+            --accent-2: #4f46e5;
+            --accent-glow: rgba(37, 99, 235, 0.15);
+            --border-accent: rgba(37, 99, 235, 0.4);
+        }
+        
+        [data-color-theme="purple"] {
+            --accent: #8b5cf6;
+            --accent-2: #a855f7;
+            --accent-glow: rgba(139, 92, 246, 0.25);
+            --gradient-primary: linear-gradient(135deg, #8b5cf6 0%, #a855f7 100%);
+            --border-accent: rgba(139, 92, 246, 0.3);
+        }
+        [data-color-theme="purple"][data-theme="light"] {
+            --accent: #7c3aed;
+            --accent-2: #9333ea;
+            --accent-glow: rgba(124, 58, 237, 0.15);
+            --border-accent: rgba(124, 58, 237, 0.4);
+        }
+        
+        [data-color-theme="orange"] {
+            --accent: #f97316;
+            --accent-2: #fb923c;
+            --accent-glow: rgba(249, 115, 22, 0.25);
+            --gradient-primary: linear-gradient(135deg, #f97316 0%, #fb923c 100%);
+            --border-accent: rgba(249, 115, 22, 0.3);
+        }
+        [data-color-theme="orange"][data-theme="light"] {
+            --accent: #ea580c;
+            --accent-2: #f97316;
+            --accent-glow: rgba(234, 88, 12, 0.15);
+            --border-accent: rgba(234, 88, 12, 0.4);
+        }
+        
+        [data-color-theme="rose"] {
+            --accent: #f43f5e;
+            --accent-2: #fb7185;
+            --accent-glow: rgba(244, 63, 94, 0.25);
+            --gradient-primary: linear-gradient(135deg, #f43f5e 0%, #fb7185 100%);
+            --border-accent: rgba(244, 63, 94, 0.3);
+        }
+        [data-color-theme="rose"][data-theme="light"] {
+            --accent: #e11d48;
+            --accent-2: #f43f5e;
+            --accent-glow: rgba(225, 29, 72, 0.15);
+            --border-accent: rgba(225, 29, 72, 0.4);
+        }
+        
         * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 10px;
+            height: 10px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--surface);
+            border-radius: 5px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 5px;
+            border: 2px solid var(--surface);
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--muted);
+        }
+        
+        /* Selection */
+        ::selection {
+            background: var(--accent);
+            color: #ffffff;
+        }
         body {
             font-family: 'Space Grotesk', 'Segoe UI', system-ui, sans-serif;
             background: var(--bg);
             color: var(--ink);
             transition: background 0.3s ease, color 0.3s ease;
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
         .app-shell {
             display: flex;
             flex-direction: column;
             min-height: 100vh;
-            background: var(--surface);
+            background: var(--bg);
+            background-image: 
+                radial-gradient(ellipse 80% 50% at 50% -20%, var(--accent-glow), transparent),
+                radial-gradient(ellipse 60% 40% at 100% 0%, rgba(6, 182, 212, 0.08), transparent);
         }
         .app-header {
-            grid-column: 1 / -1;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 14px 20px;
+            padding: 16px 28px;
             background: var(--header-bg);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
             color: var(--header-primary);
-            border-bottom: 1px solid var(--border);
+            border-bottom: 1px solid var(--glass-border);
             position: sticky;
             top: 0;
-            z-index: 5;
+            z-index: 100;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
         }
         .brand {
             display: flex;
             align-items: center;
-            gap: 10px;
-            color: var(--header-primary);
-            font-weight: 800;
-            letter-spacing: 0.06em;
-            text-transform: uppercase;
+            gap: 12px;
+            color: var(--ink);
+            font-weight: 700;
+            font-size: 15px;
+            letter-spacing: 0.02em;
+        }
+        .brand span {
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
         .brand-logo {
-            width: 34px;
-            height: 34px;
-            border-radius: 8px;
+            width: 36px;
+            height: 36px;
+            border-radius: var(--radius-sm);
             object-fit: cover;
             border: 1px solid var(--border);
             display: none;
@@ -88,51 +209,104 @@
         }
         .nav-links {
             display: flex;
-            gap: 10px;
+            gap: 8px;
             flex-wrap: wrap;
         }
         .nav-btn {
-            padding: 10px 14px;
-            border-radius: 10px;
+            padding: 10px 16px;
+            border-radius: var(--radius-md);
             border: 1px solid var(--border);
-            background: var(--card);
+            background: var(--glass);
+            backdrop-filter: blur(8px);
             color: var(--ink);
-            font-weight: 700;
+            font-weight: 600;
+            font-size: 13px;
             cursor: pointer;
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            transition: transform 0.08s ease, box-shadow 0.12s ease;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
         }
-        .nav-btn:hover { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(0,0,0,0.15); }
-        .nav-btn.primary { border-color: var(--accent); background: var(--accent); color: #0b1a0c; }
+        .nav-btn::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: var(--gradient-primary);
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+        .nav-btn:hover { 
+            transform: translateY(-2px); 
+            box-shadow: var(--shadow-lg);
+            border-color: var(--border-accent);
+            background: var(--card-hover);
+        }
+        .nav-btn:active {
+            transform: translateY(0);
+        }
+        .nav-btn.primary { 
+            border: none;
+            background: var(--gradient-primary);
+            color: #ffffff;
+            font-weight: 700;
+            box-shadow: 0 4px 14px var(--accent-glow);
+        }
+        .nav-btn.primary:hover {
+            box-shadow: 0 6px 20px var(--accent-glow);
+            filter: brightness(1.1);
+        }
+        .nav-btn.lang-select {
+            width: 70px !important;
+            min-width: 70px !important;
+            max-width: 70px !important;
+            flex-shrink: 0;
+        }
         .main {
-            padding: 20px;
-            background: var(--surface);
+            padding: 32px;
+            background: transparent;
+            max-width: 1600px;
+            margin: 0 auto;
+            width: 100%;
         }
         .hero {
             display: flex;
             justify-content: space-between;
-            gap: 18px;
+            gap: 24px;
             align-items: flex-start;
+            margin-bottom: 8px;
         }
         .eyebrow {
             text-transform: uppercase;
-            letter-spacing: 0.08em;
-            color: var(--accent-2);
-            font-weight: 700;
-            font-size: 12px;
+            letter-spacing: 0.12em;
+            color: var(--accent);
+            font-weight: 600;
+            font-size: 11px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .eyebrow::before {
+            content: '';
+            width: 24px;
+            height: 2px;
+            background: var(--gradient-primary);
+            border-radius: 2px;
         }
         h1 {
-            margin-top: 4px;
-            font-size: 28px;
-            line-height: 1.2;
+            margin-top: 8px;
+            font-size: 32px;
+            line-height: 1.15;
             color: var(--ink);
+            font-weight: 700;
+            letter-spacing: -0.02em;
         }
         .subtitle {
             margin-top: 6px;
             color: var(--muted);
             font-size: 14px;
+            display: none !important;
         }
         .pill-stack {
             display: flex;
@@ -144,35 +318,53 @@
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            padding: 10px 14px;
+            padding: 8px 14px;
             border-radius: 999px;
             border: 1px solid var(--border);
-            background: var(--card);
+            background: var(--glass);
+            backdrop-filter: blur(8px);
             color: var(--ink);
-            font-weight: 600;
+            font-weight: 500;
             font-size: 12px;
+            transition: all 0.2s ease;
         }
         .pill.accent {
-            background: var(--accent);
-            border-color: var(--accent);
-            color: #0b1a0c;
+            background: var(--gradient-primary);
+            border: none;
+            color: #ffffff;
+            font-weight: 600;
+            box-shadow: 0 2px 8px var(--accent-glow);
         }
         .pill.quiet {
             color: var(--muted);
             background: var(--card);
+            border-color: var(--border);
         }
         .surface {
-            background: var(--panel);
-            border: 1px solid var(--border);
-            border-radius: 14px;
-            padding: 16px;
-            box-shadow: var(--glow);
-            margin-top: 18px;
+            background: var(--glass);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-xl);
+            padding: 24px;
+            box-shadow: var(--shadow-xl);
+            margin-top: 24px;
+            position: relative;
+            overflow: hidden;
+        }
+        .surface::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
         }
         .metrics {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 12px;
+            gap: 16px;
         }
         .form-grid {
             display: grid;
@@ -203,25 +395,53 @@
         .metric-card {
             background: var(--card);
             border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 14px;
+            border-radius: var(--radius-lg);
+            padding: 20px;
             color: var(--ink);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        .metric-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 3px;
+            height: 100%;
+            background: var(--gradient-primary);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .metric-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--border-accent);
+        }
+        .metric-card:hover::after {
+            opacity: 1;
         }
         .metric-label {
-            font-size: 12px;
+            font-size: 11px;
             color: var(--muted);
             text-transform: uppercase;
-            letter-spacing: 0.06em;
+            letter-spacing: 0.1em;
+            font-weight: 600;
         }
         .metric-value {
-            font-size: 18px;
+            font-size: 20px;
             font-weight: 700;
-            margin-top: 6px;
+            margin-top: 8px;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
         .metric-note {
             font-size: 12px;
-            color: #91a2c7;
-            margin-top: 4px;
+            color: var(--muted);
+            margin-top: 6px;
+            font-weight: 500;
         }
         .toolbar {
             display: flex;
@@ -241,82 +461,137 @@
             flex-wrap: wrap;
         }
         .btn {
-            padding: 10px 16px;
-            border-radius: 10px;
+            padding: 12px 20px;
+            border-radius: var(--radius-md);
             border: 1px solid transparent;
-            font-weight: 700;
+            font-weight: 600;
             cursor: pointer;
             font-size: 13px;
             display: inline-flex;
             align-items: center;
-            gap: 6px;
-            transition: transform 0.08s ease, box-shadow 0.12s ease;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
         }
-        .btn:hover { transform: translateY(-1px); }
+        .btn::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(255,255,255,0.1), transparent);
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+        .btn:hover::before { opacity: 1; }
+        .btn:hover { transform: translateY(-2px); }
         .btn:active { transform: translateY(0); }
         .btn.primary {
-            background: linear-gradient(135deg, var(--accent), var(--accent-2));
-            color: #0b1a0c;
-            border-color: var(--accent);
-            box-shadow: 0 10px 25px rgba(0, 159, 218, 0.25);
+            background: var(--gradient-primary);
+            color: #ffffff;
+            border: none;
+            box-shadow: 0 4px 14px var(--accent-glow);
+            font-weight: 700;
+        }
+        .btn.primary:hover {
+            box-shadow: 0 8px 25px var(--accent-glow);
+            filter: brightness(1.1);
         }
         .btn.ghost {
-            background: var(--panel);
+            background: var(--glass);
+            backdrop-filter: blur(8px);
             border-color: var(--border);
             color: var(--ink);
         }
+        .btn.ghost:hover {
+            background: var(--card-hover);
+            border-color: var(--border-accent);
+        }
         .btn.warn {
-            background: rgba(227, 73, 69, 0.12);
-            border-color: rgba(227, 73, 69, 0.4);
-            color: #e34945;
+            background: rgba(239, 68, 68, 0.1);
+            border-color: rgba(239, 68, 68, 0.3);
+            color: var(--error);
+        }
+        .btn.warn:hover {
+            background: rgba(239, 68, 68, 0.2);
+            border-color: rgba(239, 68, 68, 0.5);
         }
         .btn.soft {
-            background: rgba(105, 190, 40, 0.12);
-            border-color: rgba(105, 190, 40, 0.45);
+            background: rgba(16, 185, 129, 0.1);
+            border-color: rgba(16, 185, 129, 0.3);
             color: var(--accent);
+        }
+        .btn.soft:hover {
+            background: rgba(16, 185, 129, 0.2);
+            border-color: rgba(16, 185, 129, 0.5);
         }
         .quick-actions {
             display: flex;
-            gap: 10px;
+            gap: 12px;
             flex-wrap: wrap;
-            margin: 12px 0 6px;
+            margin: 16px 0 8px;
         }
         .icon-btn {
-            padding: 10px 14px;
-            border-radius: 12px;
+            padding: 12px 18px;
+            border-radius: var(--radius-md);
             border: 1px solid var(--border);
             background: var(--card);
             color: var(--ink);
-            font-weight: 700;
+            font-weight: 600;
             cursor: pointer;
             display: inline-flex;
             align-items: center;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
             gap: 8px;
             transition: transform 0.08s ease, box-shadow 0.12s ease;
         }
-        .icon-btn:hover { transform: translateY(-1px); box-shadow: 0 8px 20px rgba(15,23,42,0.18); }
-        .icon-btn.primary { background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: #0b1a0c; border-color: transparent; box-shadow: 0 10px 25px rgba(0, 159, 218, 0.25); }
+        .icon-btn:hover { 
+            transform: translateY(-2px); 
+            box-shadow: var(--shadow-lg);
+            border-color: var(--border-accent);
+            background: var(--card-hover);
+        }
+        .icon-btn:active {
+            transform: translateY(0);
+        }
+        .icon-btn.primary { 
+            background: var(--gradient-primary);
+            color: #ffffff; 
+            border: none; 
+            box-shadow: 0 4px 14px var(--accent-glow);
+        }
+        .icon-btn.primary:hover {
+            box-shadow: 0 8px 25px var(--accent-glow);
+            filter: brightness(1.1);
+        }
         .row-stack { display: flex; flex-direction: column; gap: 14px; margin-top: 12px; }
         .row-card {
             border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 14px;
+            border-radius: var(--radius-xl);
+            padding: 20px;
             background: var(--card);
-            box-shadow: var(--glow);
+            box-shadow: var(--shadow-md);
             color: var(--ink);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+        .row-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-xl);
+            border-color: var(--border-accent);
         }
         .row-head {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 10px;
+            gap: 12px;
             align-items: center;
-            margin-bottom: 12px;
+            margin-bottom: 16px;
         }
         .row-id {
-            padding: 10px;
-            border-radius: 12px;
-            background: var(--accent);
-            color: #0b1a0c;
+            padding: 10px 16px;
+            border-radius: var(--radius-md);
+            background: var(--gradient-primary);
+            color: #ffffff;
             font-weight: 700;
             text-align: center;
         }
@@ -393,63 +668,125 @@
         .chip { font-weight: 700; }
         select {
             width: 100%;
-            padding: 10px 10px;
-            border-radius: 10px;
+            padding: 12px 14px;
+            border-radius: var(--radius-md);
             border: 1px solid var(--border);
-            font-size: 13px;
-            background: linear-gradient(135deg, #f8fbff, #ffffff);
+            font-size: 14px;
+            font-weight: 500;
+            background: var(--card);
+            color: var(--ink);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2394a3b8' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 14px center;
+            padding-right: 36px;
+        }
+        select:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-glow);
+        }
+        select:hover {
+            border-color: var(--border-accent);
+        }
+        select option {
+            background: var(--card);
+            color: var(--ink);
+            padding: 10px;
         }
         input {
             width: 100%;
             border: 1px solid var(--border);
-            background: linear-gradient(135deg, #f8fafc, #ffffff);
+            background: var(--card);
+            color: var(--ink);
             text-align: center;
-            padding: 10px 10px;
-            font-size: 13px;
-            border-radius: 10px;
+            padding: 12px 14px;
+            font-size: 14px;
+            font-weight: 500;
+            border-radius: var(--radius-md);
+            transition: all 0.2s ease;
         }
         .form-group input[type="text"] { text-align: left; }
         textarea {
             width: 100%;
             border: 1px solid var(--border);
-            background: #f8fafc;
-            padding: 8px 10px;
-            font-size: 12px;
-            border-radius: 8px;
-            min-height: 70px;
+            background: var(--card);
+            color: var(--ink);
+            padding: 12px 14px;
+            font-size: 13px;
+            border-radius: var(--radius-md);
+            min-height: 80px;
             resize: vertical;
+            transition: all 0.2s ease;
         }
-        input:focus {
+        input:focus, textarea:focus {
             outline: none;
-            border-color: var(--accent-2);
-            box-shadow: 0 0 0 3px rgba(46, 108, 184, 0.18);
-            background: #fff;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-glow);
+            background: var(--card-hover);
+        }
+        input::placeholder, textarea::placeholder {
+            color: var(--muted);
+            opacity: 0.7;
         }
         .modal {
             position: fixed;
             inset: 0;
-            background: rgba(0, 0, 0, 0.55);
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(8px);
             display: none;
             align-items: center;
             justify-content: center;
-            z-index: 20;
+            z-index: 200;
             padding: 20px;
+            animation: fadeIn 0.3s ease;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
         .modal.open { display: flex; }
         .modal-content {
             width: min(1100px, 95vw);
-            background: var(--panel);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            box-shadow: var(--glow);
-            padding: 18px;
+            max-height: 90vh;
+            overflow-y: auto;
+            background: var(--glass);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-xl);
+            padding: 28px;
             color: var(--ink);
+            animation: modalSlideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        @keyframes modalSlideIn {
+            from { 
+                opacity: 0;
+                transform: translateY(-20px) scale(0.95);
+            }
+            to { 
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
         }
         .modal-head {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 12px;
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border);
+        }
+        .modal-head h3 {
+            font-size: 20px;
+            font-weight: 700;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
         .modal-head h3 { margin: 0; }
         .auth-label { color: var(--muted); font-size: 12px; }
@@ -594,25 +931,42 @@
             pointer-events: none;
         }
         .toast {
-            padding: 12px 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            min-width: 250px;
+            padding: 14px 24px;
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-xl);
+            min-width: 280px;
             font-weight: 600;
             pointer-events: auto;
-            animation: slideIn 0.3s ease;
+            animation: slideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255,255,255,0.1);
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
-        .toast.success { background: #10b981; color: #fff; }
-        .toast.error { background: #ef4444; color: #fff; }
-        .toast.warning { background: #f59e0b; color: #fff; }
-        .toast.info { background: #3b82f6; color: #fff; }
+        .toast.success { 
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.95), rgba(6, 182, 212, 0.9));
+            color: #fff;
+        }
+        .toast.error { 
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.95), rgba(220, 38, 38, 0.9));
+            color: #fff;
+        }
+        .toast.warning { 
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.95), rgba(217, 119, 6, 0.9));
+            color: #fff;
+        }
+        .toast.info { 
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.95), rgba(37, 99, 235, 0.9));
+            color: #fff;
+        }
         @keyframes slideIn {
-            from { transform: translateX(100%); opacity: 0; }
+            from { transform: translateX(120%); opacity: 0; }
             to { transform: translateX(0); opacity: 1; }
         }
         @keyframes slideOut {
             from { transform: translateX(0); opacity: 1; }
-            to { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(120%); opacity: 0; }
         }
 
         /* Input Validation */
@@ -846,6 +1200,79 @@
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 16px;
         }
+        
+        /* Logo Upload Styles */
+        .logo-upload-area {
+            display: flex;
+            gap: 24px;
+            align-items: flex-start;
+            padding: 20px;
+            background: var(--surface);
+            border: 2px dashed var(--border);
+            border-radius: 16px;
+            transition: all 0.3s ease;
+        }
+        .logo-upload-area:hover {
+            border-color: var(--accent);
+            background: var(--surface-hover);
+        }
+        .logo-upload-area.drag-over {
+            border-color: var(--accent);
+            background: rgba(16, 185, 129, 0.1);
+        }
+        .logo-preview-container {
+            flex-shrink: 0;
+        }
+        .logo-preview {
+            width: 200px;
+            height: 100px;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+        .logo-preview img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+        .logo-placeholder {
+            font-size: 32px;
+            opacity: 0.5;
+        }
+        .logo-text {
+            font-size: 11px;
+            color: var(--muted);
+            margin-top: 8px;
+        }
+        .logo-upload-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .logo-upload-controls .btn {
+            width: fit-content;
+        }
+        .logo-upload-progress {
+            width: 100%;
+            height: 4px;
+            background: var(--border);
+            border-radius: 2px;
+            overflow: hidden;
+            margin-top: 8px;
+        }
+        .logo-upload-progress-bar {
+            height: 100%;
+            background: var(--accent);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        
         .setting-item {
             display: flex;
             flex-direction: column;
@@ -888,6 +1315,253 @@
             padding-top: 20px;
             border-top: 1px solid var(--border);
         }
+        
+        /* Chamber Library Styles */
+        .chamber-selector-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+        }
+        .chamber-search-row {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+        .chamber-list-container {
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            overflow: hidden;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .chamber-list-header {
+            display: flex;
+            padding: 12px 16px;
+            background: var(--card);
+            font-weight: 600;
+            font-size: 12px;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 1;
+        }
+        .chamber-list {
+            background: var(--bg);
+        }
+        .chamber-list-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border);
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+        .chamber-list-item:hover {
+            background: var(--surface-hover);
+        }
+        .chamber-list-item.selected {
+            background: rgba(16, 185, 129, 0.15);
+            border-left: 3px solid var(--accent);
+        }
+        .chamber-list-item .chamber-name {
+            flex: 2;
+            font-weight: 500;
+        }
+        .chamber-list-item .chamber-type {
+            flex: 1;
+            font-size: 12px;
+            color: var(--muted);
+        }
+        .chamber-list-item .chamber-select {
+            flex: 1;
+            text-align: center;
+        }
+        .chamber-list-item .chamber-select button {
+            padding: 6px 16px;
+            font-size: 12px;
+        }
+        .selected-chamber-info {
+            margin-top: 16px;
+            padding: 16px;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--accent);
+            border-radius: 8px;
+        }
+        .chamber-info-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+        .chamber-info-icon {
+            font-size: 20px;
+        }
+        .chamber-info-title {
+            font-weight: 600;
+            font-size: 16px;
+            color: var(--ink);
+        }
+        .chamber-info-details {
+            display: flex;
+            gap: 24px;
+            flex-wrap: wrap;
+        }
+        .chamber-detail {
+            display: flex;
+            gap: 8px;
+        }
+        .detail-label {
+            font-size: 12px;
+            color: var(--muted);
+        }
+        .detail-value {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--ink);
+        }
+        .chamber-quick-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+        }
+        
+        /* Calibration Card */
+        .calibration-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+        }
+        .calibration-status {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 16px;
+            padding: 12px 16px;
+            background: var(--card);
+            border-radius: 8px;
+            font-size: 13px;
+        }
+        .calibration-status.valid {
+            background: rgba(16, 185, 129, 0.15);
+            color: #10b981;
+        }
+        .calibration-status.warning {
+            background: rgba(245, 158, 11, 0.15);
+            color: #f59e0b;
+        }
+        .calibration-status.expired {
+            background: rgba(239, 68, 68, 0.15);
+            color: #ef4444;
+        }
+        
+        /* Data Tab Styles */
+        .data-actions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+        }
+        .data-action-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.2s ease;
+        }
+        .data-action-card:hover {
+            border-color: var(--accent);
+            transform: translateY(-2px);
+        }
+        .data-action-card.warn:hover {
+            border-color: #ef4444;
+        }
+        .data-action-icon {
+            font-size: 32px;
+            margin-bottom: 12px;
+        }
+        .data-action-title {
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 6px;
+            color: var(--ink);
+        }
+        .data-action-desc {
+            font-size: 12px;
+            color: var(--muted);
+            margin-bottom: 16px;
+        }
+        
+        /* About Card */
+        .about-card {
+            display: flex;
+            gap: 24px;
+            padding: 24px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+        }
+        .about-logo {
+            font-size: 48px;
+        }
+        .about-info h4 {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 4px;
+            color: var(--ink);
+        }
+        .about-info p {
+            font-size: 13px;
+            color: var(--muted);
+            margin-bottom: 12px;
+        }
+        .about-info ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .about-info ul li {
+            font-size: 12px;
+            color: var(--ink);
+            padding: 4px 0;
+        }
+        
+        /* Color Theme Selector */
+        .color-theme-selector {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            padding: 12px 0;
+        }
+        .theme-dot {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 3px solid transparent;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .theme-dot:hover {
+            transform: scale(1.15);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .theme-dot.active {
+            border-color: var(--ink);
+            box-shadow: 0 0 0 3px var(--accent), 0 2px 8px rgba(0, 0, 0, 0.2);
+            transform: scale(1.1);
+        }
+        .theme-dot.green { background: linear-gradient(135deg, #10b981, #06b6d4); }
+        .theme-dot.blue { background: linear-gradient(135deg, #3b82f6, #6366f1); }
+        .theme-dot.purple { background: linear-gradient(135deg, #8b5cf6, #a855f7); }
+        .theme-dot.orange { background: linear-gradient(135deg, #f97316, #fb923c); }
+        .theme-dot.rose { background: linear-gradient(135deg, #f43f5e, #fb7185); }
         .settings-preset {
             display: inline-flex;
             align-items: center;
@@ -970,12 +1644,17 @@
                 <span>TRS-398 · Photon</span>
             </div>
             <div class="nav-links">
-                <button class="nav-btn primary" onclick="scrollToMeasurement()">Measurement</button>
-                <button class="nav-btn" onclick="openHistory()">History</button>
-                <button class="nav-btn" onclick="openSetup()">Settings</button>
-                <button class="nav-btn" onclick="downloadCSV()">Export CSV</button>
-                <button class="nav-btn" onclick="toggleTheme()">Theme <span id="themeLabel">Dark</span></button>
-                <button class="nav-btn" onclick="handleAuth()" id="authBtn">Login</button>
+                <a href="dashboard.html" class="nav-btn" title="Ctrl+D">📊 Dashboard</a>
+                <button class="nav-btn primary" onclick="scrollToMeasurement()">📝 Measurement</button>
+                <a href="history.html" class="nav-btn" title="Ctrl+H">📋 History</a>
+                <button class="nav-btn" onclick="openSetup()" title="Ctrl+,">⚙️ Settings</button>
+                <button class="nav-btn" onclick="downloadCSV()" title="Ctrl+E">📤 Export</button>
+                <button class="nav-btn" onclick="toggleTheme()" title="T">🌓 <span id="themeLabel">Dark</span></button>
+                <button class="nav-btn" onclick="handleAuth()" id="authBtn">🔐 Login</button>
+                <select class="nav-btn lang-select" id="langSelect" onchange="setLanguage(this.value)" style="padding: 8px 12px; width: 70px; min-width: 70px;">
+                    <option value="en">🇬🇧 EN</option>
+                    <option value="fr">🇫🇷 FR</option>
+                </select>
             </div>
         </header>
         <main class="main">
@@ -983,8 +1662,7 @@
             <div>
                 <div class="eyebrow">TRS-398 photon calibration</div>
                 <h1>Photon Beam Calibration</h1>
-                <p class="subtitle">Flexible chamber selection · Nd,w defaults to 0.04789 Gy/nC</p>
-                <p class="subtitle">Field 10×10 cm² · SSD 100 cm · Depth z = zref = 10 cm · 100 UM</p>
+                <!-- Subtitle text removed -->
             </div>
             <div class="pill-stack">
                 <span class="pill accent">One measurement card · choose any energy</span>
@@ -1183,18 +1861,128 @@
             </div>
             
             <div class="settings-tabs">
-                <button class="settings-tab active" onclick="switchSettingsTab('clinic')">🏥 Clinic</button>
-                <button class="settings-tab" onclick="switchSettingsTab('equipment')">🔬 Equipment</button>
+                <button class="settings-tab active" onclick="switchSettingsTab('chambers')">🔬 Chamber Library</button>
+                <button class="settings-tab" onclick="switchSettingsTab('clinic')">🏥 Clinic</button>
+                <button class="settings-tab" onclick="switchSettingsTab('equipment')">⚡ LINAC</button>
                 <button class="settings-tab" onclick="switchSettingsTab('defaults')">📋 Defaults</button>
-                <button class="settings-tab" onclick="switchSettingsTab('preferences')">🎨 Preferences</button>
-                <button class="settings-tab" onclick="switchSettingsTab('advanced')">⚙️ Advanced</button>
+                <button class="settings-tab" onclick="switchSettingsTab('preferences')">🎨 Display</button>
+                <button class="settings-tab" onclick="switchSettingsTab('data')">💾 Data</button>
+            </div>
+
+            <!-- Chamber Library Tab (NEW - First Tab) -->
+            <div id="tab-chambers" class="settings-tab-content active">
+                <div class="settings-section">
+                    <div class="settings-section-title">🔬 Chamber Selection & Calibration</div>
+                    <div class="settings-section-desc">Select your ionization chamber from the library and enter its calibration coefficient (Nd,w)</div>
+                    
+                    <div class="chamber-selector-card">
+                        <div class="chamber-search-row">
+                            <div class="setting-item" style="flex: 2;">
+                                <label>🔍 Search Chamber Library</label>
+                                <input type="text" id="chamberSearchInput" placeholder="Type to search (e.g., PTW, Farmer, FC65...)" oninput="filterChamberLibrary()" />
+                            </div>
+                            <div class="setting-item" style="flex: 1;">
+                                <label>📁 Filter by Manufacturer</label>
+                                <select id="chamberManufacturerFilter" onchange="filterChamberLibrary()">
+                                    <option value="all">All Manufacturers</option>
+                                    <option value="PTW">PTW</option>
+                                    <option value="IBA">IBA (Wellhöfer/Scanditronix)</option>
+                                    <option value="Exradin">Exradin</option>
+                                    <option value="NE">NE / Nuclear Enterprises</option>
+                                    <option value="Capintec">Capintec</option>
+                                    <option value="Sun Nuclear">Sun Nuclear</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="chamber-list-container">
+                            <div class="chamber-list-header">
+                                <span style="flex: 2;">Chamber Model</span>
+                                <span style="flex: 1;">Type</span>
+                                <span style="flex: 1; text-align: center;">Select</span>
+                            </div>
+                            <div id="chamberLibraryList" class="chamber-list">
+                                <!-- Populated by JavaScript -->
+                            </div>
+                        </div>
+                        
+                        <div class="selected-chamber-info" id="selectedChamberInfo" style="display: none;">
+                            <div class="chamber-info-header">
+                                <span class="chamber-info-icon">✅</span>
+                                <span class="chamber-info-title" id="selectedChamberName">No chamber selected</span>
+                            </div>
+                            <div class="chamber-info-details">
+                                <div class="chamber-detail">
+                                    <span class="detail-label">Type:</span>
+                                    <span class="detail-value" id="selectedChamberType">-</span>
+                                </div>
+                                <div class="chamber-detail">
+                                    <span class="detail-label">kQ Range:</span>
+                                    <span class="detail-value" id="selectedChamberKqRange">-</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="settings-section">
+                    <div class="settings-section-title">📜 Calibration Certificate</div>
+                    <div class="settings-section-desc">Enter your chamber's calibration data from the certificate</div>
+                    
+                    <div class="calibration-card">
+                        <div class="settings-grid" style="grid-template-columns: repeat(3, 1fr);">
+                            <div class="setting-item">
+                                <label for="ChamberNdw">📊 Nd,w (Gy/nC) *</label>
+                                <input id="ChamberNdw" type="number" step="0.00001" placeholder="0.04789" oninput="syncNdwToMain()" />
+                                <div class="help-text">Calibration factor from certificate</div>
+                            </div>
+                            <div class="setting-item">
+                                <label for="ChamberSerial">🔢 Serial Number</label>
+                                <input id="ChamberSerial" type="text" placeholder="e.g., 12345" />
+                                <div class="help-text">Chamber serial number</div>
+                            </div>
+                            <div class="setting-item">
+                                <label for="CalibrationLab">🏛️ Calibration Laboratory</label>
+                                <input id="CalibrationLab" type="text" placeholder="e.g., PTB, NPL, NIST" />
+                                <div class="help-text">Accredited calibration lab</div>
+                            </div>
+                            <div class="setting-item">
+                                <label for="CalibrationDate">📅 Calibration Date</label>
+                                <input id="CalibrationDate" type="date" />
+                                <div class="help-text">Date of calibration</div>
+                            </div>
+                            <div class="setting-item">
+                                <label for="CalibrationExpiry">⏰ Next Calibration Due</label>
+                                <input id="CalibrationExpiry" type="date" />
+                                <div class="help-text">Recommended: 2 years</div>
+                            </div>
+                            <div class="setting-item">
+                                <label for="CertificateNumber">📄 Certificate Number</label>
+                                <input id="CertificateNumber" type="text" placeholder="e.g., PTB-2024-12345" />
+                                <div class="help-text">Certificate reference number</div>
+                            </div>
+                        </div>
+                        
+                        <div class="calibration-status" id="calibrationStatus">
+                            <span class="status-icon">ℹ️</span>
+                            <span class="status-text">Enter calibration data to track certificate validity</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="chamber-quick-actions">
+                    <button class="btn primary" onclick="applyChamberToMain()">✅ Apply to Measurement</button>
+                    <button class="btn soft" onclick="saveChamberConfig()">💾 Save Configuration</button>
+                    <button class="btn ghost" onclick="loadSavedChamber()">📂 Load Saved</button>
+                </div>
             </div>
 
             <!-- Clinic Tab -->
-            <div id="tab-clinic" class="settings-tab-content active">
+            <div id="tab-clinic" class="settings-tab-content">
                 <div class="settings-section">
-                    <div class="settings-section-title">Clinic Information</div>
-                    <div class="settings-section-desc">Organization details used in reports and measurements</div>
+                    <div class="settings-section-title">🏥 Clinic Information</div>
+                    <div class="settings-section-desc">Organization details for reports and records</div>
                     <div class="settings-grid">
                         <div class="setting-item">
                             <label for="ClinicName">🏥 Clinic Name *</label>
@@ -1214,27 +2002,38 @@
                         <div class="setting-item">
                             <label for="ClinicPhone">📞 Contact Phone</label>
                             <input id="ClinicPhone" type="text" placeholder="+1 (555) 123-4567" />
-                            <div class="help-text">Optional contact information</div>
                         </div>
                         <div class="setting-item">
                             <label for="ClinicEmail">📧 Contact Email</label>
                             <input id="ClinicEmail" type="email" placeholder="physicist@clinic.com" />
-                            <div class="help-text">Optional email address</div>
                         </div>
-                        <div class="setting-item">
-                            <label for="Notes">📝 Notes / Equipment Change</label>
-                            <textarea id="Notes" placeholder="E.g. chamber changed, electrometer recalibrated" style="min-height: 80px;"></textarea>
-                            <div class="help-text">General notes or equipment change log</div>
+                    </div>
+                </div>
+                
+                <div class="settings-section">
+                    <div class="settings-section-title">🖼️ Clinic Logo</div>
+                    <div class="settings-section-desc">Upload logo for PDF reports (PNG, JPEG, max 5MB)</div>
+                    <div class="logo-upload-area">
+                        <div class="logo-preview-container">
+                            <div id="logoPreview" class="logo-preview">
+                                <span class="logo-placeholder">📷</span>
+                                <span class="logo-text">No logo uploaded</span>
+                            </div>
+                        </div>
+                        <div class="logo-upload-controls">
+                            <input type="file" id="logoFileInput" accept="image/png,image/jpeg,image/gif,image/webp" style="display: none;" onchange="handleLogoUpload(event)" />
+                            <button class="btn primary" onclick="document.getElementById('logoFileInput').click()">📤 Upload Logo</button>
+                            <button class="btn ghost" onclick="deleteLogo()" id="deleteLogoBtn" style="display: none;">🗑️ Remove</button>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Equipment Tab -->
+            <!-- Equipment/LINAC Tab -->
             <div id="tab-equipment" class="settings-tab-content">
                 <div class="settings-section">
-                    <div class="settings-section-title">LINAC & Beam Setup</div>
-                    <div class="settings-section-desc">Equipment configuration for measurements</div>
+                    <div class="settings-section-title">⚡ LINAC Configuration</div>
+                    <div class="settings-section-desc">Linear accelerator and beam setup</div>
                     <div class="settings-grid">
                         <div class="setting-item">
                             <label for="LinacName">⚡ LINAC Name</label>
@@ -1242,50 +2041,42 @@
                             <div class="help-text">LINAC model or manufacturer</div>
                         </div>
                         <div class="setting-item">
-                            <label for="LinacId">🆔 LINAC ID</label>
+                            <label for="LinacId">🆔 LINAC ID / Serial</label>
                             <input id="LinacId" type="text" placeholder="TB-01" />
-                            <div class="help-text">Unique identifier or serial number</div>
+                            <div class="help-text">Unique identifier</div>
                         </div>
                         <div class="setting-item">
                             <label for="FieldSize">📐 Field Size (cm²)</label>
                             <input id="FieldSize" type="text" placeholder="10×10" />
-                            <div class="help-text">Standard field size (e.g., 10×10, 15×15)</div>
+                            <div class="help-text">Standard calibration field</div>
                         </div>
-                        <div class="setting-item">
-                            <label for="Chamber">🔬 Chamber (Library Lookup)</label>
-                            <select id="Chamber" onchange="autoKQ()">
-                                <option value="">Select chamber</option>
-                            </select>
-                            <div class="help-text">Select from detector library</div>
-                        </div>
-                        <div class="setting-item photon-only">
-                            <label for="TPR">📊 TPR20/10</label>
-                            <input id="TPR" type="number" step="0.0001" placeholder="0.6800" oninput="autoKQ()" />
-                            <div class="help-text">Tissue Phantom Ratio for kQ calculation</div>
-                        </div>
+                    </div>
+                </div>
+                
+                <div class="settings-section">
+                    <div class="settings-section-title">📊 Beam Quality Parameters</div>
+                    <div class="settings-section-desc">Electron beam specific parameters (TPR and Chamber are set in main form)</div>
+                    <div class="settings-grid">
                         <div class="setting-item electron-only">
                             <label for="SSD">📏 SSD (cm)</label>
                             <input id="SSD" type="number" step="0.1" value="100" oninput="calc(1)" />
                             <div class="help-text">Source-to-Surface Distance</div>
                         </div>
                         <div class="setting-item electron-only">
-                            <label for="ChamberType">🔬 Chamber Type</label>
-                            <select id="ChamberType" onchange="autoKQ()">
-                                <option value="cylindrical" selected>Cylindrical</option>
-                                <option value="planeParallel">Plane-parallel</option>
-                            </select>
-                            <div class="help-text">Chamber geometry type</div>
-                        </div>
-                        <div class="setting-item electron-only">
-                            <label for="NdwCross">📈 Nd,w,Qcross (Gy/nC)</label>
+                            <label for="NdwCross">📈 Nd,w,Qcross</label>
                             <input id="NdwCross" type="number" step="0.00001" placeholder="Cross-cal factor" oninput="calc(1)" />
-                            <div class="help-text">Cross-calibration factor for plane-parallel</div>
                         </div>
                         <div class="setting-item electron-only">
-                            <label for="R50Cross">📏 R50 (cross-cal cm)</label>
+                            <label for="R50Cross">📏 R50 (cross-cal)</label>
                             <input id="R50Cross" type="number" step="0.01" placeholder="R50 at cross-cal" oninput="calc(1)" />
-                            <div class="help-text">R50 used for cross-calibration reference</div>
                         </div>
+                    </div>
+                </div>
+                
+                <div class="settings-section">
+                    <div class="settings-section-title">📝 Equipment Notes</div>
+                    <div class="setting-item" style="max-width: 100%;">
+                        <textarea id="Notes" placeholder="Equipment change log, maintenance notes..." style="min-height: 80px; width: 100%;"></textarea>
                     </div>
                 </div>
             </div>
@@ -1293,23 +2084,16 @@
             <!-- Defaults Tab -->
             <div id="tab-defaults" class="settings-tab-content">
                 <div class="settings-section">
-                    <div class="settings-section-title">Default Values</div>
-                    <div class="settings-section-desc">Pre-filled values for new measurements</div>
+                    <div class="settings-section-title">📋 Default Measurement Values</div>
+                    <div class="settings-section-desc">Pre-filled values for new measurements (Nd,w is set in Chamber Library tab)</div>
                     <div class="settings-grid">
                         <div class="setting-item">
-                            <label for="NdwInput">📊 Nd,w (Gy/nC)</label>
-                            <input id="NdwInput" type="number" step="0.00001" value="0.04789" oninput="recalcAll()" />
-                            <div class="help-text">Chamber calibration factor (default: 0.04789)</div>
-                        </div>
-                        <div class="setting-item">
-                            <label for="DefaultTemp">🌡️ Default Temperature (°C)</label>
+                            <label for="DefaultTemp">🌡️ Temperature (°C)</label>
                             <input id="DefaultTemp" type="number" step="0.1" value="22.0" />
-                            <div class="help-text">Typical room temperature</div>
                         </div>
                         <div class="setting-item">
-                            <label for="DefaultPressure">🌬️ Default Pressure (mBar)</label>
+                            <label for="DefaultPressure">🌬️ Pressure (mBar)</label>
                             <input id="DefaultPressure" type="number" step="0.1" value="1013.0" />
-                            <div class="help-text">Standard atmospheric pressure</div>
                         </div>
                         <div class="setting-item">
                             <label for="DefaultEnergy">⚡ Default Energy</label>
@@ -1317,14 +2101,16 @@
                                 <option value="6X" selected>6X</option>
                                 <option value="6FFF">6FFF</option>
                                 <option value="10X">10X</option>
+                                <option value="10FFF">10FFF</option>
                                 <option value="15X">15X</option>
                                 <option value="18X">18X</option>
                                 <option value="6E">6E</option>
                                 <option value="9E">9E</option>
                                 <option value="12E">12E</option>
                                 <option value="15E">15E</option>
+                                <option value="18E">18E</option>
+                                <option value="20E">20E</option>
                             </select>
-                            <div class="help-text">Default energy for new measurements</div>
                         </div>
                         <div class="setting-item">
                             <label for="DefaultMode">🔬 Default Mode</label>
@@ -1332,132 +2118,134 @@
                                 <option value="photon" selected>Photon TRS-398</option>
                                 <option value="electron">Electron TRS-398</option>
                             </select>
-                            <div class="help-text">Default measurement mode</div>
                         </div>
-                        <div class="setting-item">
-                            <label>
-                                <input type="checkbox" id="AutoFillDefaults" checked />
-                                Auto-fill defaults on new measurement
-                            </label>
-                            <div class="help-text">Automatically populate default values</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Preferences Tab -->
-            <div id="tab-preferences" class="settings-tab-content">
-                <div class="settings-section">
-                    <div class="settings-section-title">Display & Appearance</div>
-                    <div class="settings-section-desc">Customize the interface appearance</div>
-                    <div class="settings-grid">
-                        <div class="setting-item">
-                            <label>🎨 Theme</label>
-                            <button class="btn ghost" onclick="toggleTheme()" style="width: 100%;">Switch to <span id="themeLabelSettings">Light</span></button>
-                            <div class="help-text">Toggle between dark and light theme</div>
-                        </div>
-                        <div class="setting-item">
-                            <label for="LogoUpload">🖼️ Header Logo</label>
-                            <input id="LogoUpload" type="file" accept="image/*" onchange="handleLogoUpload(event)" />
-                            <button class="btn ghost" style="margin-top:6px; width: 100%;" onclick="clearLogo()">Remove logo</button>
-                            <div class="help-text">Logo is stored in your browser only</div>
-                        </div>
-                        <div class="setting-item">
-                            <label>
-                                <input type="checkbox" id="ShowFormulas" checked />
-                                Show formula box
-                            </label>
-                            <div class="help-text">Display TRS-398 calculation formulas</div>
-                        </div>
-                        <div class="setting-item">
-                            <label>
-                                <input type="checkbox" id="ShowSignature" checked />
-                                Show signature box
-                            </label>
-                            <div class="help-text">Display signature section</div>
-                        </div>
-                        <div class="setting-item">
-                            <label>
-                                <input type="checkbox" id="CompactMode" />
-                                Compact mode
-                            </label>
-                            <div class="help-text">Reduce spacing for smaller screens</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="settings-section">
-                    <div class="settings-section-title">Behavior & Features</div>
-                    <div class="settings-section-desc">Control application behavior</div>
-                    <div class="settings-grid">
-                        <div class="setting-item">
-                            <label>
-                                <input type="checkbox" id="AutoSaveDraft" checked />
-                                Auto-save draft
-                            </label>
-                            <div class="help-text">Automatically save form data every 30 seconds</div>
-                        </div>
-                        <div class="setting-item">
-                            <label>
-                                <input type="checkbox" id="AutoCalculate" checked />
-                                Auto-calculate on input
-                            </label>
-                            <div class="help-text">Calculate results as you type</div>
-                        </div>
-                        <div class="setting-item">
-                            <label>
-                                <input type="checkbox" id="ShowTooltips" checked />
-                                Show tooltips
-                            </label>
-                            <div class="help-text">Display helpful tooltips on hover</div>
-                        </div>
-                        <div class="setting-item">
-                            <label>
-                                <input type="checkbox" id="ConfirmDelete" checked />
-                                Confirm before delete
-                            </label>
-                            <div class="help-text">Ask for confirmation before deleting measurements</div>
-                        </div>
-                        <div class="setting-item">
-                            <label>
-                                <input type="checkbox" id="ShowNotifications" checked />
-                                Show notifications
-                            </label>
-                            <div class="help-text">Display toast notifications for actions</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Advanced Tab -->
-            <div id="tab-advanced" class="settings-tab-content">
-                <div class="settings-section">
-                    <div class="settings-section-title">Advanced Options</div>
-                    <div class="settings-section-desc">Expert settings and utilities</div>
-                    <div class="settings-grid">
                         <div class="setting-item">
                             <label for="Tolerance">📏 Tolerance (%)</label>
                             <input id="Tolerance" type="number" step="0.1" value="2.0" />
-                            <div class="help-text">Pass/fail tolerance for Ecart (default: ±2%)</div>
+                            <div class="help-text">Pass/fail threshold</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="settings-section">
+                    <div class="settings-section-title">⚙️ Auto-fill Options</div>
+                    <div class="settings-grid">
+                        <div class="setting-item">
+                            <label><input type="checkbox" id="AutoFillDefaults" checked /> Auto-fill defaults on new measurement</label>
                         </div>
                         <div class="setting-item">
-                            <label>
-                                <input type="checkbox" id="DebugMode" />
-                                Debug mode
-                            </label>
-                            <div class="help-text">Show console logs and debug information</div>
+                            <label><input type="checkbox" id="AutoCalculate" checked /> Auto-calculate on input</label>
                         </div>
                         <div class="setting-item">
-                            <label>🔧 Utilities</label>
-                            <div style="display: flex; flex-direction: column; gap: 8px;">
-                                <button class="btn soft" onclick="pickSampleChamber()">Fill example chamber</button>
-                                <button class="btn ghost" onclick="exportSettings()">Export settings</button>
-                                <button class="btn ghost" onclick="importSettings()">Import settings</button>
-                                <button class="btn warn" onclick="resetSettings()">Reset to defaults</button>
+                            <label><input type="checkbox" id="AutoSaveDraft" checked /> Auto-save draft every 30s</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Preferences/Display Tab -->
+            <div id="tab-preferences" class="settings-tab-content">
+                <div class="settings-section">
+                    <div class="settings-section-title">🎨 Theme & Appearance</div>
+                    <div class="settings-grid">
+                        <div class="setting-item">
+                            <label>🌓 Theme</label>
+                            <button class="btn ghost" onclick="toggleTheme()" style="width: 100%;">
+                                Switch to <span id="themeLabelSettings">Light</span>
+                            </button>
+                        </div>
+                        <div class="setting-item" style="grid-column: span 1;">
+                            <label>🎨 Color Theme</label>
+                            <div class="color-theme-selector">
+                                <div class="theme-dot green active" onclick="setColorTheme('green')" title="Green" id="theme-dot-green"></div>
+                                <div class="theme-dot blue" onclick="setColorTheme('blue')" title="Blue" id="theme-dot-blue"></div>
+                                <div class="theme-dot purple" onclick="setColorTheme('purple')" title="Purple" id="theme-dot-purple"></div>
+                                <div class="theme-dot orange" onclick="setColorTheme('orange')" title="Orange" id="theme-dot-orange"></div>
+                                <div class="theme-dot rose" onclick="setColorTheme('rose')" title="Rose" id="theme-dot-rose"></div>
                             </div>
+                            <div class="help-text">Choose accent color for the interface</div>
                         </div>
                         <div class="setting-item">
-                            <label>ℹ️ About</label>
-                            <textarea readonly style="background: var(--card); color: var(--ink); min-height: 100px; font-size: 12px;">TRS-398 photon/electron calibration with live Kpol/Ktp/Ks calculations, SQLite history, CSV/PDF export. Use the chamber library + TPR to auto-calculate kQ. Version 1.0.0</textarea>
+                            <label><input type="checkbox" id="CompactMode" /> Compact mode</label>
+                            <div class="help-text">Reduce spacing</div>
+                        </div>
+                        <div class="setting-item">
+                            <label><input type="checkbox" id="ShowFormulas" checked /> Show formula box</label>
+                        </div>
+                        <div class="setting-item">
+                            <label><input type="checkbox" id="ShowSignature" checked /> Show signature section</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="settings-section">
+                    <div class="settings-section-title">🔔 Notifications & Behavior</div>
+                    <div class="settings-grid">
+                        <div class="setting-item">
+                            <label><input type="checkbox" id="ShowNotifications" checked /> Show toast notifications</label>
+                        </div>
+                        <div class="setting-item">
+                            <label><input type="checkbox" id="ShowTooltips" checked /> Show tooltips</label>
+                        </div>
+                        <div class="setting-item">
+                            <label><input type="checkbox" id="ConfirmDelete" checked /> Confirm before delete</label>
+                        </div>
+                        <div class="setting-item">
+                            <label><input type="checkbox" id="DebugMode" /> Debug mode</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Data Tab (NEW) -->
+            <div id="tab-data" class="settings-tab-content">
+                <div class="settings-section">
+                    <div class="settings-section-title">💾 Backup & Restore</div>
+                    <div class="settings-section-desc">Export or import your settings and data</div>
+                    <div class="data-actions-grid">
+                        <div class="data-action-card">
+                            <div class="data-action-icon">📤</div>
+                            <div class="data-action-title">Export Settings</div>
+                            <div class="data-action-desc">Download all settings as JSON file</div>
+                            <button class="btn soft" onclick="exportSettings()">Export</button>
+                        </div>
+                        <div class="data-action-card">
+                            <div class="data-action-icon">📥</div>
+                            <div class="data-action-title">Import Settings</div>
+                            <div class="data-action-desc">Load settings from JSON file</div>
+                            <input type="file" id="importSettingsFile" accept=".json" style="display: none;" onchange="importSettingsFromFile(event)" />
+                            <button class="btn soft" onclick="document.getElementById('importSettingsFile').click()">Import</button>
+                        </div>
+                        <div class="data-action-card">
+                            <div class="data-action-icon">💾</div>
+                            <div class="data-action-title">Backup Database</div>
+                            <div class="data-action-desc">Download measurement history</div>
+                            <button class="btn soft" onclick="downloadBackup()">Backup</button>
+                        </div>
+                        <div class="data-action-card warn">
+                            <div class="data-action-icon">🔄</div>
+                            <div class="data-action-title">Reset All</div>
+                            <div class="data-action-desc">Clear all settings to defaults</div>
+                            <button class="btn warn" onclick="resetSettings()">Reset</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="settings-section">
+                    <div class="settings-section-title">ℹ️ About TRS-398 Pro</div>
+                    <div class="about-card">
+                        <div class="about-logo">📋</div>
+                        <div class="about-info">
+                            <h4>TRS-398 Pro Calibration Software</h4>
+                            <p>Version 2.1.0</p>
+                            <p>Photon & Electron beam calibration following IAEA TRS-398 protocol</p>
+                            <ul>
+                                <li>✅ Live kQ, Ktp, Kpol, Ks calculations</li>
+                                <li>✅ Chamber library with 50+ detectors</li>
+                                <li>✅ SQLite measurement history</li>
+                                <li>✅ PDF/CSV/Excel export</li>
+                                <li>✅ Multi-language (EN/FR)</li>
+                            </ul>
                         </div>
                     </div>
                 </div>
@@ -1465,8 +2253,8 @@
 
             <div class="settings-actions">
                 <button class="btn ghost" onclick="resetSettings()">Reset</button>
-                <button class="btn soft" onclick="saveSettings()">Save Settings</button>
-                <button class="btn primary" onclick="closeSetup()">Done</button>
+                <button class="btn soft" onclick="saveSettings()">💾 Save Settings</button>
+                <button class="btn primary" onclick="closeSetup()">✅ Done</button>
             </div>
         </div>
     </div>
@@ -1761,7 +2549,7 @@
             // Ctrl+H or Cmd+H: History
             if ((e.ctrlKey || e.metaKey) && e.key === 'h') {
                 e.preventDefault();
-                openHistory();
+                window.location.href = 'history.html';
             }
             
             // Esc: Close modals
@@ -2258,12 +3046,253 @@
             
             // Activate clicked tab button
             const tabs = document.querySelectorAll('.settings-tab');
+            const tabNames = ['chambers', 'clinic', 'equipment', 'defaults', 'preferences', 'data'];
             tabs.forEach((tab, index) => {
-                const tabNames = ['clinic', 'equipment', 'defaults', 'preferences', 'advanced'];
                 if (tabNames[index] === tabName) {
                     tab.classList.add('active');
                 }
             });
+            
+            // Initialize chamber library when tab opens
+            if (tabName === 'chambers') {
+                initChamberLibrary();
+            }
+        }
+        
+        // ====== CHAMBER LIBRARY FUNCTIONS ======
+        let chamberLibraryData = {};
+        let selectedChamber = null;
+        
+        async function initChamberLibrary() {
+            if (Object.keys(chamberLibraryData).length === 0) {
+                try {
+                    const resp = await fetch('/api/detectors');
+                    chamberLibraryData = await resp.json();
+                } catch (e) {
+                    console.error('Failed to load chamber library:', e);
+                }
+            }
+            renderChamberList();
+            loadSavedChamberConfig();
+        }
+        
+        function filterChamberLibrary() {
+            renderChamberList();
+        }
+        
+        function renderChamberList() {
+            const container = document.getElementById('chamberLibraryList');
+            if (!container) return;
+            
+            const searchTerm = (document.getElementById('chamberSearchInput')?.value || '').toLowerCase();
+            const manufacturer = document.getElementById('chamberManufacturerFilter')?.value || 'all';
+            
+            const chambers = Object.keys(chamberLibraryData);
+            const filtered = chambers.filter(name => {
+                const matchesSearch = name.toLowerCase().includes(searchTerm);
+                let matchesManufacturer = manufacturer === 'all';
+                
+                if (!matchesManufacturer) {
+                    if (manufacturer === 'PTW') matchesManufacturer = name.includes('PTW');
+                    else if (manufacturer === 'IBA') matchesManufacturer = name.includes('Wellhöfer') || name.includes('FC') || name.includes('CC') || name.includes('PPC');
+                    else if (manufacturer === 'Exradin') matchesManufacturer = name.includes('Exradin');
+                    else if (manufacturer === 'NE') matchesManufacturer = name.includes('NE ') || name.includes('Nuclear');
+                    else if (manufacturer === 'Capintec') matchesManufacturer = name.includes('Capintec');
+                    else if (manufacturer === 'Sun Nuclear') matchesManufacturer = name.includes('SNC');
+                    else if (manufacturer === 'Other') matchesManufacturer = !['PTW', 'Wellhöfer', 'FC', 'CC', 'PPC', 'Exradin', 'NE ', 'Nuclear', 'Capintec', 'SNC'].some(m => name.includes(m));
+                }
+                
+                return matchesSearch && matchesManufacturer;
+            });
+            
+            if (filtered.length === 0) {
+                container.innerHTML = '<div style="padding: 24px; text-align: center; color: var(--muted);">No chambers found matching your search</div>';
+                return;
+            }
+            
+            container.innerHTML = filtered.map(name => {
+                const data = chamberLibraryData[name];
+                const type = data.type === 'plane-parallel' ? 'Plane-parallel' : 'Cylindrical';
+                const isSelected = selectedChamber === name;
+                
+                return `
+                    <div class="chamber-list-item ${isSelected ? 'selected' : ''}" onclick="selectChamber('${name.replace(/'/g, "\\'")}')">
+                        <span class="chamber-name">${name}</span>
+                        <span class="chamber-type">${type}</span>
+                        <span class="chamber-select">
+                            <button class="btn ${isSelected ? 'primary' : 'soft'}" onclick="event.stopPropagation(); selectChamber('${name.replace(/'/g, "\\'")}')">
+                                ${isSelected ? '✓ Selected' : 'Select'}
+                            </button>
+                        </span>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        function selectChamber(name) {
+            selectedChamber = name;
+            const data = chamberLibraryData[name];
+            
+            // Update selected chamber info
+            const infoDiv = document.getElementById('selectedChamberInfo');
+            if (infoDiv) {
+                infoDiv.style.display = 'block';
+                document.getElementById('selectedChamberName').textContent = name;
+                document.getElementById('selectedChamberType').textContent = data.type === 'plane-parallel' ? 'Plane-parallel' : 'Cylindrical';
+                
+                // Calculate kQ range
+                const kqValues = data.kq_values || [];
+                if (kqValues.length > 0) {
+                    const minKq = Math.min(...kqValues).toFixed(4);
+                    const maxKq = Math.max(...kqValues).toFixed(4);
+                    document.getElementById('selectedChamberKqRange').textContent = `${minKq} - ${maxKq}`;
+                }
+            }
+            
+            // Update the Chamber dropdown in Equipment tab and main form
+            const chamberSelect = document.getElementById('Chamber');
+            if (chamberSelect) {
+                chamberSelect.value = name;
+            }
+            
+            renderChamberList();
+            showToast(`Chamber "${name}" selected`, 'success');
+        }
+        
+        function syncNdwToMain() {
+            const chamberNdw = document.getElementById('ChamberNdw')?.value;
+            if (chamberNdw) {
+                const ndwInput = document.getElementById('NdwInput');
+                if (ndwInput) {
+                    ndwInput.value = chamberNdw;
+                    recalcAll();
+                }
+            }
+        }
+        
+        function applyChamberToMain() {
+            // Sync Nd,w
+            syncNdwToMain();
+            
+            // Sync chamber selection
+            if (selectedChamber) {
+                const chamberSelect = document.getElementById('Chamber');
+                if (chamberSelect) {
+                    chamberSelect.value = selectedChamber;
+                    autoKQ();
+                }
+            }
+            
+            showToast('Chamber configuration applied to measurement', 'success');
+        }
+        
+        function saveChamberConfig() {
+            const config = {
+                chamber: selectedChamber,
+                ndw: document.getElementById('ChamberNdw')?.value,
+                serial: document.getElementById('ChamberSerial')?.value,
+                lab: document.getElementById('CalibrationLab')?.value,
+                calibrationDate: document.getElementById('CalibrationDate')?.value,
+                expiryDate: document.getElementById('CalibrationExpiry')?.value,
+                certificateNumber: document.getElementById('CertificateNumber')?.value
+            };
+            
+            localStorage.setItem('trs-chamber-config', JSON.stringify(config));
+            updateCalibrationStatus();
+            showToast('Chamber configuration saved', 'success');
+        }
+        
+        function loadSavedChamberConfig() {
+            const config = JSON.parse(localStorage.getItem('trs-chamber-config') || '{}');
+            
+            if (config.chamber) {
+                selectedChamber = config.chamber;
+                renderChamberList();
+                
+                // Show selected chamber info
+                if (chamberLibraryData[config.chamber]) {
+                    selectChamber(config.chamber);
+                }
+            }
+            
+            if (config.ndw) document.getElementById('ChamberNdw').value = config.ndw;
+            if (config.serial) document.getElementById('ChamberSerial').value = config.serial;
+            if (config.lab) document.getElementById('CalibrationLab').value = config.lab;
+            if (config.calibrationDate) document.getElementById('CalibrationDate').value = config.calibrationDate;
+            if (config.expiryDate) document.getElementById('CalibrationExpiry').value = config.expiryDate;
+            if (config.certificateNumber) document.getElementById('CertificateNumber').value = config.certificateNumber;
+            
+            updateCalibrationStatus();
+        }
+        
+        function loadSavedChamber() {
+            loadSavedChamberConfig();
+            showToast('Saved chamber configuration loaded', 'info');
+        }
+        
+        function updateCalibrationStatus() {
+            const statusDiv = document.getElementById('calibrationStatus');
+            if (!statusDiv) return;
+            
+            const expiryDate = document.getElementById('CalibrationExpiry')?.value;
+            const ndw = document.getElementById('ChamberNdw')?.value;
+            
+            if (!ndw) {
+                statusDiv.className = 'calibration-status';
+                statusDiv.innerHTML = '<span class="status-icon">ℹ️</span><span class="status-text">Enter Nd,w calibration coefficient</span>';
+                return;
+            }
+            
+            if (!expiryDate) {
+                statusDiv.className = 'calibration-status valid';
+                statusDiv.innerHTML = '<span class="status-icon">✅</span><span class="status-text">Calibration data entered (no expiry date set)</span>';
+                return;
+            }
+            
+            const expiry = new Date(expiryDate);
+            const today = new Date();
+            const daysUntilExpiry = Math.ceil((expiry - today) / (1000 * 60 * 60 * 24));
+            
+            if (daysUntilExpiry < 0) {
+                statusDiv.className = 'calibration-status expired';
+                statusDiv.innerHTML = `<span class="status-icon">⚠️</span><span class="status-text">Calibration EXPIRED ${Math.abs(daysUntilExpiry)} days ago - recalibration required!</span>`;
+            } else if (daysUntilExpiry < 30) {
+                statusDiv.className = 'calibration-status warning';
+                statusDiv.innerHTML = `<span class="status-icon">⏰</span><span class="status-text">Calibration expires in ${daysUntilExpiry} days - schedule recalibration</span>`;
+            } else if (daysUntilExpiry < 90) {
+                statusDiv.className = 'calibration-status warning';
+                statusDiv.innerHTML = `<span class="status-icon">📅</span><span class="status-text">Calibration valid - expires in ${daysUntilExpiry} days</span>`;
+            } else {
+                statusDiv.className = 'calibration-status valid';
+                statusDiv.innerHTML = `<span class="status-icon">✅</span><span class="status-text">Calibration valid until ${expiry.toLocaleDateString()}</span>`;
+            }
+        }
+        
+        function onChamberSelectChange() {
+            const chamberSelect = document.getElementById('Chamber');
+            if (chamberSelect && chamberSelect.value) {
+                selectedChamber = chamberSelect.value;
+                autoKQ();
+            }
+        }
+        
+        // Import settings from file
+        function importSettingsFromFile(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const settings = JSON.parse(e.target.result);
+                    localStorage.setItem('trs-settings', JSON.stringify(settings));
+                    loadSettings();
+                    showToast('Settings imported successfully', 'success');
+                } catch (err) {
+                    showToast('Invalid settings file', 'error');
+                }
+            };
+            reader.readAsText(file);
         }
 
         function loadSettings() {
@@ -2378,6 +3407,160 @@
             applyPreferences();
         }
 
+        // Logo Upload Functions
+        async function handleLogoUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            // Validate file type
+            const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/gif', 'image/webp'];
+            if (!allowedTypes.includes(file.type)) {
+                showToast('Invalid file type. Please upload PNG, JPEG, GIF, or WebP.', 'error');
+                return;
+            }
+
+            // Validate file size (5MB max)
+            if (file.size > 5 * 1024 * 1024) {
+                showToast('File too large. Maximum size is 5MB.', 'error');
+                return;
+            }
+
+            // Get clinic name for the logo filename
+            const clinicName = document.getElementById('ClinicName').value || '';
+
+            // Create form data
+            const formData = new FormData();
+            formData.append('logo', file);
+            formData.append('clinicName', clinicName);
+
+            try {
+                // Show uploading state
+                const preview = document.getElementById('logoPreview');
+                preview.innerHTML = '<div class="logo-upload-progress"><div class="logo-upload-progress-bar" style="width: 50%"></div></div><span class="logo-text">Uploading...</span>';
+
+                const response = await fetch('/api/logo/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    showToast('Logo uploaded successfully!', 'success');
+                    // Update preview with uploaded image
+                    updateLogoPreview(result.path);
+                    // Store logo path in localStorage
+                    localStorage.setItem('clinic-logo-path', result.path);
+                } else {
+                    showToast(result.error || 'Upload failed', 'error');
+                    resetLogoPreview();
+                }
+            } catch (error) {
+                console.error('Logo upload error:', error);
+                showToast('Upload failed. Please try again.', 'error');
+                resetLogoPreview();
+            }
+
+            // Clear file input
+            event.target.value = '';
+        }
+
+        function updateLogoPreview(path) {
+            const preview = document.getElementById('logoPreview');
+            const deleteBtn = document.getElementById('deleteLogoBtn');
+            
+            preview.innerHTML = `<img src="${path}" alt="Clinic Logo" onerror="resetLogoPreview()" />`;
+            deleteBtn.style.display = 'inline-flex';
+        }
+
+        function resetLogoPreview() {
+            const preview = document.getElementById('logoPreview');
+            const deleteBtn = document.getElementById('deleteLogoBtn');
+            
+            preview.innerHTML = '<span class="logo-placeholder">📷</span><span class="logo-text">No logo uploaded</span>';
+            deleteBtn.style.display = 'none';
+        }
+
+        async function deleteLogo() {
+            if (!confirm('Remove the clinic logo?')) return;
+
+            const logoPath = localStorage.getItem('clinic-logo-path');
+            if (!logoPath) {
+                resetLogoPreview();
+                return;
+            }
+
+            const filename = logoPath.split('/').pop();
+
+            try {
+                const response = await fetch(`/api/logo/${filename}`, {
+                    method: 'DELETE'
+                });
+
+                if (response.ok) {
+                    showToast('Logo removed', 'success');
+                    localStorage.removeItem('clinic-logo-path');
+                    resetLogoPreview();
+                } else {
+                    showToast('Failed to remove logo', 'error');
+                }
+            } catch (error) {
+                console.error('Delete logo error:', error);
+                showToast('Failed to remove logo', 'error');
+            }
+        }
+
+        async function loadExistingLogo() {
+            // Check localStorage first
+            const savedPath = localStorage.getItem('clinic-logo-path');
+            if (savedPath) {
+                updateLogoPreview(savedPath);
+                return;
+            }
+
+            // Check server for existing logos
+            try {
+                const response = await fetch('/api/logos');
+                const data = await response.json();
+                
+                if (data.logos && data.logos.length > 0) {
+                    // Use the first/default logo
+                    const logo = data.logos.find(l => l.filename.startsWith('logo.')) || data.logos[0];
+                    updateLogoPreview(logo.path);
+                    localStorage.setItem('clinic-logo-path', logo.path);
+                }
+            } catch (error) {
+                console.log('No existing logos found');
+            }
+        }
+
+        // Setup drag and drop for logo upload
+        function setupLogoDragDrop() {
+            const uploadArea = document.querySelector('.logo-upload-area');
+            if (!uploadArea) return;
+
+            uploadArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                uploadArea.classList.add('drag-over');
+            });
+
+            uploadArea.addEventListener('dragleave', () => {
+                uploadArea.classList.remove('drag-over');
+            });
+
+            uploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                uploadArea.classList.remove('drag-over');
+                
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    const input = document.getElementById('logoFileInput');
+                    input.files = files;
+                    handleLogoUpload({ target: input });
+                }
+            });
+        }
+
         function exportSettings() {
             const settings = localStorage.getItem('trs-settings');
             if (!settings) {
@@ -2466,6 +3649,12 @@
             document.getElementById('setupModal').classList.add('open');
             syncThemeLabels();
             loadSettings();
+            updateThemeDots(); // Update color theme dots
+            // Initialize chamber library if on that tab
+            const chambersTab = document.getElementById('tab-chambers');
+            if (chambersTab && chambersTab.classList.contains('active')) {
+                initChamberLibrary();
+            }
         }
 
         function closeSetup() {
@@ -2566,13 +3755,579 @@
             });
         }
 
+        // ============================================================================
+        // KEYBOARD SHORTCUTS
+        // ============================================================================
+        function setupKeyboardShortcuts() {
+            document.addEventListener('keydown', (e) => {
+                // Don't trigger shortcuts when typing in inputs
+                if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') {
+                    // Allow Escape to blur inputs
+                    if (e.key === 'Escape') {
+                        e.target.blur();
+                    }
+                    return;
+                }
+                
+                // Ctrl/Cmd + S = Save/Calculate
+                if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+                    e.preventDefault();
+                    saveCalc();
+                    showToast('Calculation saved! (Ctrl+S)', 'success');
+                }
+                
+                // Ctrl/Cmd + E = Export CSV
+                if ((e.ctrlKey || e.metaKey) && e.key === 'e') {
+                    e.preventDefault();
+                    window.location.href = '/api/trs/export';
+                    showToast('Exporting CSV... (Ctrl+E)', 'info');
+                }
+                
+                // Ctrl/Cmd + Shift + E = Export Excel
+                if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'E') {
+                    e.preventDefault();
+                    window.location.href = '/api/trs/export?format=excel';
+                    showToast('Exporting Excel... (Ctrl+Shift+E)', 'info');
+                }
+                
+                // Ctrl/Cmd + B = Backup Database
+                if ((e.ctrlKey || e.metaKey) && e.key === 'b') {
+                    e.preventDefault();
+                    backupDatabase();
+                }
+                
+                // Ctrl/Cmd + , = Settings
+                if ((e.ctrlKey || e.metaKey) && e.key === ',') {
+                    e.preventDefault();
+                    openSetup();
+                }
+                
+                // Ctrl/Cmd + D = Dashboard
+                if ((e.ctrlKey || e.metaKey) && e.key === 'd') {
+                    e.preventDefault();
+                    window.location.href = 'dashboard.html';
+                }
+                
+                // Ctrl/Cmd + H = History
+                if ((e.ctrlKey || e.metaKey) && e.key === 'h') {
+                    e.preventDefault();
+                    window.location.href = 'history.html';
+                }
+                
+                // Ctrl/Cmd + N = New/Reset Form
+                if ((e.ctrlKey || e.metaKey) && e.key === 'n') {
+                    e.preventDefault();
+                    if (confirm('Reset form and start new measurement?')) {
+                        document.querySelectorAll('input[type="number"]').forEach(i => i.value = '');
+                        showToast('Form reset (Ctrl+N)', 'info');
+                    }
+                }
+                
+                // T = Toggle Theme
+                if (e.key === 't' && !e.ctrlKey && !e.metaKey) {
+                    toggleTheme();
+                }
+                
+                // ? = Show shortcuts help
+                if (e.key === '?' || (e.shiftKey && e.key === '/')) {
+                    showShortcutsHelp();
+                }
+                
+                // 1-5 = Switch color themes
+                if (['1', '2', '3', '4', '5'].includes(e.key) && !e.ctrlKey && !e.metaKey) {
+                    const themes = ['green', 'blue', 'purple', 'orange', 'rose'];
+                    setColorTheme(themes[parseInt(e.key) - 1]);
+                }
+                
+                // Escape = Close modals
+                if (e.key === 'Escape') {
+                    document.querySelectorAll('.modal.open').forEach(m => m.classList.remove('open'));
+                }
+            });
+        }
+        
+        function showShortcutsHelp() {
+            const shortcuts = `
+⌨️ KEYBOARD SHORTCUTS
+
+Navigation:
+  Ctrl+D    Dashboard
+  Ctrl+H    History
+  Ctrl+,    Settings
+  Escape    Close modal
+
+Actions:
+  Ctrl+S    Save calculation
+  Ctrl+E    Export CSV
+  Ctrl+⇧+E  Export Excel
+  Ctrl+B    Backup database
+  Ctrl+N    New measurement
+
+Appearance:
+  T         Toggle dark/light
+  1-5       Color themes
+  ?         Show this help
+            `;
+            alert(shortcuts);
+        }
+        
+        // ============================================================================
+        // COLOR THEME SUPPORT
+        // ============================================================================
+        let colorTheme = localStorage.getItem('trs-color-theme') || 'green';
+        
+        function setColorTheme(color) {
+            colorTheme = color;
+            localStorage.setItem('trs-color-theme', color);
+            applyColorTheme();
+            updateThemeDots();
+            showToast(`Theme: ${color.charAt(0).toUpperCase() + color.slice(1)}`, 'success');
+        }
+        
+        function applyColorTheme() {
+            document.body.setAttribute('data-color-theme', colorTheme);
+        }
+        
+        function updateThemeDots() {
+            // Update theme dots in Settings modal
+            document.querySelectorAll('.theme-dot').forEach(dot => {
+                dot.classList.remove('active');
+                if (dot.classList.contains(colorTheme)) {
+                    dot.classList.add('active');
+                }
+            });
+        }
+        
+        // ============================================================================
+        // DATABASE BACKUP
+        // ============================================================================
+        async function backupDatabase() {
+            try {
+                showToast('Creating backup...', 'info');
+                const response = await fetch('/api/backup');
+                if (!response.ok) throw new Error('Backup failed');
+                
+                const blob = await response.blob();
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `trs398_backup_${new Date().toISOString().slice(0,10)}.db`;
+                a.click();
+                URL.revokeObjectURL(url);
+                showToast('Backup downloaded! (Ctrl+B)', 'success');
+            } catch (error) {
+                showToast('Backup failed: ' + error.message, 'error');
+            }
+        }
+        
+        // ============================================================================
+        // MULTI-LANGUAGE SUPPORT (EN/FR)
+        // ============================================================================
+        let currentLanguage = localStorage.getItem('trs-language') || 'en';
+        
+        const translations = {
+            en: {
+                // Navigation
+                dashboard: "Dashboard",
+                measurement: "Measurement",
+                history: "History",
+                settings: "Settings",
+                export: "Export",
+                login: "Login",
+                logout: "Logout",
+                
+                // Main titles
+                photonCalibration: "Photon Beam Calibration",
+                electronCalibration: "Electron Beam Calibration",
+                trs398Photon: "TRS-398 PHOTON CALIBRATION",
+                trs398Electron: "TRS-398 ELECTRON CALIBRATION",
+                
+                // Pills/badges
+                oneMeasurement: "One measurement card · choose any energy",
+                liveCalculations: "Live calculations · History · CSV/PDF",
+                
+                // Reference section
+                reference: "REFERENCE",
+                measurementSet: "MEASUREMENT SET",
+                corrections: "CORRECTIONS",
+                measurementsEach: "3 measurements each",
+                autoCalculated: "Auto-calculated live",
+                
+                // Measurement grid
+                measurementGrid: "Measurement grid",
+                mode: "Mode",
+                energy: "Energy",
+                temperature: "T (°C)",
+                pressure: "P (mBar)",
+                chamber: "Chamber",
+                mean: "Mean",
+                
+                // Buttons
+                save: "Save",
+                clear: "Clear",
+                exportCsv: "Export CSV",
+                exportPdf: "Export PDF",
+                refresh: "Refresh",
+                delete: "Delete",
+                cancel: "Cancel",
+                confirm: "Confirm",
+                close: "Close",
+                
+                // Results
+                correctionsResults: "Corrections & results",
+                doseResult: "Dose Result",
+                deviation: "Deviation",
+                status: "Status",
+                pass: "PASS",
+                fail: "FAIL",
+                
+                // Settings
+                settingsTitle: "Settings",
+                clinicInfo: "Clinic Information",
+                clinicName: "Clinic Name",
+                clinicAddress: "Address",
+                clinicPhone: "Phone",
+                clinicEmail: "Email",
+                physicist: "Physicist",
+                clinicLogo: "Clinic Logo",
+                uploadLogo: "Upload Logo",
+                removeLogo: "Remove",
+                noLogo: "No logo uploaded",
+                
+                // Preferences
+                preferences: "Preferences",
+                autoSave: "Auto-save measurements",
+                compactMode: "Compact mode",
+                defaultValues: "Default Values",
+                defaultTemp: "Default Temperature",
+                defaultPressure: "Default Pressure",
+                
+                // Theme
+                theme: "Theme",
+                dark: "Dark",
+                light: "Light",
+                colorTheme: "Color Theme",
+                
+                // History
+                measurementHistory: "Measurement History",
+                date: "Date",
+                user: "User",
+                machine: "Machine",
+                actions: "Actions",
+                noMeasurements: "No measurements yet",
+                totalRecords: "Total",
+                passRecords: "Pass",
+                failRecords: "Fail",
+                
+                // Messages
+                savedSuccess: "Measurement saved successfully",
+                deleteConfirm: "Are you sure you want to delete this measurement?",
+                deleteSuccess: "Measurement deleted",
+                errorSaving: "Error saving measurement",
+                errorLoading: "Error loading data",
+                languageChanged: "Language changed to English",
+                
+                // Calibration modes
+                photonTrs398: "Photon TRS-398",
+                electronTrs398: "Electron TRS-398",
+                
+                // Form labels
+                linacName: "LINAC Name",
+                linacId: "LINAC ID",
+                fieldSize: "Field Size",
+                userName: "User Name",
+                notes: "Notes",
+                
+                // Electron specific
+                r50: "R50 (g/cm²)",
+                zref: "Zref (g/cm²)",
+                
+                // Help
+                help: "Help",
+                shortcuts: "Keyboard Shortcuts"
+            },
+            fr: {
+                // Navigation
+                dashboard: "Tableau de bord",
+                measurement: "Mesure",
+                history: "Historique",
+                settings: "Paramètres",
+                export: "Exporter",
+                login: "Connexion",
+                logout: "Déconnexion",
+                
+                // Main titles
+                photonCalibration: "Étalonnage Faisceau Photon",
+                electronCalibration: "Étalonnage Faisceau Électron",
+                trs398Photon: "ÉTALONNAGE PHOTON TRS-398",
+                trs398Electron: "ÉTALONNAGE ÉLECTRON TRS-398",
+                
+                // Pills/badges
+                oneMeasurement: "Une carte de mesure · choisir l'énergie",
+                liveCalculations: "Calculs en direct · Historique · CSV/PDF",
+                
+                // Reference section
+                reference: "RÉFÉRENCE",
+                measurementSet: "ENSEMBLE DE MESURES",
+                corrections: "CORRECTIONS",
+                measurementsEach: "3 mesures chacune",
+                autoCalculated: "Calculé automatiquement",
+                
+                // Measurement grid
+                measurementGrid: "Grille de mesure",
+                mode: "Mode",
+                energy: "Énergie",
+                temperature: "T (°C)",
+                pressure: "P (mBar)",
+                chamber: "Chambre",
+                mean: "Moyenne",
+                
+                // Buttons
+                save: "Enregistrer",
+                clear: "Effacer",
+                exportCsv: "Exporter CSV",
+                exportPdf: "Exporter PDF",
+                refresh: "Actualiser",
+                delete: "Supprimer",
+                cancel: "Annuler",
+                confirm: "Confirmer",
+                close: "Fermer",
+                
+                // Results
+                correctionsResults: "Corrections & résultats",
+                doseResult: "Résultat de dose",
+                deviation: "Écart",
+                status: "Statut",
+                pass: "CONFORME",
+                fail: "NON CONFORME",
+                
+                // Settings
+                settingsTitle: "Paramètres",
+                clinicInfo: "Informations Clinique",
+                clinicName: "Nom de la clinique",
+                clinicAddress: "Adresse",
+                clinicPhone: "Téléphone",
+                clinicEmail: "Email",
+                physicist: "Physicien",
+                clinicLogo: "Logo de la clinique",
+                uploadLogo: "Télécharger le logo",
+                removeLogo: "Supprimer",
+                noLogo: "Aucun logo téléchargé",
+                
+                // Preferences
+                preferences: "Préférences",
+                autoSave: "Sauvegarde automatique",
+                compactMode: "Mode compact",
+                defaultValues: "Valeurs par défaut",
+                defaultTemp: "Température par défaut",
+                defaultPressure: "Pression par défaut",
+                
+                // Theme
+                theme: "Thème",
+                dark: "Sombre",
+                light: "Clair",
+                colorTheme: "Couleur du thème",
+                
+                // History
+                measurementHistory: "Historique des mesures",
+                date: "Date",
+                user: "Utilisateur",
+                machine: "Machine",
+                actions: "Actions",
+                noMeasurements: "Aucune mesure",
+                totalRecords: "Total",
+                passRecords: "Conforme",
+                failRecords: "Non conforme",
+                
+                // Messages
+                savedSuccess: "Mesure enregistrée avec succès",
+                deleteConfirm: "Êtes-vous sûr de vouloir supprimer cette mesure?",
+                deleteSuccess: "Mesure supprimée",
+                errorSaving: "Erreur lors de l'enregistrement",
+                errorLoading: "Erreur lors du chargement",
+                languageChanged: "Langue changée en Français",
+                
+                // Calibration modes
+                photonTrs398: "Photon TRS-398",
+                electronTrs398: "Électron TRS-398",
+                
+                // Form labels
+                linacName: "Nom du LINAC",
+                linacId: "ID du LINAC",
+                fieldSize: "Taille du champ",
+                userName: "Nom d'utilisateur",
+                notes: "Notes",
+                
+                // Electron specific
+                r50: "R50 (g/cm²)",
+                zref: "Zref (g/cm²)",
+                
+                // Help
+                help: "Aide",
+                shortcuts: "Raccourcis clavier"
+            }
+        };
+        
+        function t(key) {
+            return translations[currentLanguage]?.[key] || translations['en']?.[key] || key;
+        }
+        
+        function setLanguage(lang) {
+            currentLanguage = lang;
+            localStorage.setItem('trs-language', lang);
+            document.getElementById('langSelect').value = lang;
+            applyTranslations();
+            showToast(t('languageChanged'), 'success');
+        }
+        
+        function applyTranslations() {
+            // Navigation buttons
+            const navBtns = document.querySelectorAll('.nav-btn');
+            navBtns.forEach(btn => {
+                const text = btn.textContent.trim();
+                if (text.includes('Dashboard') || text.includes('Tableau')) {
+                    btn.innerHTML = `📊 ${t('dashboard')}`;
+                } else if (text.includes('Measurement') || text.includes('Mesure')) {
+                    if (!text.includes('History') && !text.includes('Historique')) {
+                        btn.innerHTML = `📝 ${t('measurement')}`;
+                    }
+                } else if (text.includes('History') || text.includes('Historique')) {
+                    btn.innerHTML = `📋 ${t('history')}`;
+                } else if (text.includes('Settings') || text.includes('Paramètres')) {
+                    btn.innerHTML = `⚙️ ${t('settings')}`;
+                } else if (text.includes('Export') && !text.includes('CSV') && !text.includes('PDF')) {
+                    btn.innerHTML = `📤 ${t('export')}`;
+                }
+            });
+            
+            // Theme label
+            const themeLabel = document.getElementById('themeLabel');
+            if (themeLabel) {
+                themeLabel.textContent = theme === 'dark' ? t('dark') : t('light');
+            }
+            
+            // Auth button
+            const authBtn = document.getElementById('authBtn');
+            if (authBtn) {
+                authBtn.innerHTML = currentUser ? `👤 ${t('logout')}` : `🔐 ${t('login')}`;
+            }
+            
+            // Eyebrow and title
+            const eyebrow = document.querySelector('.eyebrow');
+            const modeSelect = document.getElementById('Mode');
+            const isElectron = modeSelect && modeSelect.value.toLowerCase().includes('electron');
+            
+            if (eyebrow) {
+                eyebrow.textContent = isElectron ? t('trs398Electron') : t('trs398Photon');
+            }
+            
+            const mainTitle = document.querySelector('.hero h1');
+            if (mainTitle) {
+                mainTitle.textContent = isElectron ? t('electronCalibration') : t('photonCalibration');
+            }
+            
+            // Pills
+            const pills = document.querySelectorAll('.pill');
+            pills.forEach((pill, index) => {
+                if (index === 0) pill.textContent = t('oneMeasurement');
+                if (index === 1) pill.textContent = t('liveCalculations');
+            });
+            
+            // Surface titles
+            const surfaceTitles = document.querySelectorAll('.surface-title');
+            surfaceTitles.forEach(title => {
+                const text = title.textContent.trim().toUpperCase();
+                if (text.includes('REFERENCE') || text.includes('RÉFÉRENCE')) {
+                    title.textContent = t('reference');
+                } else if (text.includes('MEASUREMENT SET') || text.includes('ENSEMBLE')) {
+                    title.textContent = t('measurementSet');
+                } else if (text.includes('CORRECTION')) {
+                    title.textContent = t('corrections');
+                }
+            });
+            
+            // Surface descriptions
+            const surfaceDescs = document.querySelectorAll('.surface-desc');
+            surfaceDescs.forEach(desc => {
+                const text = desc.textContent.trim();
+                if (text.includes('measurements each') || text.includes('mesures chacune')) {
+                    desc.textContent = t('measurementsEach');
+                } else if (text.includes('Auto-calculated') || text.includes('Calculé')) {
+                    desc.textContent = t('autoCalculated');
+                }
+            });
+            
+            // Measurement grid title
+            const gridTitle = document.querySelector('.grid-title');
+            if (gridTitle) {
+                gridTitle.textContent = t('measurementGrid');
+            }
+            
+            // Form labels
+            document.querySelectorAll('label').forEach(label => {
+                const forAttr = label.getAttribute('for');
+                const text = label.textContent.trim();
+                
+                if (forAttr === 'Mode' || text === 'Mode') label.textContent = t('mode');
+                else if (forAttr === 'Energy' || text.includes('Energy') || text.includes('Énergie')) label.textContent = t('energy');
+                else if (text.includes('T (°C)') || text.includes('Temperature') || text.includes('Température')) label.textContent = t('temperature');
+                else if (text.includes('P (mBar)') || text.includes('Pressure') || text.includes('Pression')) label.textContent = t('pressure');
+                else if (forAttr === 'Chamber' || text.includes('Chamber') || text.includes('Chambre')) label.textContent = t('chamber');
+            });
+            
+            // Mean labels
+            document.querySelectorAll('.mean-label').forEach(el => {
+                el.textContent = t('mean');
+            });
+            
+            // Buttons
+            document.querySelectorAll('.btn').forEach(btn => {
+                const text = btn.textContent.trim();
+                if (text.includes('Save') || text.includes('Enregistrer')) btn.textContent = t('save');
+                else if (text.includes('Clear') || text.includes('Effacer')) btn.textContent = t('clear');
+            });
+            
+            // Results section
+            const resultsTitle = document.querySelector('.results-title');
+            if (resultsTitle) {
+                resultsTitle.textContent = t('correctionsResults');
+            }
+            
+            // Update brand text
+            const brand = document.querySelector('.brand span');
+            if (brand) {
+                brand.textContent = isElectron ? 'TRS-398 · Électron' : 'TRS-398 · Photon';
+            }
+        }
+        
+        function initLanguage() {
+            const savedLang = localStorage.getItem('trs-language') || 'en';
+            currentLanguage = savedLang;
+            const langSelect = document.getElementById('langSelect');
+            if (langSelect) langSelect.value = savedLang;
+            applyTranslations();
+        }
+
         window.addEventListener('DOMContentLoaded', () => {
             applyTheme();
+            applyColorTheme(); // Apply color theme
             applyLogo();
             loadChambers();
             updateAuthUI();
             loadSettings(); // Load saved settings
             applyPreferences(); // Apply preferences
+            loadExistingLogo(); // Load clinic logo
+            setupLogoDragDrop(); // Setup drag and drop for logo
+            setupKeyboardShortcuts(); // Setup keyboard shortcuts
+            initLanguage(); // Initialize language
+            
+            // Setup calibration date change listeners
+            const calibrationDate = document.getElementById('CalibrationDate');
+            const calibrationExpiry = document.getElementById('CalibrationExpiry');
+            const chamberNdw = document.getElementById('ChamberNdw');
+            if (calibrationDate) calibrationDate.addEventListener('change', updateCalibrationStatus);
+            if (calibrationExpiry) calibrationExpiry.addEventListener('change', updateCalibrationStatus);
+            if (chamberNdw) chamberNdw.addEventListener('input', updateCalibrationStatus);
             
             if (currentUser) document.getElementById('UserName').value = currentUser;
             const modeSelect = document.getElementById('Mode');

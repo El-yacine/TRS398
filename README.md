@@ -11,14 +11,16 @@ A modern, user-friendly web application for performing TRS-398 photon and electr
 - **PDF reports** - Generate professional calibration reports with your hospital logo
 - **CSV export** - Export data for further analysis
 - **Mobile-friendly** - Works great on tablets and phones too
+- **Professional Windows Installer** - Easy installation with desktop shortcuts (see [INSTALLER_GUIDE.md](INSTALLER_GUIDE.md))
 
 ## 📋 Requirements
 
 Before you start, make sure you have:
 
-- **.NET 8.0 SDK** or later ([Download here](https://dotnet.microsoft.com/download))
+- **.NET 8.0 Runtime** or SDK ([Download here](https://dotnet.microsoft.com/download))
 - **A web browser** (Chrome, Firefox, Edge, or Safari)
 - **For Apache hosting**: Apache web server with mod_proxy enabled
+- **For building installer**: WiX Toolset v3.11+ (see [INSTALLER_GUIDE.md](INSTALLER_GUIDE.md))
 
 ## 🚀 Quick Start (Standalone Mode)
 
@@ -289,6 +291,27 @@ If you encounter any issues:
 2. Check Apache error logs: `/var/log/apache2/error.log`
 3. Verify all requirements are installed correctly
 4. Make sure ports are not blocked by firewall
+
+## 💼 Professional Windows Installer
+
+TRS-398 Professional includes a Windows installer with:
+
+- ✅ Professional installation wizard
+- ✅ Desktop and Start Menu shortcuts
+- ✅ Automatic .NET Runtime detection
+- ✅ Clean uninstall support
+- ✅ System tray integration
+
+### Building the Installer
+
+See [INSTALLER_GUIDE.md](INSTALLER_GUIDE.md) for detailed instructions on building the Windows installer.
+
+**Quick start:**
+```powershell
+.\build-installer.ps1
+```
+
+This creates a professional MSI installer that can be distributed to end users.
 
 ## 📄 License
 

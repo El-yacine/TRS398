@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TRS-398 Pro - Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --ink: #f1f5f9;
+            --muted: #94a3b8;
+            --accent: #10b981;
+            --accent-2: #06b6d4;
+            --accent-glow: rgba(16, 185, 129, 0.25);
+            --surface: #0f172a;
+            --card: #1e293b;
+            --card-hover: #273548;
+            --border: rgba(148, 163, 184, 0.12);
+            --border-accent: rgba(16, 185, 129, 0.3);
+            --bg: #0a0f1c;
+            --header-bg: rgba(15, 23, 42, 0.85);
+            --success: #10b981;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            --info: #3b82f6;
+            --gradient-primary: linear-gradient(135deg, #10b981 0%, #06b6d4 100%);
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4);
+        }
+        
+        [data-theme="light"] {
+            --ink: #1e293b;
+            --muted: #64748b;
+            --accent: #059669;
+            --accent-2: #0891b2;
+            --surface: #f8fafc;
+            --card: #ffffff;
+            --card-hover: #f1f5f9;
+            --border: rgba(148, 163, 184, 0.25);
+            --bg: #f1f5f9;
+            --header-bg: rgba(255, 255, 255, 0.9);
+        }
+        
+        /* Theme variations */
+        [data-color-theme="blue"] {
+            --accent: #3b82f6;
+            --accent-2: #6366f1;
+            --accent-glow: rgba(59, 130, 246, 0.25);
+            --gradient-primary: linear-gradient(135deg, #3b82f6 0%, #6366f1 100%);
+        }
+        
+        [data-color-theme="purple"] {
+            --accent: #8b5cf6;
+            --accent-2: #a855f7;
+            --accent-glow: rgba(139, 92, 246, 0.25);
+            --gradient-primary: linear-gradient(135deg, #8b5cf6 0%, #a855f7 100%);
+        }
+        
+        [data-color-theme="orange"] {
+            --accent: #f97316;
+            --accent-2: #fb923c;
+            --accent-glow: rgba(249, 115, 22, 0.25);
+            --gradient-primary: linear-gradient(135deg, #f97316 0%, #fb923c 100%);
+        }
+        
+        [data-color-theme="rose"] {
+            --accent: #f43f5e;
+            --accent-2: #fb7185;
+            --accent-glow: rgba(244, 63, 94, 0.25);
+            --gradient-primary: linear-gradient(135deg, #f43f5e 0%, #fb7185 100%);
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Space Grotesk', system-ui, sans-serif;
+            background: var(--bg);
+            color: var(--ink);
+            min-height: 100vh;
+        }
+        
+        .app-shell {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            background: var(--bg);
+            background-image: 
+                radial-gradient(ellipse 80% 50% at 50% -20%, var(--accent-glow), transparent);
+        }
+        
+        .app-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 28px;
+            background: var(--header-bg);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 700;
+            font-size: 15px;
+        }
+        
+        .brand span {
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        
+        .nav-btn {
+            padding: 10px 16px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border);
+            background: var(--card);
+            color: var(--ink);
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+        
+        .nav-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--accent);
+        }
+        
+        .nav-btn.primary {
+            background: var(--gradient-primary);
+            color: white;
+            border: none;
+        }
+        
+        .main {
+            flex: 1;
+            padding: 24px;
+            max-width: 1600px;
+            margin: 0 auto;
+            width: 100%;
+        }
+        
+        .page-title {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .page-title span {
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        
+        .stat-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--gradient-primary);
+        }
+        
+        .stat-card.success::before { background: var(--success); }
+        .stat-card.warning::before { background: var(--warning); }
+        .stat-card.error::before { background: var(--error); }
+        .stat-card.info::before { background: var(--info); }
+        
+        .stat-icon {
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+        
+        .stat-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--accent);
+        }
+        
+        .stat-label {
+            font-size: 13px;
+            color: var(--muted);
+            margin-top: 4px;
+        }
+        
+        /* Charts Grid */
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 20px;
+            margin-bottom: 24px;
+        }
+        
+        .chart-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+        }
+        
+        .chart-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 300px;
+        }
+        
+        /* Notifications */
+        .notifications-panel {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+        }
+        
+        .notification-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 12px;
+            border-radius: var(--radius-md);
+            margin-bottom: 8px;
+            background: var(--surface);
+        }
+        
+        .notification-item.warning {
+            border-left: 4px solid var(--warning);
+        }
+        
+        .notification-item.error {
+            border-left: 4px solid var(--error);
+        }
+        
+        .notification-item.success {
+            border-left: 4px solid var(--success);
+        }
+        
+        .notification-icon {
+            font-size: 20px;
+        }
+        
+        .notification-content {
+            flex: 1;
+        }
+        
+        .notification-title {
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        .notification-message {
+            font-size: 13px;
+            color: var(--muted);
+            margin-top: 4px;
+        }
+        
+        /* Quick Actions */
+        .quick-actions {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 24px;
+        }
+        
+        .action-btn {
+            padding: 12px 20px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border);
+            background: var(--card);
+            color: var(--ink);
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+        
+        .action-btn:hover {
+            background: var(--card-hover);
+            border-color: var(--accent);
+            transform: translateY(-2px);
+        }
+        
+        .action-btn.primary {
+            background: var(--gradient-primary);
+            color: white;
+            border: none;
+        }
+        
+        /* Theme Selector */
+        .theme-selector {
+            display: flex;
+            gap: 8px;
+            margin-left: auto;
+        }
+        
+        .theme-dot {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.2s;
+        }
+        
+        .theme-dot:hover {
+            transform: scale(1.2);
+        }
+        
+        .theme-dot.active {
+            border-color: white;
+            box-shadow: 0 0 0 2px var(--accent);
+        }
+        
+        .theme-dot.green { background: linear-gradient(135deg, #10b981, #06b6d4); }
+        .theme-dot.blue { background: linear-gradient(135deg, #3b82f6, #6366f1); }
+        .theme-dot.purple { background: linear-gradient(135deg, #8b5cf6, #a855f7); }
+        .theme-dot.orange { background: linear-gradient(135deg, #f97316, #fb923c); }
+        .theme-dot.rose { background: linear-gradient(135deg, #f43f5e, #fb7185); }
+        
+        /* Loading */
+        .loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            color: var(--muted);
+        }
+        
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid var(--border);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .main {
+                padding: 16px;
+            }
+            
+            .app-header {
+                padding: 12px 16px;
+                flex-wrap: wrap;
+                gap: 12px;
+            }
+            
+            .nav-links {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-shell">
+        <header class="app-header">
+            <div class="brand">
+                📊 <span>TRS-398 Pro</span> Dashboard
+            </div>
+            <nav class="nav-links">
+                <a href="index.html" class="nav-btn">📝 Calibration</a>
+                <a href="history.html" class="nav-btn">📋 History</a>
+                <button class="nav-btn" onclick="toggleTheme()">🌓 <span id="themeLabel">Dark</span></button>
+                <button class="nav-btn primary" onclick="exportData()">📤 Export</button>
+            </nav>
+        </header>
+        
+        <main class="main">
+            <h1 class="page-title">📊 <span>Analytics Dashboard</span></h1>
+            
+            <!-- Quick Actions -->
+            <div class="quick-actions">
+                <button class="action-btn primary" onclick="location.href='index.html'">➕ New Calibration</button>
+                <button class="action-btn" onclick="backupDatabase()">💾 Backup Database</button>
+                <button class="action-btn" onclick="exportExcel()">📊 Export Excel</button>
+                <button class="action-btn" onclick="exportCSV()">📄 Export CSV</button>
+            </div>
+            
+            <!-- Stats Grid -->
+            <div class="stats-grid" id="statsGrid">
+                <div class="loading"><div class="spinner"></div></div>
+            </div>
+            
+            <!-- Charts Grid -->
+            <div class="charts-grid">
+                <div class="chart-card">
+                    <div class="chart-title">📈 Monthly Calibrations</div>
+                    <div class="chart-container">
+                        <canvas id="monthlyChart"></canvas>
+                    </div>
+                </div>
+                
+                <div class="chart-card">
+                    <div class="chart-title">📊 Deviation Trend</div>
+                    <div class="chart-container">
+                        <canvas id="deviationChart"></canvas>
+                    </div>
+                </div>
+                
+                <div class="chart-card">
+                    <div class="chart-title">⚡ By Energy</div>
+                    <div class="chart-container">
+                        <canvas id="energyChart"></canvas>
+                    </div>
+                </div>
+                
+                <div class="chart-card">
+                    <div class="chart-title">🏥 By Machine</div>
+                    <div class="chart-container">
+                        <canvas id="machineChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Notifications -->
+            <div class="notifications-panel">
+                <div class="chart-title">🔔 Notifications & Alerts</div>
+                <div id="notificationsList">
+                    <div class="loading"><div class="spinner"></div></div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <script>
+        let theme = localStorage.getItem('trs-theme') || 'dark';
+        let colorTheme = localStorage.getItem('trs-color-theme') || 'green';
+        let charts = {};
+        
+        function applyTheme() {
+            document.body.setAttribute('data-theme', theme);
+            document.body.setAttribute('data-color-theme', colorTheme);
+            document.getElementById('themeLabel').textContent = theme === 'dark' ? 'Dark' : 'Light';
+            
+            // Update charts if they exist
+            updateChartColors();
+        }
+        
+        function toggleTheme() {
+            theme = theme === 'dark' ? 'light' : 'dark';
+            localStorage.setItem('trs-theme', theme);
+            applyTheme();
+        }
+        
+        function setColorTheme(color) {
+            colorTheme = color;
+            localStorage.setItem('trs-color-theme', color);
+            applyTheme();
+        }
+        
+        function getChartColors() {
+            const style = getComputedStyle(document.body);
+            return {
+                accent: style.getPropertyValue('--accent').trim() || '#10b981',
+                accent2: style.getPropertyValue('--accent-2').trim() || '#06b6d4',
+                muted: style.getPropertyValue('--muted').trim() || '#94a3b8',
+                text: style.getPropertyValue('--ink').trim() || '#f1f5f9',
+                grid: style.getPropertyValue('--border').trim() || 'rgba(148, 163, 184, 0.12)'
+            };
+        }
+        
+        function updateChartColors() {
+            const colors = getChartColors();
+            Object.values(charts).forEach(chart => {
+                if (chart) {
+                    chart.options.scales.x.ticks.color = colors.muted;
+                    chart.options.scales.y.ticks.color = colors.muted;
+                    chart.options.scales.x.grid.color = colors.grid;
+                    chart.options.scales.y.grid.color = colors.grid;
+                    chart.update();
+                }
+            });
+        }
+        
+        async function loadStats() {
+            try {
+                const response = await fetch('/api/stats/overview');
+                const data = await response.json();
+                
+                document.getElementById('statsGrid').innerHTML = `
+                    <div class="stat-card success">
+                        <div class="stat-icon">📊</div>
+                        <div class="stat-value">${data.total}</div>
+                        <div class="stat-label">Total Calibrations</div>
+                    </div>
+                    <div class="stat-card info">
+                        <div class="stat-icon">📅</div>
+                        <div class="stat-value">${data.thisMonth}</div>
+                        <div class="stat-label">This Month</div>
+                    </div>
+                    <div class="stat-card ${data.passRate >= 95 ? 'success' : data.passRate >= 80 ? 'warning' : 'error'}">
+                        <div class="stat-icon">✅</div>
+                        <div class="stat-value">${data.passRate}%</div>
+                        <div class="stat-label">Pass Rate</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">📐</div>
+                        <div class="stat-value">${data.avgDeviation}%</div>
+                        <div class="stat-label">Avg Deviation</div>
+                    </div>
+                    <div class="stat-card info">
+                        <div class="stat-icon">☢️</div>
+                        <div class="stat-value">${data.photonCount}</div>
+                        <div class="stat-label">Photon Beams</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">⚡</div>
+                        <div class="stat-value">${data.electronCount}</div>
+                        <div class="stat-label">Electron Beams</div>
+                    </div>
+                `;
+            } catch (error) {
+                console.error('Error loading stats:', error);
+                document.getElementById('statsGrid').innerHTML = '<div class="stat-card">Error loading statistics</div>';
+            }
+        }
+        
+        async function loadCharts() {
+            try {
+                const response = await fetch('/api/stats/trends?months=12');
+                const data = await response.json();
+                const colors = getChartColors();
+                
+                // Monthly calibrations chart
+                const monthlyCtx = document.getElementById('monthlyChart').getContext('2d');
+                charts.monthly = new Chart(monthlyCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: data.monthly.map(m => m.month),
+                        datasets: [{
+                            label: 'Calibrations',
+                            data: data.monthly.map(m => m.count),
+                            backgroundColor: colors.accent + '80',
+                            borderColor: colors.accent,
+                            borderWidth: 2,
+                            borderRadius: 6
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            x: { ticks: { color: colors.muted }, grid: { color: colors.grid } },
+                            y: { ticks: { color: colors.muted }, grid: { color: colors.grid }, beginAtZero: true }
+                        }
+                    }
+                });
+                
+                // Deviation trend chart
+                const deviationCtx = document.getElementById('deviationChart').getContext('2d');
+                charts.deviation = new Chart(deviationCtx, {
+                    type: 'line',
+                    data: {
+                        labels: data.deviationHistory.slice(-50).map(d => d.date),
+                        datasets: [{
+                            label: 'Deviation (%)',
+                            data: data.deviationHistory.slice(-50).map(d => d.deviation),
+                            borderColor: colors.accent,
+                            backgroundColor: colors.accent + '20',
+                            fill: true,
+                            tension: 0.4
+                        }, {
+                            label: '+2% Tolerance',
+                            data: Array(50).fill(2),
+                            borderColor: '#ef4444',
+                            borderDash: [5, 5],
+                            pointRadius: 0
+                        }, {
+                            label: '-2% Tolerance',
+                            data: Array(50).fill(-2),
+                            borderColor: '#ef4444',
+                            borderDash: [5, 5],
+                            pointRadius: 0
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: true, labels: { color: colors.muted } } },
+                        scales: {
+                            x: { ticks: { color: colors.muted, maxTicksLimit: 10 }, grid: { color: colors.grid } },
+                            y: { ticks: { color: colors.muted }, grid: { color: colors.grid } }
+                        }
+                    }
+                });
+                
+                // Energy distribution chart
+                const energyCtx = document.getElementById('energyChart').getContext('2d');
+                charts.energy = new Chart(energyCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: data.byEnergy.map(e => e.energy || 'Unknown'),
+                        datasets: [{
+                            data: data.byEnergy.map(e => e.count),
+                            backgroundColor: [
+                                '#10b981', '#06b6d4', '#3b82f6', '#8b5cf6', 
+                                '#f97316', '#f43f5e', '#84cc16', '#eab308'
+                            ]
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { 
+                            legend: { 
+                                position: 'right',
+                                labels: { color: colors.muted }
+                            } 
+                        }
+                    }
+                });
+                
+                // Machine distribution chart
+                const machineCtx = document.getElementById('machineChart').getContext('2d');
+                charts.machine = new Chart(machineCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: data.byMachine.map(m => m.machine),
+                        datasets: [{
+                            label: 'Calibrations',
+                            data: data.byMachine.map(m => m.count),
+                            backgroundColor: colors.accent2 + '80',
+                            borderColor: colors.accent2,
+                            borderWidth: 2,
+                            borderRadius: 6
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        indexAxis: 'y',
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            x: { ticks: { color: colors.muted }, grid: { color: colors.grid }, beginAtZero: true },
+                            y: { ticks: { color: colors.muted }, grid: { color: colors.grid } }
+                        }
+                    }
+                });
+                
+            } catch (error) {
+                console.error('Error loading charts:', error);
+            }
+        }
+        
+        async function loadNotifications() {
+            try {
+                const response = await fetch('/api/notifications');
+                const data = await response.json();
+                
+                if (data.notifications.length === 0) {
+                    document.getElementById('notificationsList').innerHTML = `
+                        <div class="notification-item success">
+                            <span class="notification-icon">✅</span>
+                            <div class="notification-content">
+                                <div class="notification-title">All Clear!</div>
+                                <div class="notification-message">No pending notifications or alerts.</div>
+                            </div>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                document.getElementById('notificationsList').innerHTML = data.notifications.map(n => `
+                    <div class="notification-item ${n.type}">
+                        <span class="notification-icon">${n.type === 'warning' ? '⚠️' : n.type === 'error' ? '❌' : 'ℹ️'}</span>
+                        <div class="notification-content">
+                            <div class="notification-title">${n.title}</div>
+                            <div class="notification-message">${n.message}</div>
+                        </div>
+                    </div>
+                `).join('');
+                
+            } catch (error) {
+                console.error('Error loading notifications:', error);
+                document.getElementById('notificationsList').innerHTML = '<div class="notification-item">Error loading notifications</div>';
+            }
+        }
+        
+        async function backupDatabase() {
+            try {
+                const response = await fetch('/api/backup');
+                const blob = await response.blob();
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `trs398_backup_${new Date().toISOString().slice(0,10)}.db`;
+                a.click();
+                URL.revokeObjectURL(url);
+                alert('Database backup downloaded!');
+            } catch (error) {
+                alert('Error creating backup: ' + error.message);
+            }
+        }
+        
+        async function exportExcel() {
+            window.location.href = '/api/trs/export?format=excel';
+        }
+        
+        async function exportCSV() {
+            window.location.href = '/api/trs/export';
+        }
+        
+        function exportData() {
+            if (confirm('Export as Excel? (Cancel for CSV)')) {
+                exportExcel();
+            } else {
+                exportCSV();
+            }
+        }
+        
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            // Ctrl/Cmd + B = Backup
+            if ((e.ctrlKey || e.metaKey) && e.key === 'b') {
+                e.preventDefault();
+                backupDatabase();
+            }
+            // Ctrl/Cmd + E = Export
+            if ((e.ctrlKey || e.metaKey) && e.key === 'e') {
+                e.preventDefault();
+                exportData();
+            }
+            // Ctrl/Cmd + N = New Calibration
+            if ((e.ctrlKey || e.metaKey) && e.key === 'n') {
+                e.preventDefault();
+                location.href = 'index.html';
+            }
+        });
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            applyTheme();
+            loadStats();
+            loadCharts();
+            loadNotifications();
+        });
+    </script>
+</body>
+</html>
+

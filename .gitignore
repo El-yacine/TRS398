@@ -1,22 +1,70 @@
-# .NET / Visual Studio
-bin/
-obj/
-*.user
+# Build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+[Ww][Ii][Nn]32/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+
+# Visual Studio cache/options
+.vs/
+.vscode/
 *.suo
+*.user
 *.userosscache
 *.sln.docstates
-.vscode/
-.idea/
 
-# OS
+# Build results
+publish/
+*.msi
+*.wixpdb
+*.wixobj
+
+# Database
+*.db
+*.db-shm
+*.db-wal
+
+# OS files
 .DS_Store
 Thumbs.db
+desktop.ini
 
-# Secrets / local configs
-appsettings.*.json
-*.pfx
+# Temporary files
+*.tmp
+*.temp
+*.log
 
-# SQLite / local DB (optional: decide)
-*.db
-CHANGES_SUMMARY.md
-server/wwwroot/logos/
+# Icon files (if you want to track them, remove these lines)
+# *.ico
+
+# IDE files
+.cursor/
+.vs/
+.idea/
+
+# Build artifacts and installers
+dist/
+TRS398Desktop/
+TRS398Installer/
+issrc/
+innosetup-*.exe
+*.exe
+*.msi
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Temporary installer files
+*.zip
+*.tar.gz
