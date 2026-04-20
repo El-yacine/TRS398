@@ -98,8 +98,8 @@ app.MapGet("/api/stats/overview", async (MyQCDbContext db) =>
             ? Math.Round(measurements.Average(m => Math.Abs(m.Ecart)), 2) 
             : 0,
         lastCalibration = measurements.OrderByDescending(m => m.Date).FirstOrDefault()?.Date,
-        photonCount = measurements.Count(m => m.Mode == "Photon"),
-        electronCount = measurements.Count(m => m.Mode == "Electron")
+        photonCount = measurements.Count(m => string.Equals(m.Mode, "photon", StringComparison.OrdinalIgnoreCase)),
+        electronCount = measurements.Count(m => string.Equals(m.Mode, "electron", StringComparison.OrdinalIgnoreCase))
     });
 });
 
@@ -228,27 +228,27 @@ app.MapGet("/api/trs/export", async (MyQCDbContext db, string? format) =>
 // ============================================================================
 // PDF REPORT WITH SIGNATURE
 // ============================================================================
-app.MapGet("/api/trs/report/{id}", async (int id, MyQCDbContext db, PdfReportService pdfService, string? signature) =>
-{
-    var measurement = await db.TRSMeasurements.FindAsync(id);
-    if (measurement is null) return Results.NotFound();
-    
-    var bytes = pdfService.Build(measurement, signature);
-    var filename = $"trs398_report_{id}.pdf";
-    return Results.File(bytes, "application/pdf", filename);
-});
-
 app.MapGet("/api/trs/report/all", async (MyQCDbContext db, PdfReportService pdfService) =>
 {
     var measurements = await db.TRSMeasurements
         .OrderByDescending(m => m.Date)
         .ToListAsync();
-    
+
     if (measurements.Count == 0)
         return Results.BadRequest(new { error = "No measurements found" });
-    
+
     var bytes = pdfService.BuildSummaryReport(measurements);
     var filename = $"trs398_summary_report_{DateTime.Now:yyyyMMdd}.pdf";
+    return Results.File(bytes, "application/pdf", filename);
+});
+
+app.MapGet("/api/trs/report/{id}", async (int id, MyQCDbContext db, PdfReportService pdfService, string? signature) =>
+{
+    var measurement = await db.TRSMeasurements.FindAsync(id);
+    if (measurement is null) return Results.NotFound();
+
+    var bytes = pdfService.Build(measurement, signature);
+    var filename = $"trs398_report_{id}.pdf";
     return Results.File(bytes, "application/pdf", filename);
 });
 
@@ -339,9 +339,12 @@ app.MapGet("/api/logos", () =>
 
 app.MapDelete("/api/logo/{filename}", (string filename) =>
 {
-    var logosDir = Path.Combine(env.WebRootPath ?? "wwwroot", "logos");
-    var filePath = Path.Combine(logosDir, filename);
-    
+    var logosDir = Path.GetFullPath(Path.Combine(env.WebRootPath ?? "wwwroot", "logos"));
+    var filePath = Path.GetFullPath(Path.Combine(logosDir, filename));
+
+    if (!filePath.StartsWith(logosDir + Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase))
+        return Results.BadRequest(new { error = "Invalid filename" });
+
     if (!File.Exists(filePath))
         return Results.NotFound(new { error = "Logo not found" });
 

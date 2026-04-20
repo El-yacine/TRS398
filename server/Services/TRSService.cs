@@ -14,15 +14,19 @@ public class TRSService
         input.Mean_plus = (input.M_plus_1 + input.M_plus_2 + input.M_plus_3) / 3.0;
         input.Mean_minus = (input.M_minus_1 + input.M_minus_2 + input.M_minus_3) / 3.0;
         input.Mean100V = (input.M100V_1 + input.M100V_2 + input.M100V_3) / 3.0;
-        
+
         // Ktp = (1013/P) * (273.2+T)/293.2
-        input.Ktp = (1013.0 / input.P) * (273.2 + input.T) / 293.2;
-        
+        input.Ktp = input.P > 0
+            ? (1013.0 / input.P) * (273.2 + input.T) / 293.2
+            : 1.0;
+
         // Kpol = (|M+| + |M-|) / (2 * |M+|)
-        input.Kpol = (Math.Abs(input.Mean_plus) + Math.Abs(input.Mean_minus)) / (2.0 * Math.Abs(input.Mean_plus));
-        
+        input.Kpol = Math.Abs(input.Mean_plus) > 0
+            ? (Math.Abs(input.Mean_plus) + Math.Abs(input.Mean_minus)) / (2.0 * Math.Abs(input.Mean_plus))
+            : 1.0;
+
         // Ks = 1.198 - (0.875 * Mean+/Mean100V) + (0.677 * (Mean+/Mean100V)^2)
-        double ratio = input.Mean_plus / input.Mean100V;
+        double ratio = Math.Abs(input.Mean100V) > 0 ? input.Mean_plus / input.Mean100V : 1.0;
         input.Ks = 1.198 - (0.875 * ratio) + (0.677 * ratio * ratio);
         
         var isElectron = string.Equals(input.Mode, "electron", StringComparison.OrdinalIgnoreCase);
@@ -62,8 +66,8 @@ public class TRSService
         // DW,Zref = M_corr * kQ * NdUsed
         input.DW_Zref = input.M_corr * input.kQUsed * input.NdUsed;
         
-        // Ecart (%) = 100 * (1 - DW,Zref)
-        input.Ecart = 100.0 * (1.0 - input.DW_Zref);
+        // Ecart (%) = 100 * (DW,Zref - 1)
+        input.Ecart = 100.0 * (input.DW_Zref - 1.0);
         
         input.Date = DateTime.Now;
         
