@@ -6,6 +6,7 @@
     <GenerateDocumentationFile>false</GenerateDocumentationFile>
     <NoWarn>$(NoWarn);CS1591;EF1002</NoWarn>
     <RootNamespace>MyQC</RootNamespace>
+    <UseAppHost>false</UseAppHost>
   </PropertyGroup>
   <!-- wwwroot is automatically included by Web SDK, no need to specify -->
   <ItemGroup>
