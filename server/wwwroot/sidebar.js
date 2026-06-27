@@ -25,10 +25,10 @@
 
   // footer actions — call handler if present on this page, else fall back
   var SYSTEM = [
-    { icon: "settings",     label: "Settings",        fn: "openSetup",          fallback: "dashboard.html" },
+    { icon: "settings",     label: "Settings",        fn: "openSetup",          fallback: "index.html#settings" },
     { icon: "database",     label: "Backup",          href: "backup.html" },
-    { icon: "download",     label: "Export CSV",      fn: "downloadCSV",        fallback: "dashboard.html" },
-    { icon: "file-archive", label: "All Reports PDF", fn: "downloadAllPdfZip",  fallback: "dashboard.html" }
+    { icon: "download",     label: "Export CSV",      fn: "downloadCSV",        fallback: "index.html#export-csv" },
+    { icon: "file-archive", label: "All Reports PDF", fn: "downloadAllPdfZip",  fallback: "index.html#all-pdf" }
   ];
 
   var LOGO_SVG =

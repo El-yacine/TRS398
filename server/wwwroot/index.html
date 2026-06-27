@@ -5016,6 +5016,20 @@ Appearance:
             // Clear any stale draft from localStorage (feature removed)
             localStorage.removeItem('trs-draft');
 
+            // Sidebar actions routed here from other pages (Settings/Export/Reports
+            // only exist on this page). Run the requested action after init.
+            const _sidebarAction = location.hash;
+            if (['#settings', '#export-csv', '#all-pdf'].includes(_sidebarAction)) {
+                history.replaceState(null, '', location.pathname);
+                setTimeout(() => {
+                    try {
+                        if (_sidebarAction === '#settings'   && typeof openSetup === 'function')        openSetup();
+                        else if (_sidebarAction === '#export-csv' && typeof downloadCSV === 'function')      downloadCSV();
+                        else if (_sidebarAction === '#all-pdf'    && typeof downloadAllPdfZip === 'function') downloadAllPdfZip();
+                    } catch (e) { console.error('[sidebar action]', e); }
+                }, 450);
+            }
+
             applyTheme();
             applyColorTheme();
             applyLogo();
