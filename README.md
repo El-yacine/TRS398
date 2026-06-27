@@ -11,6 +11,10 @@
 
 [Features](#-features) • [Quick Start](#-quick-start) • [Installation](#-installation) • [Documentation](#-documentation) • [Contributing](#-contributing)
 
+<br>
+
+![TRS-398 Pro demo](assets/demo.gif)
+
 </div>
 
 ---
