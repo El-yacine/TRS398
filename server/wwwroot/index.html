@@ -2124,6 +2124,13 @@
                 <span class="topbar-title brand"><span>TRS-398 · Photon</span></span>
             </div>
             <div class="topbar-right">
+                <div style="display:flex;align-items:center;gap:7px;margin-right:6px" title="Who is performing this measurement (manage the list in Settings → Operators)">
+                    <span style="font-size:10.5px;font-weight:700;letter-spacing:.06em;color:var(--text-muted);text-transform:uppercase">Operator</span>
+                    <select id="operatorSelect" onchange="onOperatorChange()"
+                            style="height:34px;padding:0 30px 0 11px;border:1px solid var(--border);border-radius:8px;background:var(--surface,#fff);color:var(--text);font-size:13px;font-weight:600;min-width:150px;cursor:pointer">
+                        <option value="">— none —</option>
+                    </select>
+                </div>
                 <button class="topbar-btn primary" onclick="saveAll()">
                     <i data-lucide="save"></i> Save
                 </button>
@@ -2385,6 +2392,7 @@
                     <div class="settings-sidebar-section">Dosimetry</div>
                     <button class="settings-nav-item active" onclick="switchSettingsTab('chambers')" data-tab="chambers"><i data-lucide="circle-dot"></i> Chamber Library</button>
                     <button class="settings-nav-item" onclick="switchSettingsTab('defaults')" data-tab="defaults"><i data-lucide="sliders"></i> Defaults</button>
+                    <button class="settings-nav-item" onclick="switchSettingsTab('operators')" data-tab="operators"><i data-lucide="users"></i> Operators</button>
 
                     <div class="settings-sidebar-section">Facility</div>
                     <button class="settings-nav-item" onclick="switchSettingsTab('clinic')" data-tab="clinic"><i data-lucide="building-2"></i> Clinic</button>
@@ -2514,6 +2522,21 @@
             </div>
 
             <!-- Clinic Tab -->
+            <div id="tab-operators" class="settings-tab-content">
+                <div class="settings-section">
+                    <div class="settings-section-title">Operators</div>
+                    <p style="font-size:12.5px;color:var(--text-muted);margin:4px 0 14px">
+                        Names that can be selected as the operator for a measurement. No passwords — this just records who performed each calibration (shown on the PDF report).
+                    </p>
+                    <div style="display:flex;gap:8px;margin-bottom:14px">
+                        <input id="newOperatorName" class="form-input" placeholder="e.g. Yacine El Attaoui" autocomplete="off"
+                               onkeydown="if(event.key==='Enter'){event.preventDefault();addOperator();}" style="flex:1">
+                        <button class="btn soft" onclick="addOperator()"><i data-lucide="plus"></i> Add</button>
+                    </div>
+                    <div id="operatorList" style="display:flex;flex-direction:column;gap:6px"></div>
+                </div>
+            </div>
+
             <div id="tab-clinic" class="settings-tab-content">
                 <div class="settings-section">
                     <div class="settings-section-title">Clinic Information</div>
@@ -5012,6 +5035,70 @@ Appearance:
             }
         }
 
+        // ── Operators (no passwords; tags each measurement with who performed it) ──
+        async function loadOperators() {
+            let ops = [];
+            try {
+                const r = await fetch('/api/operators');
+                if (r.ok) ops = await r.json();
+            } catch { /* offline → empty */ }
+
+            const sel = document.getElementById('operatorSelect');
+            const saved = localStorage.getItem('trs-operator') || '';
+            if (sel) {
+                sel.innerHTML = '<option value="">— none —</option>' +
+                    ops.map(n => `<option value="${n.replace(/"/g,'&quot;')}">${n}</option>`).join('');
+                sel.value = ops.includes(saved) ? saved : '';
+                syncOperatorToUserName();
+            }
+
+            const list = document.getElementById('operatorList');
+            if (list) {
+                list.innerHTML = ops.length ? ops.map(n => `
+                    <div style="display:flex;align-items:center;justify-content:space-between;padding:9px 12px;border:1px solid var(--border);border-radius:8px">
+                        <span style="font-size:13px;font-weight:600;color:var(--text)">${n}</span>
+                        <button class="btn ghost" style="padding:5px 9px" title="Remove"
+                                onclick="removeOperator('${encodeURIComponent(n)}')"><i data-lucide="trash-2"></i></button>
+                    </div>`).join('')
+                    : '<div style="font-size:12.5px;color:var(--text-muted);padding:6px 2px">No operators yet — add one above.</div>';
+                if (window.lucide) lucide.createIcons();
+            }
+        }
+        function syncOperatorToUserName() {
+            const sel = document.getElementById('operatorSelect');
+            const u   = document.getElementById('UserName');
+            if (sel && u && sel.value) u.value = sel.value;
+        }
+        function onOperatorChange() {
+            const sel = document.getElementById('operatorSelect');
+            localStorage.setItem('trs-operator', sel.value || '');
+            syncOperatorToUserName();
+        }
+        async function addOperator() {
+            const inp = document.getElementById('newOperatorName');
+            const name = (inp.value || '').trim();
+            if (!name) return;
+            try {
+                const r = await fetch('/api/operators', {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name })
+                });
+                const out = await r.json().catch(() => ({}));
+                if (!r.ok) { if (typeof showToast==='function') showToast(out.error || 'Could not add operator', 'error'); else console.error(out.error); return; }
+                inp.value = '';
+                localStorage.setItem('trs-operator', name);   // select the one just added
+                await loadOperators();
+            } catch { /* ignore */ }
+        }
+        async function removeOperator(enc) {
+            const name = decodeURIComponent(enc);
+            try {
+                await fetch('/api/operators/' + encodeURIComponent(name), { method: 'DELETE' });
+                if (localStorage.getItem('trs-operator') === name) localStorage.removeItem('trs-operator');
+                await loadOperators();
+            } catch { /* ignore */ }
+        }
+
         window.addEventListener('DOMContentLoaded', () => {
             // Clear any stale draft from localStorage (feature removed)
             localStorage.removeItem('trs-draft');
@@ -5037,6 +5124,7 @@ Appearance:
             loadSettings();
             loadDefaultProfile();
             loadProfiles();
+            loadOperators();
             applyPreferences();
             loadExistingLogo();
             setupLogoDragDrop();

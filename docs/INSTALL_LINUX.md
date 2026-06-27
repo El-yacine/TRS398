@@ -139,13 +139,9 @@ cp server/email_config.example.json server/email_config.json
 
 ---
 
-## Default login accounts
+## Operators (no login required)
 
-The app ships with two seed accounts (used only if you enable login):
-
-| Username   | Password     | Role      |
-|------------|--------------|-----------|
-| `admin`    | `admin123`   | admin     |
-| `physicist`| `physics123` | physicist |
-
-**Change these before any networked deployment.**
+The app has **no login** — it records *who performed* each measurement via an
+**Operator** picker in the top bar. Manage the list of operator names in
+**Settings → Operators** (add / remove). The selected operator is saved with each
+measurement and printed on the PDF report. No passwords, no user accounts.

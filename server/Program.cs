@@ -950,6 +950,50 @@ app.MapDelete("/api/linacs/{id}", async (string id, MyQCDbContext db) =>
 });
 
 // ============================================================================
+// OPERATORS  (names that perform measurements — no passwords, no login)
+// ============================================================================
+var operatorsPath = Path.Combine(dataDir, "operators.json");
+
+List<string> LoadOperators()
+{
+    try
+    {
+        if (File.Exists(operatorsPath))
+            return System.Text.Json.JsonSerializer.Deserialize<List<string>>(File.ReadAllText(operatorsPath)) ?? new();
+    }
+    catch { /* corrupt/missing → empty */ }
+    return new();
+}
+void SaveOperators(List<string> list) =>
+    File.WriteAllText(operatorsPath, System.Text.Json.JsonSerializer.Serialize(list, new System.Text.Json.JsonSerializerOptions { WriteIndented = true }));
+
+app.MapGet("/api/operators", () => Results.Ok(LoadOperators()));
+
+app.MapPost("/api/operators", (NameDto body) =>
+{
+    var name = body?.Name?.Trim();
+    if (string.IsNullOrWhiteSpace(name))
+        return Results.BadRequest(new { error = "Operator name is required." });
+    var list = LoadOperators();
+    if (list.Any(x => string.Equals(x, name, StringComparison.OrdinalIgnoreCase)))
+        return Results.Conflict(new { error = "That operator already exists." });
+    list.Add(name);
+    SaveOperators(list);
+    return Results.Ok(new { success = true, name });
+});
+
+app.MapDelete("/api/operators/{name}", (string name) =>
+{
+    name = Uri.UnescapeDataString(name ?? "");
+    var list = LoadOperators();
+    var removed = list.RemoveAll(x => string.Equals(x, name, StringComparison.OrdinalIgnoreCase));
+    SaveOperators(list);
+    return removed == 0
+        ? Results.NotFound(new { error = "Operator not found." })
+        : Results.Ok(new { success = true });
+});
+
+// ============================================================================
 // TOLERANCES
 // ============================================================================
 app.MapGet("/api/tolerances", () =>
@@ -1495,71 +1539,7 @@ app.MapPost("/api/email/report", async (HttpRequest request, MyQCDbContext db, P
     });
 });
 
-// ============================================================================
-// USER AUTHENTICATION (Simple token-based)
-// ============================================================================
-var users = new Dictionary<string, UserInfo>
-{
-    ["admin"] = new UserInfo { Username = "admin", PasswordHash = HashPassword("admin123"), Role = "admin", FullName = "Administrator" },
-    ["physicist"] = new UserInfo { Username = "physicist", PasswordHash = HashPassword("physics123"), Role = "physicist", FullName = "Medical Physicist" }
-};
-
-app.MapPost("/api/auth/login", (LoginRequest request) =>
-{
-    if (string.IsNullOrEmpty(request.Username) || string.IsNullOrEmpty(request.Password))
-        return Results.BadRequest(new { error = "Username and password required" });
-
-    if (!users.TryGetValue(request.Username.ToLower(), out var user))
-        return Results.Unauthorized();
-
-    if (user.PasswordHash != HashPassword(request.Password))
-        return Results.Unauthorized();
-
-    // Generate simple token
-    var token = Convert.ToBase64String(RandomNumberGenerator.GetBytes(32));
-    
-    return Results.Ok(new {
-        success = true,
-        token = token,
-        user = new {
-            username = user.Username,
-            role = user.Role,
-            fullName = user.FullName
-        }
-    });
-});
-
-app.MapPost("/api/auth/register", (RegisterRequest request) =>
-{
-    if (string.IsNullOrEmpty(request.Username) || string.IsNullOrEmpty(request.Password))
-        return Results.BadRequest(new { error = "Username and password required" });
-
-    if (users.ContainsKey(request.Username.ToLower()))
-        return Results.BadRequest(new { error = "Username already exists" });
-
-    var newUser = new UserInfo
-    {
-        Username = request.Username.ToLower(),
-        PasswordHash = HashPassword(request.Password),
-        Role = request.Role ?? "physicist",
-        FullName = request.FullName ?? request.Username
-    };
-
-    users[newUser.Username] = newUser;
-
-    return Results.Ok(new { success = true, message = "User registered successfully" });
-});
-
-app.MapGet("/api/auth/users", () =>
-{
-    var userList = users.Values.Select(u => new {
-        username = u.Username,
-        role = u.Role,
-        fullName = u.FullName
-    }).ToList();
-
-    return Results.Ok(new { users = userList });
-});
+// Note: this app uses operator names (no passwords / no login) — see /api/operators.
 
 // ============================================================================
 // TRANSLATIONS / I18N
@@ -2095,6 +2075,7 @@ static double GetTolerance(string? linacId, string? energy, string dir)
 // Request/Response classes
 record LoginRequest(string Username, string Password);
 record MachineReg(string Name, string? SerialId);
+record NameDto(string? Name);
 record ProfileDoc(
     string Id            = "",
     string Name          = "",
