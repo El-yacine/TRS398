@@ -1,0 +1,264 @@
+/* ============================================================
+   TRS-398 Pro — "DATA INSTRUMENT" theme
+   editorial · ruled · vermillion signal
+   Direction 2 from TRS Restyle.dc.html
+
+   Loaded LAST (right before </head>) so it wins the cascade.
+   Re-skins the whole app by overriding the shared --dash-*
+   design tokens, the short page tokens, fonts and shape.
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap');
+
+/* ---- 1. Palette tokens ------------------------------------ */
+/* !important on custom properties beats every non-important
+   :root in the per-page inline styles and both light/dark
+   theme variants in dashboard-system.css.                     */
+:root,
+html[data-theme="light"],
+body[data-theme="light"],
+html[data-theme="dark"],
+body[data-theme="dark"] {
+  /* fonts */
+  --font-ui: 'Space Grotesk', 'Segoe UI', system-ui, sans-serif !important;
+  --font-mono: 'Space Grotesk', 'Segoe UI', system-ui, sans-serif !important;
+
+  /* shared dashboard-system tokens (the dominant layer) */
+  --dash-bg: #F6F4EE !important;
+  --dash-surface: #FCFBF7 !important;
+  --dash-card: #FCFBF7 !important;
+  --dash-card-hover: #EFEBDE !important;
+  --dash-input: #FFFFFF !important;
+  --dash-border-subtle: #E7E1D2 !important;
+  --dash-border: #E2DCCD !important;
+  --dash-border-strong: #1A1A1A !important;
+  --dash-text: #1A1A1A !important;
+  --dash-text-secondary: #5A554B !important;
+  --dash-text-muted: #9A958A !important;
+  --dash-accent: #E4572E !important;
+  --dash-accent-hover: #C8431F !important;
+  --dash-sidebar-bg: #1A1A1A !important;
+  --dash-sidebar-border: rgba(255,255,255,0.08) !important;
+  --dash-sidebar-hover: rgba(255,255,255,0.06) !important;
+  --dash-sidebar-active: rgba(228,87,46,0.16) !important;
+  --dash-sidebar-text: #F0A58E !important;
+  --dash-shadow-sm: none !important;
+
+  /* short page tokens (used by per-page inline components) */
+  --bg: #F6F4EE !important;
+  --surface: #FCFBF7 !important;
+  --surface2: #FFFFFF !important;
+  --card: #FCFBF7 !important;
+  --card-hover: #EFEBDE !important;
+  --panel: #FCFBF7 !important;
+  --glass: #FCFBF7 !important;
+  --glass-border: #E2DCCD !important;
+  --header-bg: #F6F4EE !important;
+  --border: #E2DCCD !important;
+  --border-subtle: #E7E1D2 !important;
+  --border-strong: #1A1A1A !important;
+  --border-accent: rgba(228,87,46,0.30) !important;
+  --text: #1A1A1A !important;
+  --ink: #1A1A1A !important;
+  --text-secondary: #5A554B !important;
+  --muted: #9A958A !important;
+  --text-muted: #9A958A !important;
+  --accent: #E4572E !important;
+  --accent-2: #C8431F !important;
+  --accent-glow: rgba(228,87,46,0.12) !important;
+  --success: #2F7A4D !important;
+  --warning: #B7791F !important;
+  --error: #C0392B !important;
+  --info: #E4572E !important;
+
+  /* second token family used by dashboard/linacs KPI cards etc. */
+  --bg-dark: #F6F4EE !important;
+  --bg-surface: #F6F4EE !important;
+  --bg-card: #FCFBF7 !important;
+  --bg-card-hover: #EFEBDE !important;
+  --bg-elevated: #FFFFFF !important;
+  --bg-input: #FFFFFF !important;
+  --bg-highlight: rgba(228,87,46,0.08) !important;
+  --text-primary: #1A1A1A !important;
+  --text-accent: #E4572E !important;
+  --danger: #C0392B !important;
+  --danger-subtle: rgba(192,57,43,0.10) !important;
+
+  /* sharp, editorial corners */
+  --radius-sm: 2px !important;
+  --radius-md: 2px !important;
+  --radius-lg: 2px !important;
+  --radius-xl: 3px !important;
+
+  /* flat — no glow */
+  --shadow-sm: none !important;
+  --shadow-md: none !important;
+  --shadow-lg: none !important;
+  --shadow-xl: none !important;
+
+  /* gradients collapse to the flat vermillion signal */
+  --gradient-primary: linear-gradient(135deg, #E4572E, #C8431F) !important;
+  --gradient-subtle: none !important;
+}
+
+/* ---- 2. Typography ---------------------------------------- */
+body,
+button, input, select, textarea,
+h1, h2, h3, h4, h5, h6,
+.hero h1, .topbar-title, .header-title,
+.logo-name, .toolbar-title,
+.settings-section-title, .settings-panel-head h4 {
+  font-family: 'Space Grotesk', 'Segoe UI', system-ui, sans-serif !important;
+}
+
+/* tabular figures everywhere numbers matter */
+.num, .metric-value, .kpi-value, .sum-val, .stat-value,
+.value-large, table td, table th, .mono, [class*="mono"] {
+  font-feature-settings: "tnum" 1, "lnum" 1 !important;
+}
+
+/* ---- 3. Shape: flatten corners, kill shadows -------------- */
+.card, .table-card, .det-table-wrap, .cal-grid, .chart-card,
+.machine-card, .sum-card, .stat-card, .stats-row > *,
+.summary-strip > *, .controls, .toolbar, .surface, .panel,
+.metric-card, .measure-card, .result-card, .result-item.highlight,
+.correction-item, .settings-section, .chamber-selector-card,
+.calibration-card, .data-action-card, .about-card, .profile-card,
+#save-template-dialog, #measurementCard,
+.topbar-btn, .btn, .ctrl-btn, .nav-btn, .act-btn, .btn-modal,
+input, select, textarea, .search-box, .search-input,
+.filter-select, .select-sm, .ctrl-select, .form-input,
+.nav-item, .sidebar-nav-item, .settings-nav-item,
+#setupModal .modal-content {
+  border-radius: 2px !important;
+  box-shadow: none !important;
+}
+
+/* ---- 4. Ruled, editorial accents -------------------------- */
+/* table headers: black ink bar, paper-white type (the mockup signature) */
+table th,
+.det-table th,
+.cal-header-cell {
+  background: #1A1A1A !important;
+  color: #F6F4EE !important;
+  letter-spacing: 0.10em !important;
+  text-transform: uppercase !important;
+}
+
+/* the colored left rule on stat / metric cards → vermillion */
+.stat-card::before,
+.sum-card::before,
+.stats-row > *::before,
+.metric-card::after {
+  background: #E4572E !important;
+  border-radius: 0 !important;
+}
+
+/* primary buttons: solid vermillion, crisp */
+.topbar-btn.primary, .btn-primary, .btn.primary,
+.ctrl-btn.active, .today-btn, .btn-save {
+  background: #E4572E !important;
+  color: #fff !important;
+}
+
+/* secondary buttons: 1.5px ink frame (editorial) */
+.topbar-btn:not(.primary), .btn-secondary, .btn-ghost,
+.btn.ghost, .btn.soft, .ctrl-btn, .nav-btn, .act-btn {
+  border-width: 1.5px !important;
+  border-color: #1A1A1A !important;
+  color: #1A1A1A !important;
+}
+
+/* input focus ring → vermillion */
+input:focus, select:focus, textarea:focus,
+.search-box:focus, .search-input:focus, .filter-select:focus,
+.select-sm:focus, .ctrl-select:focus, .form-input:focus {
+  border-color: #E4572E !important;
+  box-shadow: 0 0 0 3px rgba(228,87,46,0.12) !important;
+}
+
+/* PASS / success affordances → editorial green */
+.measure-mean {
+  background: rgba(47,122,77,0.10) !important;
+  border: 1px solid rgba(47,122,77,0.22) !important;
+  color: #1A1A1A !important;
+}
+
+/* highlighted result block: ink panel, paper figure */
+.result-card.enhanced {
+  background: rgba(228,87,46,0.06) !important;
+  border: 1.5px solid #1A1A1A !important;
+}
+.value-large {
+  color: #1A1A1A !important;
+}
+
+/* badges keep the sharp instrument look */
+.status-badge, .mode-badge, .badge {
+  border-radius: 2px !important;
+  letter-spacing: 0.06em !important;
+  text-transform: uppercase !important;
+}
+
+/* measurement card header tint (was amber) → vermillion wash */
+#measurementCard > div:first-child {
+  background: rgba(228,87,46,0.07) !important;
+}
+
+/* sidebar: ink slab with vermillion active bar */
+.sidebar .nav-item.active,
+.sidebar .sidebar-nav-item.active,
+.settings-nav-item.active {
+  box-shadow: inset 3px 0 0 #E4572E !important;
+}
+.sidebar .logo-icon {
+  color: #E4572E !important;
+}
+
+/* hero eyebrow → vermillion label */
+.eyebrow {
+  color: #E4572E !important;
+}
+
+/* ---- 6. Shared sidebar: identical items on every page ----- */
+/* neutralizes per-page <a>/<button> styling so the injected
+   sidebar (sidebar.js) looks the same everywhere. */
+.sidebar .sidebar-nav-item,
+.sidebar .nav-item {
+  text-decoration: none !important;
+  border: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  text-align: left !important;
+  cursor: pointer !important;
+  font-family: 'Space Grotesk', system-ui, sans-serif !important;
+}
+.sidebar .sidebar-nav-item:hover,
+.sidebar .nav-item:hover {
+  background: rgba(255,255,255,0.06) !important;
+  color: #EAEEF7 !important;
+}
+.sidebar .sidebar-nav-item.active,
+.sidebar .nav-item.active {
+  background: rgba(228,87,46,0.16) !important;
+  color: #F0A58E !important;
+  box-shadow: inset 3px 0 0 #E4572E !important;
+}
+/* logo crosshair uses currentColor → vermillion */
+.sidebar .logo-icon { color: #E4572E !important; width: 34px !important; height: 34px !important; }
+.sidebar .logo-name { color: #EAEEF7 !important; }
+
+/* accent pills */
+.pill.accent {
+  background: rgba(228,87,46,0.10) !important;
+  color: #C8431F !important;
+  border-color: rgba(228,87,46,0.28) !important;
+}
+
+/* ---- 5. Recolor hardcoded cyan logo/icons → vermillion ---- */
+/* CSS overrides SVG presentation attributes, so this catches the
+   crosshair logo (and any leftover old-accent glyphs) on every page. */
+.logo-name span { color: #E4572E !important; }
+.logo-version, .logo-ver { color: #9A958A !important; }
+[stroke="#38bdf8"], [stroke="#0ea5e9"] { stroke: #E4572E !important; }
+[fill="#38bdf8"],   [fill="#0ea5e9"]   { fill:   #E4572E !important; }

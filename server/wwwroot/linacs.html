@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TRS-398 Pro — Machines</title>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:      #0b1120;
+      --surface: #131c2e;
+      --card:    #1a2540;
+      --border:  rgba(148,163,184,0.1);
+      --text:    #e8edf4;
+      --muted:   #6b7fa3;
+      --accent:  #E4572E;
+      --success: #22c55e;
+      --warning: #f59e0b;
+      --error:   #ef4444;
+      --sidebar-w: 220px;
+    }
+
+    body {
+      font-family: 'Segoe UI', -apple-system, system-ui, sans-serif;
+      background: var(--bg); color: var(--text);
+      display: flex; min-height: 100vh; font-size: 14px;
+    }
+
+    /* ── Sidebar ── */
+    .sidebar {
+      width: var(--sidebar-w); background:#1A1A1A;
+      border-right: 1px solid rgba(148,163,184,0.08);
+      display: flex; flex-direction: column;
+      position: fixed; left: 0; top: 0; bottom: 0; z-index: 300;
+    }
+    .sidebar-logo {
+      display: flex; align-items: center; gap: 10px;
+      padding: 18px 20px; border-bottom: 1px solid rgba(148,163,184,0.08);
+    }
+    .logo-icon { width: 34px; height: 34px; flex-shrink: 0; }
+    .logo-name { font-size: 14px; font-weight: 700; color: #e8edf4; }
+    .logo-name span { color: #E4572E; }
+    .logo-ver { font-size: 10px; color: #6b7fa3; }
+    .sidebar-nav { flex: 1; padding: 10px 8px; display: flex; flex-direction: column; gap: 2px; }
+    .nav-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 9px 12px; border-radius: 10px;
+      color: #94a3b8; text-decoration: none;
+      font-size: 13px; font-weight: 500; cursor: pointer;
+      transition: all 0.15s; background: none; border: none; width: 100%; text-align: left;
+    }
+    .nav-item i { width: 16px; height: 16px; flex-shrink: 0; }
+    .nav-item:hover { background: rgba(56,189,248,0.08); color: #e8edf4; }
+    .nav-item.active { background: rgba(56,189,248,0.12); color: #E4572E; }
+    .sidebar-footer { padding: 10px 8px; border-top: 1px solid rgba(148,163,184,0.08); display: flex; flex-direction: column; gap: 2px; }
+    .sidebar-label { font-size: 10px; font-weight: 600; letter-spacing: 0.06em; color: #4a5a72; text-transform: uppercase; padding: 4px 12px 6px; }
+
+    /* ── Main ── */
+    .app-shell { flex: 1; margin-left: var(--sidebar-w); display: flex; flex-direction: column; }
+    .topbar {
+      height: 56px; display: flex; align-items: center; justify-content: space-between;
+      padding: 0 24px; background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      position: sticky; top: 0; z-index: 100;
+    }
+    .topbar-left { display: flex; align-items: center; gap: 10px; }
+    .topbar-title { font-size: 15px; font-weight: 600; }
+    .topbar-btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 7px 14px; border-radius: 10px;
+      font-size: 13px; font-weight: 500; cursor: pointer;
+      border: 1px solid var(--border); background: transparent;
+      color: var(--muted); transition: all 0.15s; text-decoration: none;
+      font-family: inherit;
+    }
+    .topbar-btn:hover { background: var(--card); color: var(--text); border-color: var(--accent); }
+    .topbar-btn.primary { background: var(--accent); color: #0b1120; border-color: transparent; font-weight: 600; }
+    .topbar-btn.primary:hover { opacity: 0.9; }
+    .topbar-btn i { width: 14px; height: 14px; }
+
+    .content { padding: 24px; }
+
+    /* ── Summary strip ── */
+    .summary-strip {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 24px;
+    }
+    .sum-card {
+      background: var(--card); border: 1px solid var(--border); border-radius: 10px;
+      padding: 16px 20px; display: flex; align-items: center; gap: 14px;
+    }
+    .sum-icon {
+      width: 40px; height: 40px; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .sum-icon i { width: 20px; height: 20px; }
+    .sum-val { font-size: 22px; font-weight: 700; }
+    .sum-lbl { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+    /* ── Machine grid ── */
+    .machine-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 16px;
+    }
+    .machine-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 14px; overflow: hidden;
+      transition: border-color 0.15s, transform 0.15s;
+    }
+    .machine-card:hover { border-color: rgba(56,189,248,0.3); transform: translateY(-1px); }
+    .machine-card.overdue { border-top: 3px solid var(--error); }
+    .machine-card.urgent  { border-top: 3px solid var(--warning); }
+    .machine-card.warning { border-top: 3px solid #E4572E; }
+    .machine-card.ok      { border-top: 3px solid var(--success); }
+    .machine-card.fail    { border-top: 3px solid var(--error); }
+
+    .mc-header { padding: 18px 20px 14px; display: flex; align-items: flex-start; justify-content: space-between; }
+    .mc-name { font-size: 16px; font-weight: 700; }
+    .mc-id   { font-size: 12px; color: var(--muted); margin-top: 3px; }
+    .mc-status-badge {
+      font-size: 10px; font-weight: 700; padding: 3px 9px; border-radius: 20px;
+      text-transform: uppercase; letter-spacing: 0.06em; flex-shrink: 0;
+    }
+    .badge-ok      { background: rgba(34,197,94,0.15);  color: var(--success); }
+    .badge-warning { background: rgba(59,130,246,0.15); color: #E4572E; }
+    .badge-urgent  { background: rgba(245,158,11,0.15); color: var(--warning); }
+    .badge-overdue { background: rgba(239,68,68,0.15);  color: var(--error); }
+    .badge-fail    { background: rgba(239,68,68,0.1);   color: var(--error); }
+
+    .mc-body { padding: 0 20px 18px; display: flex; flex-direction: column; gap: 12px; }
+
+    .mc-beams { display: flex; gap: 6px; flex-wrap: wrap; }
+    .beam-tag {
+      font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 6px;
+      background: rgba(56,189,248,0.1); color: var(--accent); border: 1px solid rgba(56,189,248,0.2);
+    }
+
+    .mc-stats { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+    .mc-stat { display: flex; flex-direction: column; gap: 2px; }
+    .mc-stat-lbl { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
+    .mc-stat-val { font-size: 15px; font-weight: 700; }
+    .mc-stat-val.pass { color: var(--success); }
+    .mc-stat-val.warn { color: var(--warning); }
+    .mc-stat-val.fail { color: var(--error); }
+
+    .mc-divider { height: 1px; background: var(--border); margin: 0 -0px; }
+
+    .mc-dates { display: flex; align-items: center; justify-content: space-between; font-size: 12px; }
+    .mc-date-item { display: flex; flex-direction: column; gap: 2px; }
+    .mc-date-lbl { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
+    .mc-date-val { font-weight: 600; }
+    .mc-date-val.overdue { color: var(--error); }
+    .mc-date-val.soon    { color: var(--warning); }
+
+    .mc-footer { padding: 12px 20px; border-top: 1px solid var(--border); display: flex; gap: 8px; }
+    .mc-btn {
+      flex: 1; padding: 7px; border-radius: 8px; border: 1px solid var(--border);
+      background: transparent; color: var(--muted); font-size: 12px; font-weight: 500;
+      cursor: pointer; transition: all 0.15s; font-family: inherit;
+      display: flex; align-items: center; justify-content: center; gap: 5px;
+      text-decoration: none;
+    }
+    .mc-btn:hover { background: var(--card); color: var(--text); border-color: var(--accent); }
+    .mc-btn i { width: 13px; height: 13px; }
+
+    .deviation-bar { height: 4px; background: rgba(148,163,184,0.1); border-radius: 2px; overflow: hidden; }
+    .deviation-fill { height: 100%; border-radius: 2px; transition: width 0.4s; }
+
+    .empty-state { text-align: center; padding: 80px 24px; color: var(--muted); }
+
+    /* Auto-backup modal */
+    .modal-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.6);
+      z-index: 1000; display: none; align-items: center; justify-content: center;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal-box {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 16px; padding: 28px; width: 420px;
+      box-shadow: 0 24px 48px rgba(0,0,0,0.5);
+    }
+    .modal-title { font-size: 16px; font-weight: 700; margin-bottom: 20px; display: flex; align-items: center; gap: 8px; }
+    .form-row { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
+    .form-row label { font-size: 12px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
+    .form-input {
+      padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border);
+      background: var(--card); color: var(--text); font-size: 14px; font-family: inherit; outline: none;
+    }
+    .form-input:focus { border-color: var(--accent); }
+    .toggle-row { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--border); margin-bottom: 16px; }
+    .toggle-label { font-size: 14px; font-weight: 500; }
+    .toggle-sub   { font-size: 12px; color: var(--muted); }
+    .toggle {
+      position: relative; width: 44px; height: 24px;
+      background: rgba(148,163,184,0.2); border-radius: 12px;
+      cursor: pointer; transition: background 0.2s; flex-shrink: 0;
+    }
+    .toggle.on { background: var(--accent); }
+    .toggle::after {
+      content: ''; position: absolute; width: 18px; height: 18px;
+      background: #fff; border-radius: 50%; top: 3px; left: 3px;
+      transition: left 0.2s;
+    }
+    .toggle.on::after { left: 23px; }
+    .modal-footer { display: flex; gap: 8px; margin-top: 20px; }
+    .btn-modal {
+      flex: 1; padding: 10px; border-radius: 8px; font-size: 14px; font-weight: 600;
+      cursor: pointer; border: 1px solid var(--border); font-family: inherit;
+    }
+    .btn-cancel { background: transparent; color: var(--muted); }
+    .btn-cancel:hover { background: var(--card); color: var(--text); }
+    .btn-save { background: var(--accent); color: #0b1120; border-color: transparent; }
+    .btn-save:hover { opacity: 0.9; }
+  </style>
+  <link rel="stylesheet" href="dashboard-system.css">
+  <script>
+    (function () {
+      const theme = localStorage.getItem('trs-theme') || 'dark';
+      document.documentElement.setAttribute('data-theme', theme);
+      document.addEventListener('DOMContentLoaded', () => document.body.setAttribute('data-theme', theme));
+    })();
+  </script>
+    <link rel="stylesheet" href="theme-data-instrument.css">
+</head>
+<body>
+
+<!-- Sidebar -->
+<nav class="sidebar">
+  <div class="sidebar-logo">
+    <svg class="logo-icon" viewBox="0 0 100 100" fill="none">
+      <circle cx="50" cy="50" r="46" stroke="#E4572E" stroke-width="4"/>
+      <circle cx="50" cy="50" r="8" fill="#E4572E"/>
+      <line x1="50" y1="4" x2="50" y2="24" stroke="#E4572E" stroke-width="4" stroke-linecap="round"/>
+      <line x1="50" y1="76" x2="50" y2="96" stroke="#E4572E" stroke-width="4" stroke-linecap="round"/>
+      <line x1="4" y1="50" x2="24" y2="50" stroke="#E4572E" stroke-width="4" stroke-linecap="round"/>
+      <line x1="76" y1="50" x2="96" y2="50" stroke="#E4572E" stroke-width="4" stroke-linecap="round"/>
+    </svg>
+    <div>
+      <div class="logo-name">TRS-398 <span>Pro</span></div>
+      <div class="logo-ver">v2.1.0</div>
+    </div>
+  </div>
+  <div class="sidebar-nav">
+    <a href="dashboard.html" class="nav-item"><i data-lucide="layout-dashboard"></i> Dashboard</a>
+    <a href="index.html"     class="nav-item"><i data-lucide="circle-dot"></i> Calibration</a>
+    <a href="history.html"   class="nav-item"><i data-lucide="history"></i> History</a>
+    <a href="control.html"   class="nav-item"><i data-lucide="activity"></i> Control Charts</a>
+    <a href="linacs.html"    class="nav-item active"><i data-lucide="cpu"></i> Machines</a>
+    <a href="calendar.html"  class="nav-item"><i data-lucide="calendar"></i> QA Calendar</a>
+    <a href="detectors.html" class="nav-item"><i data-lucide="zap"></i> Detectors</a>
+  </div>
+  <div class="sidebar-footer">
+    <div class="sidebar-label">System</div>
+    <button class="nav-item" onclick="openBackupSettings()"><i data-lucide="shield-check"></i> Auto-Backup</button>
+    <button class="nav-item" onclick="location.href='backup.html'"><i data-lucide="database"></i> Backup</button>
+    <button class="nav-item" onclick="window.location='/api/trs/export?format=excel'"><i data-lucide="download"></i> Export</button>
+  </div>
+</nav>
+
+<!-- Main -->
+<div class="app-shell">
+  <div class="topbar">
+    <div class="topbar-left">
+      <i data-lucide="cpu"></i>
+      <span class="topbar-title">Machines & Accelerators</span>
+    </div>
+    <div id="topbarRight" style="display:flex;gap:8px">
+      <button class="topbar-btn" onclick="openAddMachine()">
+        <i data-lucide="plus"></i> Add Machine
+      </button>
+      <button class="topbar-btn" onclick="openTolModal()">
+        <i data-lucide="sliders"></i> Tolerances
+      </button>
+      <button class="topbar-btn" onclick="openBackupSettings()">
+        <i data-lucide="shield-check"></i> Auto-Backup
+      </button>
+      <a href="index.html" class="topbar-btn primary">
+        <i data-lucide="plus-circle"></i> New Calibration
+      </a>
+    </div>
+  </div>
+
+  <div class="content">
+    <!-- Summary strip -->
+    <div class="summary-strip" id="summaryStrip">
+      <div class="sum-card">
+        <div class="sum-icon" style="background:rgba(56,189,248,0.12)"><i data-lucide="cpu" style="color:#E4572E"></i></div>
+        <div><div class="sum-val" id="sumMachines">—</div><div class="sum-lbl">Machines</div></div>
+      </div>
+      <div class="sum-card">
+        <div class="sum-icon" style="background:rgba(34,197,94,0.12)"><i data-lucide="check-circle" style="color:#22c55e"></i></div>
+        <div><div class="sum-val" id="sumOk">—</div><div class="sum-lbl">In QA schedule</div></div>
+      </div>
+      <div class="sum-card">
+        <div class="sum-icon" style="background:rgba(245,158,11,0.12)"><i data-lucide="clock" style="color:#f59e0b"></i></div>
+        <div><div class="sum-val" id="sumDue">—</div><div class="sum-lbl">Due soon (≤7 days)</div></div>
+      </div>
+      <div class="sum-card">
+        <div class="sum-icon" style="background:rgba(239,68,68,0.12)"><i data-lucide="alert-circle" style="color:#ef4444"></i></div>
+        <div><div class="sum-val" id="sumOverdue">—</div><div class="sum-lbl">Overdue</div></div>
+      </div>
+    </div>
+
+    <!-- Machine grid -->
+    <div class="machine-grid" id="machineGrid">
+      <div class="empty-state">
+        <i data-lucide="loader-2" style="width:32px;height:32px;margin-bottom:12px;opacity:0.4"></i>
+        <div>Loading machines…</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Auto-backup modal -->
+<div class="modal-overlay" id="backupModal">
+  <div class="modal-box">
+    <div class="modal-title"><i data-lucide="shield-check"></i> Auto-Backup Settings</div>
+
+    <div class="toggle-row">
+      <div>
+        <div class="toggle-label">Enable automatic backups</div>
+        <div class="toggle-sub">Runs daily, keeps last N copies</div>
+      </div>
+      <div class="toggle" id="backupToggle" onclick="toggleBackup()"></div>
+    </div>
+
+    <div class="form-row">
+      <label>Backup folder path</label>
+      <input class="form-input" id="backupFolder" placeholder="Leave blank for AppData/auto-backups">
+    </div>
+    <div class="form-row">
+      <label>Keep last N backups</label>
+      <input class="form-input" id="backupKeep" type="number" min="1" max="365" value="10">
+    </div>
+    <div id="lastBackupInfo" style="font-size:12px;color:#6b7fa3;margin-bottom:8px"></div>
+
+    <div class="modal-footer">
+      <button class="btn-modal btn-cancel" onclick="closeBackupModal()">Cancel</button>
+      <button class="btn-modal btn-cancel" style="color:#E4572E" onclick="backupNow()">Backup Now</button>
+      <button class="btn-modal btn-save" onclick="saveBackupConfig()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Tolerances modal -->
+<div class="modal-overlay" id="tolModal">
+  <div class="modal-box" style="max-width:520px">
+    <div class="modal-title"><i data-lucide="sliders"></i> QA Tolerances</div>
+    <p style="font-size:13px;color:#6b7fa3;margin-bottom:18px">
+      Set pass/fail limits per machine and beam. Default is ±2.0%. Changes apply to all status indicators, charts, and reports.
+    </p>
+    <div class="form-row">
+      <label>Global default tolerance (%)</label>
+      <input class="form-input" id="tolDefault" type="number" step="0.1" min="0.1" max="10" value="2.0">
+    </div>
+    <div style="font-size:11px;font-weight:700;color:#6b7fa3;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:10px">Per-machine overrides</div>
+    <div id="tolMachineRows" style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px"></div>
+    <div class="modal-footer">
+      <button class="btn-modal btn-cancel" onclick="closeTolModal()">Cancel</button>
+      <button class="btn-modal btn-save" onclick="saveTol()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add machine modal -->
+<div class="modal-overlay" id="addMachineModal">
+  <div class="modal-box" style="max-width:460px">
+    <div class="modal-title"><i data-lucide="plus-circle"></i> Add Machine</div>
+    <p style="font-size:13px;color:#6b7fa3;margin-bottom:18px">
+      Register a linac so it appears in the list before its first calibration. It can be removed any time until measurements are linked to it.
+    </p>
+    <div class="form-row">
+      <label>Machine name <span style="color:#E4572E">*</span></label>
+      <input class="form-input" id="newMachineName" placeholder="e.g. Versa HD" autocomplete="off">
+    </div>
+    <div class="form-row">
+      <label>Serial number (optional)</label>
+      <input class="form-input" id="newMachineSerial" placeholder="e.g. VHD1" autocomplete="off">
+    </div>
+    <div class="modal-footer">
+      <button class="btn-modal btn-cancel" onclick="closeAddMachine()">Cancel</button>
+      <button class="btn-modal btn-save" onclick="submitAddMachine()">Add Machine</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="mcToast" style="position:fixed;left:50%;bottom:28px;transform:translateX(-50%);max-width:520px;
+     padding:13px 18px;border-radius:2px;background:#1A1A1A;color:#F6F4EE;font-size:13px;font-weight:500;
+     box-shadow:0 8px 30px rgba(0,0,0,.3);display:none;z-index:9999;border-left:3px solid #E4572E"></div>
+
+<!-- Custom confirm dialog (replaces native confirm(), which can freeze the window) -->
+<div class="modal-overlay" id="confirmModal">
+  <div class="modal-box" style="max-width:420px">
+    <div class="modal-title"><i data-lucide="alert-triangle"></i> <span id="confirmTitle">Confirm</span></div>
+    <p id="confirmMsg" style="font-size:13.5px;color:#475569;margin:6px 0 20px;line-height:1.5"></p>
+    <div class="modal-footer">
+      <button class="btn-modal btn-cancel" id="confirmNo">Cancel</button>
+      <button class="btn-modal btn-save" id="confirmYes" style="background:#C0392B">Remove</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  lucide.createIcons();
+
+  let backupEnabled = false;
+
+  async function load() {
+    try {
+      const res   = await fetch('/api/linacs');
+      const data  = await res.json();
+      renderSummary(data);
+      renderGrid(data);
+    } catch(e) {
+      document.getElementById('machineGrid').innerHTML =
+        '<div class="empty-state">Failed to load machines. Run a calibration first.</div>';
+    }
+  }
+
+  function renderSummary(data) {
+    document.getElementById('sumMachines').textContent = data.length;
+    document.getElementById('sumOk').textContent      = data.filter(m => m.status === 'ok').length;
+    document.getElementById('sumDue').textContent     = data.filter(m => m.status === 'warning' || m.status === 'urgent').length;
+    document.getElementById('sumOverdue').textContent = data.filter(m => m.status === 'overdue').length;
+  }
+
+  function renderGrid(data) {
+    const grid = document.getElementById('machineGrid');
+    if (!data.length) {
+      grid.innerHTML = '<div class="empty-state">No machines found. Save a calibration to register a machine.</div>';
+      return;
+    }
+
+    grid.innerHTML = data.map(m => {
+      // machine registered but no measurements yet → simplified card, removable
+      if (m.hasData === false) {
+        return `
+        <div class="machine-card new">
+          <div class="mc-header">
+            <div>
+              <div class="mc-name">${m.name}</div>
+              <div class="mc-id">${m.serialId ? 'S/N: ' + m.serialId : 'No serial number'}</div>
+            </div>
+            <span class="mc-status-badge" style="background:rgba(228,87,46,.12);color:#E4572E">New</span>
+          </div>
+          <div class="mc-body">
+            <div style="padding:18px 0;text-align:center;color:#9A958A;font-size:13px">
+              No measurements yet. Run a calibration to start tracking QA.
+            </div>
+            <div class="mc-divider"></div>
+          </div>
+          <div class="mc-footer">
+            <a class="mc-btn" href="index.html"><i data-lucide="plus-circle"></i> Calibrate</a>
+            <button class="mc-btn" onclick="removeMachine('${encodeURIComponent(m.id)}','${(m.name||'').replace(/'/g,"\\'")}')">
+              <i data-lucide="trash-2"></i> Remove
+            </button>
+          </div>
+        </div>`;
+      }
+
+      const passColor = m.recentPassRate >= 95 ? 'pass' : m.recentPassRate >= 80 ? 'warn' : 'fail';
+      const devColor  = Math.abs(m.lastDeviation) <= 1 ? 'pass' : Math.abs(m.lastDeviation) <= 2 ? 'warn' : 'fail';
+      const daysLabel = m.daysUntilDue >= 0
+        ? (m.daysUntilDue === 0 ? 'Today' : `${m.daysUntilDue}d`)
+        : `${Math.abs(m.daysUntilDue)}d ago`;
+      const daysClass = m.daysUntilDue < 0 ? 'overdue' : m.daysUntilDue <= 7 ? 'soon' : '';
+      const badgeMap  = { ok:'badge-ok', warning:'badge-warning', urgent:'badge-urgent', overdue:'badge-overdue', fail:'badge-fail' };
+      const labelMap  = { ok:'On Schedule', warning:'Due Soon', urgent:'Urgent', overdue:'Overdue', fail:'Last Failed' };
+      const barPct    = Math.min(100, Math.abs(m.lastDeviation) / 2 * 100);
+      const barColor  = devColor === 'pass' ? '#22c55e' : devColor === 'warn' ? '#f59e0b' : '#ef4444';
+
+      const beamTags = (m.beams || []).map(b => `<span class="beam-tag">${b}</span>`).join('');
+
+      return `
+        <div class="machine-card ${m.status}">
+          <div class="mc-header">
+            <div>
+              <div class="mc-name">${m.name}</div>
+              <div class="mc-id">${m.serialId ? 'S/N: ' + m.serialId : 'No serial number'}</div>
+            </div>
+            <span class="mc-status-badge ${badgeMap[m.status]}">${labelMap[m.status]}</span>
+          </div>
+          <div class="mc-body">
+            <div class="mc-beams">${beamTags || '<span style="font-size:12px;color:#6b7fa3">No beams recorded</span>'}</div>
+            <div class="mc-stats">
+              <div class="mc-stat">
+                <div class="mc-stat-lbl">Total QA</div>
+                <div class="mc-stat-val">${m.totalQA}</div>
+              </div>
+              <div class="mc-stat">
+                <div class="mc-stat-lbl">Pass rate (3mo)</div>
+                <div class="mc-stat-val ${passColor}">${m.recentPassRate != null ? m.recentPassRate + '%' : 'N/A'}</div>
+              </div>
+              <div class="mc-stat">
+                <div class="mc-stat-lbl">Last Δ%</div>
+                <div class="mc-stat-val ${devColor}">${m.lastDeviation >= 0 ? '+' : ''}${m.lastDeviation}%</div>
+              </div>
+            </div>
+            <div>
+              <div class="deviation-bar">
+                <div class="deviation-fill" style="width:${barPct}%;background:${barColor}"></div>
+              </div>
+            </div>
+            <div class="mc-divider"></div>
+            <div class="mc-dates">
+              <div class="mc-date-item">
+                <div class="mc-date-lbl">Last QA</div>
+                <div class="mc-date-val">${m.lastDate}</div>
+              </div>
+              <div class="mc-date-item" style="text-align:right">
+                <div class="mc-date-lbl">Next due</div>
+                <div class="mc-date-val ${daysClass}">${m.nextDue} (${daysLabel})</div>
+              </div>
+            </div>
+          </div>
+          <div class="mc-footer">
+            <a class="mc-btn" href="control.html?energy=${(m.beams||[])[0]||''}&linac=${encodeURIComponent(m.id)}">
+              <i data-lucide="activity"></i> Control Chart
+            </a>
+            <a class="mc-btn" href="history.html">
+              <i data-lucide="history"></i> History
+            </a>
+            <a class="mc-btn" href="/api/trs/report/all" target="_blank">
+              <i data-lucide="file-text"></i> Report
+            </a>
+            <button class="mc-btn" onclick="removeMachine('${encodeURIComponent(m.id)}','${(m.name||'').replace(/'/g,"\\'")}')">
+              <i data-lucide="trash-2"></i> Remove
+            </button>
+          </div>
+        </div>
+      `;
+    }).join('');
+
+    lucide.createIcons();
+  }
+
+  // ── Toast ──
+  let _toastT;
+  function toast(msg, kind) {
+    const t = document.getElementById('mcToast');
+    if (!t) return;
+    t.textContent = msg;
+    t.style.borderLeftColor = kind === 'error' ? '#C0392B' : kind === 'success' ? '#2F7A4D' : '#E4572E';
+    t.style.display = 'block';
+    clearTimeout(_toastT);
+    _toastT = setTimeout(() => { t.style.display = 'none'; }, 4200);
+  }
+
+  // ── Add / remove machine ──
+  function openAddMachine() {
+    document.getElementById('newMachineName').value = '';
+    document.getElementById('newMachineSerial').value = '';
+    document.getElementById('addMachineModal').classList.add('open');
+    setTimeout(() => document.getElementById('newMachineName').focus(), 50);
+  }
+  function closeAddMachine() {
+    document.getElementById('addMachineModal').classList.remove('open');
+  }
+  async function submitAddMachine() {
+    const name   = document.getElementById('newMachineName').value.trim();
+    const serial = document.getElementById('newMachineSerial').value.trim();
+    if (!name) { toast('Machine name is required.', 'error'); return; }
+    try {
+      const res = await fetch('/api/linacs', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, serialId: serial || null })
+      });
+      const out = await res.json().catch(() => ({}));
+      if (!res.ok) { toast(out.error || 'Could not add machine.', 'error'); return; }
+      closeAddMachine();
+      toast('Machine added.', 'success');
+      load();
+    } catch (e) {
+      toast('Network error while adding machine.', 'error');
+    }
+  }
+  // in-app confirm dialog → resolves true/false, no native confirm()
+  function confirmDialog(message, title) {
+    return new Promise(resolve => {
+      const modal = document.getElementById('confirmModal');
+      const yes   = document.getElementById('confirmYes');
+      const no    = document.getElementById('confirmNo');
+      document.getElementById('confirmMsg').textContent = message;
+      document.getElementById('confirmTitle').textContent = title || 'Confirm';
+      const cleanup = (val) => {
+        modal.classList.remove('open');
+        yes.onclick = null; no.onclick = null;
+        resolve(val);
+      };
+      yes.onclick = () => cleanup(true);
+      no.onclick  = () => cleanup(false);
+      modal.classList.add('open');
+    });
+  }
+
+  async function removeMachine(idEnc, name) {
+    const id = decodeURIComponent(idEnc);
+    const ok = await confirmDialog(`Remove machine "${name || id}"? This only removes the machine entry; measurements are never deleted.`, 'Remove machine');
+    if (!ok) return;
+    try {
+      const res = await fetch('/api/linacs/' + encodeURIComponent(id), { method: 'DELETE' });
+      const out = await res.json().catch(() => ({}));
+      if (res.status === 409) { toast(out.error || 'Machine has linked measurements.', 'error'); return; }
+      if (!res.ok) { toast(out.error || 'Could not remove machine.', 'error'); return; }
+      toast('Machine removed.', 'success');
+      load();
+    } catch (e) {
+      toast('Network error while removing machine.', 'error');
+    }
+  }
+
+  // ── Auto-backup modal ──
+  async function openBackupSettings() {
+    try {
+      const res = await fetch('/api/backup/config');
+      const cfg = await res.json();
+      backupEnabled = cfg.enabled || false;
+      document.getElementById('backupFolder').value = cfg.folder || '';
+      document.getElementById('backupKeep').value   = cfg.keepCount || 10;
+      document.getElementById('backupToggle').className = 'toggle' + (backupEnabled ? ' on' : '');
+      document.getElementById('lastBackupInfo').textContent =
+        cfg.lastBackup ? `Last backup: ${new Date(cfg.lastBackup).toLocaleString()}` : 'No backup yet';
+    } catch { backupEnabled = false; }
+    document.getElementById('backupModal').classList.add('open');
+  }
+
+  function closeBackupModal() { document.getElementById('backupModal').classList.remove('open'); }
+  function toggleBackup() {
+    backupEnabled = !backupEnabled;
+    document.getElementById('backupToggle').className = 'toggle' + (backupEnabled ? ' on' : '');
+  }
+
+  async function saveBackupConfig() {
+    const cfg = {
+      enabled:   backupEnabled,
+      keepCount: parseInt(document.getElementById('backupKeep').value) || 10,
+      folder:    document.getElementById('backupFolder').value.trim()
+    };
+    await fetch('/api/backup/config', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(cfg) });
+    closeBackupModal();
+  }
+
+  async function backupNow() {
+    const a = document.createElement('a');
+    a.href = '/api/backup'; a.download = '';
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    closeBackupModal();
+  }
+
+  // ── Tolerances ──
+  let tolConfig = { default: 2.0, machines: {} };
+  let linacList = [];
+
+  async function openTolModal() {
+    try { const r = await fetch('/api/tolerances'); tolConfig = await r.json(); } catch { tolConfig = { default: 2.0, machines: {} }; }
+    try { const r = await fetch('/api/linacs'); linacList = await r.json(); } catch { linacList = []; }
+
+    document.getElementById('tolDefault').value = tolConfig.default ?? 2.0;
+    const rows = document.getElementById('tolMachineRows');
+    rows.innerHTML = linacList.map(m => {
+      const mc  = (tolConfig.machines || {})[m.id] || {};
+      const bRows = (m.beams || []).map(beam => {
+        const bTol = (mc.beams || {})[beam] ?? '';
+        return `<div style="display:flex;align-items:center;gap:8px;margin-left:16px;margin-top:4px">
+          <span style="font-size:12px;color:#94a3b8;width:40px">${beam}</span>
+          <input type="number" step="0.1" min="0.1" max="10" placeholder="${mc.default ?? tolConfig.default ?? 2.0}" value="${bTol}"
+            style="width:80px;padding:5px 8px;border-radius:6px;border:1px solid rgba(148,163,184,0.2);background:#1A1A1A;color:#e8edf4;font-size:13px"
+            data-machine="${m.id}" data-beam="${beam}">
+          <span style="font-size:11px;color:#6b7fa3">%</span>
+        </div>`;
+      }).join('');
+      return `<div style="background:rgba(56,189,248,0.04);border:1px solid rgba(148,163,184,0.1);border-radius:8px;padding:10px 12px">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
+          <span style="font-size:13px;font-weight:600">${m.name}</span>
+          <span style="font-size:11px;color:#6b7fa3">${m.serialId ? '('+m.serialId+')' : ''}</span>
+          <span style="margin-left:auto;font-size:11px;color:#6b7fa3">Machine default:</span>
+          <input type="number" step="0.1" min="0.1" max="10" placeholder="${tolConfig.default ?? 2.0}" value="${mc.default ?? ''}"
+            style="width:70px;padding:5px 8px;border-radius:6px;border:1px solid rgba(148,163,184,0.2);background:#1A1A1A;color:#e8edf4;font-size:13px"
+            data-machine="${m.id}" data-beam="_default">
+          <span style="font-size:11px;color:#6b7fa3">%</span>
+        </div>
+        ${bRows}
+      </div>`;
+    }).join('');
+    document.getElementById('tolModal').classList.add('open');
+    lucide.createIcons();
+  }
+
+  function closeTolModal() { document.getElementById('tolModal').classList.remove('open'); }
+
+  async function saveTol() {
+    const globalDef = parseFloat(document.getElementById('tolDefault').value) || 2.0;
+    const machines  = {};
+    document.querySelectorAll('[data-machine]').forEach(inp => {
+      const id  = inp.dataset.machine;
+      const beam = inp.dataset.beam;
+      const val  = parseFloat(inp.value);
+      if (isNaN(val)) return;
+      if (!machines[id]) machines[id] = { beams: {} };
+      if (beam === '_default') machines[id].default = val;
+      else machines[id].beams[beam] = val;
+    });
+    const cfg = { default: globalDef, machines };
+    await fetch('/api/tolerances', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(cfg) });
+    closeTolModal();
+    load(); // reload cards with new tolerances
+  }
+
+  // ── Calendar and Detectors links added to sidebar below ──
+
+  // Pass pre-set filters to control chart if opened from a machine card
+  window.addEventListener('load', () => {
+    const params = new URLSearchParams(location.search);
+    if (params.has('energy') || params.has('linac')) {
+      location.href = 'control.html?' + params.toString();
+    }
+  });
+
+  load();
+</script>
+    <script src="sidebar.js"></script>
+</body>
+</html>

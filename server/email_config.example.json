@@ -1,0 +1,13 @@
+{
+  "_comment": "Copy this file to 'email_config.json' and fill in your SMTP details to enable out-of-tolerance email alerts. email_config.json is git-ignored and never committed.",
+  "Host": "smtp.example.com",
+  "Port": 587,
+  "UseTls": true,
+  "Username": "your-smtp-username",
+  "Password": "your-smtp-password-or-app-password",
+  "FromAddress": "qa-alerts@example.com",
+  "FromName": "TRS-398 Pro",
+  "AlertsEnabled": false,
+  "AlertTo": "physicist@example.com",
+  "IsConfigured": false
+}

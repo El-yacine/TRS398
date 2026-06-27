@@ -1,0 +1,88 @@
+# Build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+[Ww][Ii][Nn]32/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+
+# Visual Studio cache/options
+.vs/
+.vscode/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Build results
+publish/
+*.msi
+*.wixpdb
+*.wixobj
+
+# Database
+*.db
+*.db-shm
+*.db-wal
+*.db.bak*
+
+# Private runtime data & secrets — NEVER commit these
+email_config.json          # SMTP credentials
+license.json               # activation key
+settings.json
+profile.json
+machines.json
+tolerances.json
+backup_config.json
+server/logos/*
+server/signatures/*
+!server/logos/.gitkeep
+!server/signatures/.gitkeep
+# generated reports / exports
+trs398_report_*.pdf
+trs398_export.*
+TRS398_Reports_*.zip
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Temporary files
+*.tmp
+*.temp
+*.log
+
+# Icon files (if you want to track them, remove these lines)
+# *.ico
+
+# IDE files
+.cursor/
+.vs/
+.idea/
+
+# Build artifacts and installers
+dist/
+TRS398Desktop/
+TRS398Installer/
+issrc/
+innosetup-*.exe
+*.exe
+*.msi
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Temporary installer files
+*.zip
+*.tar.gz

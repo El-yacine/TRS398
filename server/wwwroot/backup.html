@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TRS-398 Pro - Backup</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <style>
+    :root {
+      --font-ui: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+      --bg: #080e1a;
+      --bg-surface: #111827;
+      --bg-card: #182031;
+      --bg-card-hover: #1e2a40;
+      --bg-input: #0f1929;
+      --border-subtle: #1a2540;
+      --border: #1f2d45;
+      --border-strong: #2d4060;
+      --text: #e8edf4;
+      --text-secondary: #94a3b8;
+      --text-muted: #4a5a72;
+      --accent: #E4572E;
+      --accent-hover: #E4572E;
+      --accent-subtle: rgba(14,165,233,0.07);
+      --success: #22c55e;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --sidebar-bg: #0d1526;
+      --sidebar-border: rgba(255,255,255,0.06);
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.3);
+      --shadow-md: 0 4px 12px rgba(0,0,0,0.35);
+    }
+    [data-theme="light"] {
+      --bg: #f0f4f8;
+      --bg-surface: #ffffff;
+      --bg-card: #ffffff;
+      --bg-card-hover: #f8fafc;
+      --bg-input: #ffffff;
+      --border-subtle: #e8edf4;
+      --border: #e2e8f0;
+      --border-strong: #cbd5e1;
+      --text: #0f172a;
+      --text-secondary: #475569;
+      --text-muted: #94a3b8;
+      --accent: #C8431F;
+      --accent-hover: #C8431F;
+      --accent-subtle: rgba(2,132,199,0.06);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--font-ui);
+      font-size: 13px;
+      color: var(--text);
+      background: var(--bg);
+      display: flex;
+      min-height: 100vh;
+      overflow: hidden;
+    }
+    .sidebar { width: 240px; flex-shrink: 0; background: var(--sidebar-bg); border-right: 1px solid var(--sidebar-border); display: flex; flex-direction: column; }
+    .sidebar-logo { height: 56px; display: flex; align-items: center; padding: 0 16px; gap: 10px; border-bottom: 1px solid var(--sidebar-border); }
+    .logo-icon { width: 32px; height: 32px; color: var(--accent); }
+    .logo-name { font-size: 14px; font-weight: 700; color: #e8edf4; }
+    .logo-version { font-size: 11px; color: #4a5a72; font-family: var(--font-mono); margin-top: 1px; }
+    .sidebar-nav { flex: 1; padding: 8px 0; overflow-y: auto; }
+    .nav-group-label { font-size: 11px; font-weight: 600; color: #4a5a72; text-transform: uppercase; letter-spacing: 0.07em; padding: 14px 16px 5px; }
+    .nav-item { display: flex; align-items: center; gap: 9px; height: 36px; padding: 0 12px; margin: 1px 8px; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 500; color: #94a3b8; text-decoration: none; background: transparent; border: none; width: calc(100% - 16px); text-align: left; }
+    .nav-item:hover { background: rgba(255,255,255,0.06); color: #e8edf4; }
+    .nav-item.active { background: rgba(14,165,233,0.12); color: #E4572E; }
+    .nav-item i { width: 16px; height: 16px; }
+    .nav-separator { height: 1px; background: var(--sidebar-border); margin: 6px 16px; }
+    .sidebar-bottom { padding: 8px; border-top: 1px solid var(--sidebar-border); }
+    .user-item { display: flex; align-items: center; gap: 9px; padding: 8px; border-radius: 8px; }
+    .user-avatar { width: 28px; height: 28px; border-radius: 50%; background: var(--accent); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: white; }
+    .user-name { font-size: 13px; font-weight: 500; color: #e8edf4; }
+    .user-role { font-size: 11px; color: #4a5a72; }
+    .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+    .header { height: 56px; background: var(--bg-surface); border-bottom: 1px solid var(--border-subtle); display: flex; align-items: center; padding: 0 24px; gap: 12px; flex-shrink: 0; }
+    .header-left { flex: 1; }
+    .header-title { font-size: 16px; font-weight: 600; color: var(--text); }
+    .header-sub { font-size: 12px; color: var(--text-muted); margin-top: 1px; }
+    .content { flex: 1; overflow-y: auto; padding: 24px; }
+    .page-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 20px; gap: 16px; }
+    .page-title { font-size: 20px; font-weight: 600; color: var(--text); letter-spacing: -0.02em; }
+    .page-subtitle { font-size: 13px; color: var(--text-muted); margin-top: 3px; max-width: 720px; line-height: 1.5; }
+    .page-actions, .quick-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+    .quick-actions { margin-bottom: 20px; }
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 7px; height: 36px; padding: 0 14px; border-radius: 8px; font-size: 13px; font-weight: 500; font-family: var(--font-ui); cursor: pointer; border: none; text-decoration: none; white-space: nowrap; }
+    .btn i { width: 14px; height: 14px; }
+    .btn-primary { background: var(--accent); color: #fff; }
+    .btn-primary:hover { filter: brightness(1.12); }
+    .btn-secondary { background: transparent; border: 1px solid var(--border-strong); color: var(--text-secondary); }
+    .btn-secondary:hover { background: var(--bg-card-hover); color: var(--text); }
+    .btn-danger { background: rgba(239,68,68,0.12); border: 1px solid rgba(239,68,68,0.32); color: #fca5a5; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin-bottom: 16px; }
+    .grid-2 { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 16px; margin-bottom: 16px; }
+    .card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; box-shadow: var(--shadow-sm); overflow: hidden; }
+    .card-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 16px 20px; border-bottom: 1px solid var(--border-subtle); }
+    .card-title { font-size: 14px; font-weight: 600; color: var(--text); display: flex; align-items: center; gap: 8px; }
+    .card-title i { width: 16px; height: 16px; color: var(--accent-hover); }
+    .card-subtitle { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+    .card-body { padding: 20px; }
+    .metric { min-height: 132px; position: relative; padding: 18px 20px; }
+    .metric::before { content: ""; position: absolute; left: 0; top: 16px; bottom: 16px; width: 3px; background: var(--accent); border-radius: 0 2px 2px 0; }
+    .metric-label { font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.07em; display: flex; align-items: center; gap: 6px; margin-bottom: 12px; }
+    .metric-value { font-family: var(--font-mono); font-size: 24px; font-weight: 600; margin-bottom: 8px; }
+    .metric-note { color: var(--text-muted); line-height: 1.45; }
+    .drop-zone { border: 1px dashed var(--border-strong); border-radius: 12px; background: var(--bg-input); padding: 22px; text-align: center; color: var(--text-secondary); }
+    .drop-zone i { width: 34px; height: 34px; color: var(--accent-hover); margin-bottom: 10px; }
+    .file-input { display: none; }
+    .backup-list { display: flex; flex-direction: column; gap: 8px; }
+    .backup-row { display: grid; grid-template-columns: 1fr auto auto; gap: 12px; align-items: center; padding: 12px; border: 1px solid var(--border); border-radius: 10px; background: var(--bg-surface); }
+    .backup-name { font-family: var(--font-mono); font-size: 12px; color: var(--text); word-break: break-all; }
+    .backup-meta { color: var(--text-muted); font-size: 12px; margin-top: 3px; }
+    .status { min-height: 18px; margin-top: 10px; font-size: 12px; color: var(--text-muted); }
+    .status.ok { color: var(--success); }
+    .status.err { color: var(--danger); }
+    @media (max-width: 980px) {
+      body { overflow: auto; }
+      .sidebar { display: none; }
+      .grid-3, .grid-2 { grid-template-columns: 1fr; }
+      .page-header { flex-direction: column; }
+    }
+  </style>
+  <link rel="stylesheet" href="dashboard-system.css">
+  <script>
+    (function () {
+      const theme = localStorage.getItem('trs-theme') || 'dark';
+      document.documentElement.setAttribute('data-theme', theme);
+      document.addEventListener('DOMContentLoaded', () => document.body.setAttribute('data-theme', theme));
+    })();
+  </script>
+    <link rel="stylesheet" href="theme-data-instrument.css">
+</head>
+<body>
+  <nav class="sidebar">
+    <div class="sidebar-logo">
+      <svg class="logo-icon" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="50" cy="50" r="8" fill="currentColor"/>
+        <path d="M50 42 L35 16 A36 36 0 0 1 65 16 Z" fill="currentColor"/>
+        <path d="M42.5 46 L15 55 A36 36 0 0 1 21 26 Z" fill="currentColor"/>
+        <path d="M57.5 46 L85 55 A36 36 0 0 1 79 26 Z" fill="currentColor"/>
+        <path d="M57.5 54 L73 79 A36 36 0 0 1 27 79 Z" fill="currentColor" opacity="0.4"/>
+      </svg>
+      <div>
+        <div class="logo-name">TRS-398 <span style="color:var(--accent)">Pro</span></div>
+        <div class="logo-version">v2.1</div>
+      </div>
+    </div>
+    <div class="sidebar-nav">
+      <div class="nav-group-label">Workspace</div>
+      <a href="dashboard.html" class="nav-item"><i data-lucide="layout-dashboard"></i> Dashboard</a>
+      <a href="index.html" class="nav-item"><i data-lucide="circle-dot"></i> Calibration</a>
+      <a href="history.html" class="nav-item"><i data-lucide="history"></i> History</a>
+      <a href="control.html" class="nav-item"><i data-lucide="activity"></i> Control Charts</a>
+      <a href="linacs.html" class="nav-item"><i data-lucide="cpu"></i> Machines</a>
+      <a href="calendar.html" class="nav-item"><i data-lucide="calendar"></i> QA Calendar</a>
+      <a href="detectors.html" class="nav-item"><i data-lucide="zap"></i> Detectors</a>
+      <div class="nav-separator"></div>
+      <div class="nav-group-label">System</div>
+      <a href="backup.html" class="nav-item active"><i data-lucide="database"></i> Backup</a>
+      <button class="nav-item" onclick="exportCSV()"><i data-lucide="download"></i> Export</button>
+    </div>
+    <div class="sidebar-bottom">
+      <div class="user-item">
+        <div class="user-avatar">MP</div>
+        <div>
+          <div class="user-name">Medical Physicist</div>
+          <div class="user-role">TRS-398 Pro</div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <main class="main">
+    <header class="header">
+      <div class="header-left">
+        <div class="header-title">Backup</div>
+        <div class="header-sub">Measurement database, transfer bundles, and restore tools</div>
+      </div>
+      <button class="btn btn-secondary" onclick="toggleTheme()"><i data-lucide="sun-moon"></i><span id="themeLabel">Dark</span></button>
+    </header>
+
+    <section class="content">
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">Backup & Restore</h1>
+          <p class="page-subtitle">Protect old and current measurements. A database backup keeps every saved calibration record; a transfer bundle also includes settings and configuration files.</p>
+        </div>
+        <div class="page-actions">
+          <button class="btn btn-secondary" onclick="location.href='history.html'"><i data-lucide="history"></i> History</button>
+          <button class="btn btn-primary" onclick="downloadBackup()"><i data-lucide="database-backup"></i> Backup Now</button>
+        </div>
+      </div>
+
+      <div class="grid-3">
+        <div class="card metric">
+          <div class="metric-label"><i data-lucide="database"></i> Database Backup</div>
+          <div class="metric-value">DB</div>
+          <div class="metric-note">All measurements, including old imported measurements.</div>
+        </div>
+        <div class="card metric">
+          <div class="metric-label"><i data-lucide="package"></i> Transfer Bundle</div>
+          <div class="metric-value">ZIP</div>
+          <div class="metric-note">Measurements plus settings, tolerances, email config, and custom detectors.</div>
+        </div>
+        <div class="card metric">
+          <div class="metric-label"><i data-lucide="shield-check"></i> Restore Safety</div>
+          <div class="metric-value">Auto</div>
+          <div class="metric-note">Before restore, the current database is saved as a pre-restore backup.</div>
+        </div>
+      </div>
+
+      <div class="quick-actions">
+        <button class="btn btn-primary" onclick="downloadBackup()"><i data-lucide="download"></i> Download Database Backup</button>
+        <button class="btn btn-secondary" onclick="exportTransferBundle()"><i data-lucide="package"></i> Export Transfer Bundle</button>
+        <label class="btn btn-secondary" for="restoreDbFile"><i data-lucide="folder-open"></i> Restore Old .db Backup</label>
+        <label class="btn btn-secondary" for="importBundleFile"><i data-lucide="upload-cloud"></i> Import Transfer Bundle</label>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title"><i data-lucide="folder-open"></i> Restore Old Measurements</div>
+              <div class="card-subtitle">Use a previous `trs398_backup_*.db` file or an old TRS-398 database.</div>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="drop-zone">
+              <i data-lucide="upload-cloud"></i>
+              <div style="font-weight:600;color:var(--text);margin-bottom:6px;">Select a database backup</div>
+              <div style="margin-bottom:14px;">The current database is backed up automatically before restore.</div>
+              <input class="file-input" type="file" id="restoreDbFile" accept=".db" onchange="restoreDatabase(event)">
+              <label class="btn btn-primary" for="restoreDbFile"><i data-lucide="folder-open"></i> Choose .db File</label>
+              <div id="restoreStatus" class="status"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title"><i data-lucide="package"></i> Move To Another Installation</div>
+              <div class="card-subtitle">Export or import a complete transfer package.</div>
+            </div>
+          </div>
+          <div class="card-body">
+            <div style="display:grid;gap:12px;">
+              <button class="btn btn-primary" onclick="exportTransferBundle()"><i data-lucide="download"></i> Export Complete Bundle</button>
+              <input class="file-input" type="file" id="importBundleFile" accept=".zip" onchange="importTransferBundle(event)">
+              <label class="btn btn-secondary" for="importBundleFile"><i data-lucide="upload"></i> Import Bundle</label>
+              <div id="bundleStatus" class="status"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title"><i data-lucide="archive"></i> Server-Side Safety Backups</div>
+            <div class="card-subtitle">Backups automatically created before restore/import operations.</div>
+          </div>
+          <button class="btn btn-secondary" onclick="loadBackupList()"><i data-lucide="refresh-cw"></i> Refresh</button>
+        </div>
+        <div class="card-body">
+          <div id="backupList" class="backup-list">
+            <div class="status">Loading backups...</div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    let theme = localStorage.getItem('trs-theme') || 'dark';
+    document.documentElement.setAttribute('data-theme', theme);
+    document.body.setAttribute('data-theme', theme);
+    document.getElementById('themeLabel').textContent = theme === 'dark' ? 'Dark' : 'Light';
+
+    function toggleTheme() {
+      theme = theme === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', theme);
+      document.body.setAttribute('data-theme', theme);
+      localStorage.setItem('trs-theme', theme);
+      document.getElementById('themeLabel').textContent = theme === 'dark' ? 'Dark' : 'Light';
+    }
+
+    async function downloadBackup() {
+      const status = document.getElementById('restoreStatus');
+      status.className = 'status';
+      status.textContent = 'Preparing database backup...';
+      try {
+        const response = await fetch('/api/backup');
+        if (!response.ok) throw new Error('Backup failed');
+        const blob = await response.blob();
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = `trs398_backup_${new Date().toISOString().slice(0,19).replaceAll(':','')}.db`;
+        a.click();
+        URL.revokeObjectURL(a.href);
+        status.className = 'status ok';
+        status.textContent = 'Database backup downloaded.';
+      } catch (error) {
+        status.className = 'status err';
+        status.textContent = error.message;
+      }
+    }
+
+    async function restoreDatabase(event) {
+      const file = event.target.files[0];
+      const status = document.getElementById('restoreStatus');
+      if (!file) return;
+      if (!confirm(`Restore from "${file.name}"?\n\nCurrent measurements will be backed up automatically before restore.`)) {
+        event.target.value = '';
+        return;
+      }
+      status.className = 'status';
+      status.textContent = 'Restoring database...';
+      try {
+        const fd = new FormData();
+        fd.append('backup', file);
+        const response = await fetch('/api/backup/restore', { method: 'POST', body: fd });
+        const result = await response.json().catch(() => ({}));
+        if (!response.ok) throw new Error(result.error || 'Restore failed');
+        status.className = 'status ok';
+        status.textContent = `Restored ${result.records ?? ''} records. Reloading...`;
+        setTimeout(() => location.reload(), 1200);
+      } catch (error) {
+        status.className = 'status err';
+        status.textContent = error.message;
+      } finally {
+        event.target.value = '';
+      }
+    }
+
+    async function exportTransferBundle() {
+      const status = document.getElementById('bundleStatus');
+      status.className = 'status';
+      status.textContent = 'Preparing transfer bundle...';
+      try {
+        const response = await fetch('/api/transfer/export');
+        if (!response.ok) throw new Error('Bundle export failed');
+        const blob = await response.blob();
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = `trs398_transfer_${new Date().toISOString().slice(0,10)}.zip`;
+        a.click();
+        URL.revokeObjectURL(a.href);
+        status.className = 'status ok';
+        status.textContent = 'Transfer bundle downloaded.';
+      } catch (error) {
+        status.className = 'status err';
+        status.textContent = error.message;
+      }
+    }
+
+    async function importTransferBundle(event) {
+      const file = event.target.files[0];
+      const status = document.getElementById('bundleStatus');
+      if (!file) return;
+      if (!confirm(`Import "${file.name}"?\n\nThis replaces current data and settings. Continue?`)) {
+        event.target.value = '';
+        return;
+      }
+      status.className = 'status';
+      status.textContent = 'Importing bundle...';
+      try {
+        const fd = new FormData();
+        fd.append('bundle', file);
+        const response = await fetch('/api/transfer/import', { method: 'POST', body: fd });
+        const result = await response.json().catch(() => ({}));
+        if (!response.ok) throw new Error(result.error || 'Import failed');
+        status.className = 'status ok';
+        status.textContent = `Imported: ${(result.restored || []).join(', ') || 'bundle'}. Reloading...`;
+        setTimeout(() => location.reload(), 1500);
+      } catch (error) {
+        status.className = 'status err';
+        status.textContent = error.message;
+      } finally {
+        event.target.value = '';
+      }
+    }
+
+    async function loadBackupList() {
+      const list = document.getElementById('backupList');
+      list.innerHTML = '<div class="status">Loading backups...</div>';
+      try {
+        const response = await fetch('/api/backup/list');
+        if (!response.ok) throw new Error('Could not load backup list');
+        const data = await response.json();
+        const backups = data.backups || [];
+        if (!backups.length) {
+          list.innerHTML = '<div class="status">No server-side safety backups yet. Use Backup Now to download a database backup.</div>';
+          return;
+        }
+        list.innerHTML = backups.map(b => `
+          <div class="backup-row">
+            <div>
+              <div class="backup-name">${escapeHtml(b.filename)}</div>
+              <div class="backup-meta">${formatBytes(b.size)} - ${new Date(b.created).toLocaleString()}</div>
+            </div>
+            <span class="backup-meta">Safety copy</span>
+            <button class="btn btn-secondary" onclick="copyBackupName('${escapeJs(b.filename)}')"><i data-lucide="copy"></i> Copy name</button>
+          </div>
+        `).join('');
+        if (window.lucide) lucide.createIcons();
+      } catch (error) {
+        list.innerHTML = `<div class="status err">${escapeHtml(error.message)}</div>`;
+      }
+    }
+
+    function copyBackupName(name) {
+      navigator.clipboard?.writeText(name);
+    }
+    function exportCSV() { window.location.href = '/api/trs/export?format=excel'; }
+    function formatBytes(bytes) {
+      if (!bytes) return '0 B';
+      const units = ['B', 'KB', 'MB', 'GB'];
+      const index = Math.min(Math.floor(Math.log(bytes) / Math.log(1024)), units.length - 1);
+      return `${(bytes / Math.pow(1024, index)).toFixed(index ? 1 : 0)} ${units[index]}`;
+    }
+    function escapeHtml(value) {
+      return String(value).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+    }
+    function escapeJs(value) {
+      return String(value).replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+    }
+
+    if (window.lucide) lucide.createIcons();
+    loadBackupList();
+  </script>
+    <script src="sidebar.js"></script>
+</body>
+</html>

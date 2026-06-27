@@ -1,0 +1,1134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TRS-398 Pro – History</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+    <style>
+        /* ─── Design Tokens ─── */
+        :root {
+            --bg: #0b1120;
+            --surface: #131c2e;
+            --card: #1a2540;
+            --card-hover: #1e2d4a;
+            --border: rgba(148,163,184,0.1);
+            --text: #e8edf4;
+            --text-muted: #6b7fa3;
+            --accent: #E4572E;
+            --accent-glow: rgba(56,189,248,0.12);
+            --success: #22c55e;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            --sidebar-w: 240px;
+            --header-h: 56px;
+            --radius-sm: 6px;
+            --radius-md: 10px;
+            --radius-lg: 14px;
+            /* Compat aliases for old JS */
+            --ink: #e8edf4;
+            --muted: #6b7fa3;
+            --accent-2: #E4572E;
+        }
+        [data-theme="light"] {
+            --bg: #f0f4f8;
+            --surface: #ffffff;
+            --card: #ffffff;
+            --card-hover: #f8fafc;
+            --border: rgba(148,163,184,0.2);
+            --text: #0f172a;
+            --text-muted: #64748b;
+            --ink: #0f172a;
+            --muted: #64748b;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+        }
+
+        /* ─── Sidebar (always dark) ─── */
+        .sidebar {
+            width: var(--sidebar-w);
+            min-height: 100vh;
+            background:#1A1A1A;
+            border-right: 1px solid rgba(148,163,184,0.08);
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            left: 0; top: 0; bottom: 0;
+            z-index: 200;
+        }
+        .sidebar-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 18px 20px;
+            border-bottom: 1px solid rgba(148,163,184,0.08);
+        }
+        .logo-icon { width: 36px; height: 36px; flex-shrink: 0; }
+        .logo-name {
+            font-size: 15px;
+            font-weight: 700;
+            color: #e8edf4;
+            line-height: 1.2;
+        }
+        .logo-name span { color: #E4572E; }
+        .logo-version { font-size: 11px; color: #6b7fa3; }
+        .sidebar-nav {
+            flex: 1;
+            padding: 12px 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 9px 12px;
+            border-radius: var(--radius-md);
+            color: #94a3b8;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.15s;
+            background: none;
+            border: none;
+            width: 100%;
+            text-align: left;
+        }
+        .nav-item:hover { background: rgba(56,189,248,0.08); color: #e8edf4; }
+        .nav-item.active { background: rgba(56,189,248,0.12); color: #E4572E; }
+        .nav-item i { width: 16px; height: 16px; flex-shrink: 0; }
+        .sidebar-footer {
+            padding: 12px 10px;
+            border-top: 1px solid rgba(148,163,184,0.08);
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+        .nav-label {
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 0.06em;
+            color: #4a5a72;
+            text-transform: uppercase;
+            padding: 4px 12px 8px;
+        }
+
+        /* ─── Main Layout ─── */
+        .main-wrap {
+            margin-left: var(--sidebar-w);
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* ─── Top Header ─── */
+        .topbar {
+            height: var(--header-h);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 24px;
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .topbar-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .topbar-left > i { color: var(--text-muted); width: 16px; height: 16px; }
+        .topbar-left span {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text);
+        }
+        .topbar-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* ─── Buttons ─── */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 7px 14px;
+            border-radius: var(--radius-md);
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            border: none;
+            transition: all 0.15s;
+            text-decoration: none;
+            color: var(--text);
+            font-family: 'Inter', sans-serif;
+        }
+        .btn i { width: 14px; height: 14px; }
+        .btn-ghost {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+        }
+        .btn-ghost:hover { background: var(--card); color: var(--text); border-color: var(--accent); }
+        .btn-primary {
+            background: var(--accent);
+            color: #0b1120;
+            font-weight: 600;
+        }
+        .btn-primary:hover { opacity: 0.9; }
+        .select-sm {
+            padding: 6px 10px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border);
+            background: var(--card);
+            color: var(--text);
+            font-size: 13px;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+        }
+        .select-sm:focus { outline: none; border-color: var(--accent); }
+
+        /* ─── Page Content ─── */
+        .page-content {
+            padding: 24px;
+            flex: 1;
+        }
+
+        /* ─── Stats Row ─── */
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(160px, 1fr));
+            gap: 16px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        .stat-chip {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 18px 20px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            font-size: 13px;
+            color: var(--text-muted);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+            min-height: 84px;
+        }
+        .stat-chip strong { color: var(--text); font-variant-numeric: tabular-nums; }
+        .stat-chip i { width: 14px; height: 14px; }
+        .stat-chip.pass-chip i { color: var(--success); }
+        .stat-chip.fail-chip i { color: var(--error); }
+        .stat-chip.total-chip i { color: var(--accent); }
+
+        /* ─── Filter Bar ─── */
+        .filter-bar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .search-box {
+            flex: 1;
+            min-width: 200px;
+            padding: 8px 14px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            background: var(--card);
+            color: var(--text);
+            font-size: 13px;
+            font-family: 'Inter', sans-serif;
+        }
+        .search-box::placeholder { color: var(--text-muted); }
+        .search-box:focus { outline: none; border-color: var(--accent); }
+        .filter-select {
+            padding: 8px 12px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            background: var(--card);
+            color: var(--text);
+            font-size: 13px;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+        }
+        .filter-select:focus { outline: none; border-color: var(--accent); }
+
+        /* ─── Table Card ─── */
+        .table-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+        }
+        .table-wrap { overflow-x: auto; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+        thead th {
+            background: var(--surface);
+            color: var(--text-muted);
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            padding: 12px 18px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+            white-space: nowrap;
+        }
+        tbody tr {
+            border-bottom: 1px solid var(--border);
+            transition: background 0.1s, box-shadow 0.1s;
+        }
+        tbody tr:last-child { border-bottom: none; }
+        tbody tr:hover {
+            background: var(--card-hover);
+            box-shadow: inset 3px 0 0 var(--accent);
+        }
+        td { padding: 13px 18px; vertical-align: middle; }
+
+        /* ─── Badges ─── */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.03em;
+        }
+        .status-badge i { width: 11px; height: 11px; }
+        .status-badge.pass { background: rgba(34,197,94,0.12); color: var(--success); }
+        .status-badge.fail { background: rgba(239,68,68,0.12); color: var(--error); }
+        .mode-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 4px 10px;
+            border-radius: var(--radius-sm);
+            font-size: 11px;
+            font-weight: 600;
+        }
+        .mode-badge i { width: 11px; height: 11px; }
+        .mode-badge.photon { background: rgba(59,130,246,0.12); color: #F0A58E; }
+        .mode-badge.electron { background: rgba(168,85,247,0.12); color: #c084fc; }
+        .energy-val {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            color: var(--accent);
+            font-weight: 500;
+        }
+        .deviation-val {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        /* ─── User Cell ─── */
+        .user-cell { display: flex; align-items: center; gap: 8px; }
+        .user-avatar {
+            width: 28px; height: 28px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #E4572E, #E4572E);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 11px;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        /* ─── Date Cell ─── */
+        .date-main { font-weight: 500; font-size: 13px; }
+        .date-time { font-size: 11px; color: var(--text-muted); margin-top: 1px; font-family: 'JetBrains Mono', monospace; }
+
+        /* ─── Action Buttons ─── */
+        .actions-cell { display: flex; gap: 6px; }
+        .icon-btn {
+            width: 30px; height: 30px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border);
+            background: transparent;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .icon-btn i { width: 14px; height: 14px; }
+        .icon-btn:hover { background: var(--card-hover); color: var(--text); border-color: var(--accent); }
+        .icon-btn.danger:hover { background: rgba(239,68,68,0.1); color: var(--error); border-color: var(--error); }
+
+        /* ─── Empty State ─── */
+        .empty-state {
+            text-align: center;
+            padding: 56px 24px;
+            color: var(--text-muted);
+        }
+        .empty-state i { width: 40px; height: 40px; margin: 0 auto 16px; display: block; opacity: 0.4; }
+        .empty-state h3 { font-size: 16px; color: var(--text); margin-bottom: 6px; }
+        .empty-state p { font-size: 13px; }
+
+        /* ─── Modal ─── */
+        .modal-backdrop {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.65);
+            z-index: 500;
+            overflow-y: auto;
+        }
+        .modal-box {
+            max-width: 640px;
+            margin: 48px auto;
+            background: var(--card);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border);
+            padding: 28px;
+            position: relative;
+        }
+        .modal-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+        }
+        .modal-header i { color: var(--accent); width: 20px; height: 20px; }
+        .modal-header h2 { font-size: 18px; font-weight: 700; }
+        .modal-close {
+            position: absolute;
+            top: 16px; right: 16px;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 4px;
+            display: flex;
+            align-items: center;
+        }
+        .modal-close i { width: 18px; height: 18px; }
+        .modal-close:hover { color: var(--text); }
+        .drop-zone {
+            border: 2px dashed var(--border);
+            border-radius: var(--radius-md);
+            padding: 28px;
+            text-align: center;
+            cursor: pointer;
+            margin: 20px 0;
+            transition: border-color 0.15s;
+        }
+        .drop-zone:hover { border-color: var(--accent); }
+        .drop-zone i { width: 32px; height: 32px; color: var(--text-muted); margin: 0 auto 10px; display: block; }
+        .drop-zone-label { font-weight: 600; font-size: 14px; margin-bottom: 4px; }
+        .drop-zone-sub { font-size: 12px; color: var(--text-muted); }
+        .columns-hint {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+        .columns-hint code {
+            background: var(--surface);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+        }
+        .progress-wrap { margin-bottom: 16px; }
+        .progress-labels { display: flex; justify-content: space-between; font-size: 12px; color: var(--text-muted); margin-bottom: 6px; }
+        .progress-track { background: var(--surface); border-radius: 999px; height: 6px; overflow: hidden; }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #E4572E, #E4572E);
+            border-radius: 999px;
+            transition: width 0.3s;
+            width: 0%;
+        }
+        .import-summary {
+            display: none;
+            padding: 14px 16px;
+            border-radius: var(--radius-md);
+            margin-bottom: 16px;
+            font-size: 13px;
+        }
+        .modal-footer { display: flex; gap: 10px; justify-content: flex-end; }
+    </style>
+    <link rel="stylesheet" href="dashboard-system.css">
+    <script>
+        (function () {
+            const theme = localStorage.getItem('trs-theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', theme);
+        })();
+    </script>
+    <link rel="stylesheet" href="theme-data-instrument.css">
+</head>
+<body>
+    <!-- ── Sidebar ── -->
+    <nav class="sidebar">
+        <div class="sidebar-logo">
+            <svg class="logo-icon" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="50" cy="50" r="46" stroke="#E4572E" stroke-width="4"/>
+                <circle cx="50" cy="50" r="8" fill="#E4572E"/>
+                <line x1="50" y1="4" x2="50" y2="24" stroke="#E4572E" stroke-width="4" stroke-linecap="round"/>
+                <line x1="50" y1="76" x2="50" y2="96" stroke="#E4572E" stroke-width="4" stroke-linecap="round"/>
+                <line x1="4" y1="50" x2="24" y2="50" stroke="#E4572E" stroke-width="4" stroke-linecap="round"/>
+                <line x1="76" y1="50" x2="96" y2="50" stroke="#E4572E" stroke-width="4" stroke-linecap="round"/>
+                <line x1="18" y1="18" x2="32" y2="32" stroke="#E4572E" stroke-width="3" stroke-linecap="round" opacity="0.5"/>
+                <line x1="68" y1="68" x2="82" y2="82" stroke="#E4572E" stroke-width="3" stroke-linecap="round" opacity="0.5"/>
+                <line x1="82" y1="18" x2="68" y2="32" stroke="#E4572E" stroke-width="3" stroke-linecap="round" opacity="0.5"/>
+                <line x1="32" y1="68" x2="18" y2="82" stroke="#E4572E" stroke-width="3" stroke-linecap="round" opacity="0.5"/>
+            </svg>
+            <div>
+                <div class="logo-name">TRS-398 <span>Pro</span></div>
+                <div class="logo-version">v2.1</div>
+            </div>
+        </div>
+        <div class="sidebar-nav">
+            <span class="nav-label">Workspace</span>
+            <a href="dashboard.html" class="nav-item" id="navDashboard">
+                <i data-lucide="layout-dashboard"></i> Dashboard
+            </a>
+            <a href="index.html" class="nav-item" id="navNewCalibration">
+                <i data-lucide="circle-dot"></i> Calibration
+            </a>
+            <a href="history.html" class="nav-item active">
+                <i data-lucide="history"></i> History
+            </a>
+            <a href="control.html" class="nav-item">
+                <i data-lucide="activity"></i> Control Charts
+            </a>
+            <a href="linacs.html" class="nav-item">
+                <i data-lucide="cpu"></i> Machines
+            </a>
+            <a href="calendar.html" class="nav-item">
+                <i data-lucide="calendar"></i> QA Calendar
+            </a>
+            <a href="detectors.html" class="nav-item">
+                <i data-lucide="zap"></i> Detectors
+            </a>
+        </div>
+        <div class="sidebar-footer">
+            <span class="nav-label">System</span>
+            <button class="nav-item" onclick="location.href='backup.html'">
+                <i data-lucide="database"></i> Backup
+            </button>
+            <button class="nav-item" onclick="exportCSV()">
+                <i data-lucide="download"></i> Export CSV
+            </button>
+            <span class="nav-label" style="margin-top:10px;">History Tools</span>
+            <button class="nav-item" onclick="downloadImportTemplate()">
+                <i data-lucide="file-down"></i> Download Template
+            </button>
+            <button class="nav-item" onclick="openImportModal()">
+                <i data-lucide="upload"></i> Import Historical
+            </button>
+        </div>
+    </nav>
+
+    <!-- ── Main ── -->
+    <div class="main-wrap">
+        <!-- Top Header -->
+        <header class="topbar">
+            <div class="topbar-left">
+                <i data-lucide="history"></i>
+                <span id="pageTitle">Measurement History</span>
+                <span id="brandSuffix" style="display:none">History</span>
+            </div>
+            <div class="topbar-actions">
+                <button class="btn btn-ghost" id="btnExportCsv" onclick="exportCSV()">
+                    <i data-lucide="download"></i> Export CSV
+                </button>
+                <button class="btn btn-ghost" onclick="toggleTheme()">
+                    <i data-lucide="sun-moon"></i>
+                    <span id="themeLabel">Dark</span>
+                </button>
+                <select class="select-sm" id="langSelect" onchange="setLanguage(this.value)">
+                    <option value="en">EN</option>
+                    <option value="fr">FR</option>
+                </select>
+            </div>
+        </header>
+
+        <!-- Page Content -->
+        <div class="page-content">
+            <!-- Stats -->
+            <div class="stats-row">
+                <div class="stat-chip total-chip">
+                    <i data-lucide="database"></i>
+                    <span id="labelTotal">Total</span>: <strong id="totalCount">0</strong>
+                </div>
+                <div class="stat-chip pass-chip">
+                    <i data-lucide="check-circle-2"></i>
+                    <span id="labelPass">Pass</span>: <strong id="passCount">0</strong>
+                </div>
+                <div class="stat-chip fail-chip">
+                    <i data-lucide="x-circle"></i>
+                    <span id="labelFail">Fail</span>: <strong id="failCount">0</strong>
+                </div>
+            </div>
+
+            <!-- Filter Bar -->
+            <div class="filter-bar">
+                <input type="search" class="search-box" id="searchInput"
+                    placeholder="Search by user, energy, machine..." oninput="renderHistory()">
+                <select class="filter-select" id="modeFilter" onchange="renderHistory()">
+                    <option value="all" id="optAllModes">All Modes</option>
+                    <option value="Photon">Photon</option>
+                    <option value="Electron">Electron</option>
+                </select>
+                <select class="filter-select" id="statusFilter" onchange="renderHistory()">
+                    <option value="all" id="optAllStatus">All Status</option>
+                    <option value="pass" id="optPass">Pass</option>
+                    <option value="fail" id="optFail">Fail</option>
+                </select>
+                <button class="btn btn-ghost" onclick="loadHistory()" id="btnRefresh">
+                    <i data-lucide="refresh-cw"></i> Refresh
+                </button>
+            </div>
+
+            <!-- Table -->
+            <div class="table-card">
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th id="thDate">Date</th>
+                                <th id="thUser">User</th>
+                                <th id="thMode">Mode</th>
+                                <th id="thEnergy">Energy</th>
+                                <th id="thMachine">Machine</th>
+                                <th id="thStatus">Status</th>
+                                <th id="thDeviation">Deviation</th>
+                                <th id="thActions">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="historyBody">
+                            <tr>
+                                <td colspan="8">
+                                    <div class="empty-state">
+                                        <i data-lucide="loader-2"></i>
+                                        <h3 id="loadingText">Loading...</h3>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── Import Modal ── -->
+    <div id="importModal" class="modal-backdrop">
+        <div class="modal-box">
+            <button class="modal-close" onclick="closeImportModal()">
+                <i data-lucide="x"></i>
+            </button>
+            <div class="modal-header">
+                <i data-lucide="upload"></i>
+                <h2>Import Historical Data</h2>
+            </div>
+            <p style="color:var(--text-muted);font-size:13px;margin-bottom:0;">Upload a CSV file with past calibration measurements. Each row will be saved with its original date.</p>
+
+            <div class="drop-zone" onclick="document.getElementById('csvFileInput').click()">
+                <i data-lucide="file-up"></i>
+                <div class="drop-zone-label">Click to select CSV file</div>
+                <div class="drop-zone-sub" id="csvFileName">No file selected</div>
+                <input type="file" id="csvFileInput" accept=".csv" style="display:none;" onchange="onCsvFileSelected(this)">
+            </div>
+
+            <div class="columns-hint">
+                Expected columns: <code>Date, Energy, LinacName, T, P, kQ, Ndw, M+1, M+2, M+3, M-1, M-2, M-3, M100V1, M100V2, M100V3, Notes</code>
+            </div>
+
+            <div id="importProgress" style="display:none;" class="progress-wrap">
+                <div class="progress-labels">
+                    <span>Importing...</span>
+                    <span id="importProgressText">0 / 0</span>
+                </div>
+                <div class="progress-track">
+                    <div id="importProgressBar" class="progress-fill"></div>
+                </div>
+            </div>
+
+            <div id="importSummary" class="import-summary"></div>
+
+            <div class="modal-footer">
+                <button class="btn btn-ghost" onclick="closeImportModal()">Cancel</button>
+                <button id="importBtn" class="btn btn-primary" onclick="startImport()">
+                    <i data-lucide="upload"></i> Import
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let measurements = [];
+        let theme = localStorage.getItem('trs-theme') || 'dark';
+        let currentLanguage = localStorage.getItem('trs-language') || 'en';
+
+        const translations = {
+            en: {
+                dashboard: "Dashboard",
+                newCalibration: "Calibration",
+                exportCsv: "Export CSV",
+                history: "History",
+                measurementHistory: "Measurement History",
+                total: "Total",
+                pass: "Pass",
+                fail: "Fail",
+                searchPlaceholder: "Search by user, energy, machine...",
+                allModes: "All Modes",
+                allStatus: "All Status",
+                refresh: "Refresh",
+                date: "Date",
+                user: "User",
+                mode: "Mode",
+                energy: "Energy",
+                machine: "Machine",
+                status: "Status",
+                deviation: "Deviation",
+                actions: "Actions",
+                statusPass: "PASS",
+                statusFail: "FAIL",
+                photon: "Photon",
+                electron: "Electron",
+                loading: "Loading...",
+                noMeasurements: "No measurements yet",
+                startCreating: "Start by creating a new calibration",
+                noResults: "No results found",
+                adjustFilters: "Try adjusting your filters",
+                errorLoading: "Error loading history",
+                tryAgain: "Please try again",
+                dark: "Dark",
+                light: "Light",
+                deleteConfirm: "Are you sure you want to delete this measurement?"
+            },
+            fr: {
+                dashboard: "Tableau de bord",
+                newCalibration: "Étalonnage",
+                exportCsv: "Exporter CSV",
+                history: "Historique",
+                measurementHistory: "Historique des mesures",
+                total: "Total",
+                pass: "Conforme",
+                fail: "Non conforme",
+                searchPlaceholder: "Rechercher par utilisateur, énergie, machine...",
+                allModes: "Tous les modes",
+                allStatus: "Tous les statuts",
+                refresh: "Actualiser",
+                date: "Date",
+                user: "Utilisateur",
+                mode: "Mode",
+                energy: "Énergie",
+                machine: "Machine",
+                status: "Statut",
+                deviation: "Écart",
+                actions: "Actions",
+                statusPass: "CONFORME",
+                statusFail: "NON CONFORME",
+                photon: "Photon",
+                electron: "Électron",
+                loading: "Chargement...",
+                noMeasurements: "Aucune mesure",
+                startCreating: "Commencez par créer un nouvel étalonnage",
+                noResults: "Aucun résultat trouvé",
+                adjustFilters: "Essayez d'ajuster vos filtres",
+                errorLoading: "Erreur lors du chargement",
+                tryAgain: "Veuillez réessayer",
+                dark: "Sombre",
+                light: "Clair",
+                deleteConfirm: "Êtes-vous sûr de vouloir supprimer cette mesure?"
+            }
+        };
+
+        function t(key) {
+            return translations[currentLanguage]?.[key] || translations['en']?.[key] || key;
+        }
+
+        function applyTheme() {
+            document.documentElement.setAttribute('data-theme', theme);
+            document.body.setAttribute('data-theme', theme);
+            document.getElementById('themeLabel').textContent = theme === 'dark' ? t('dark') : t('light');
+        }
+
+        function toggleTheme() {
+            theme = theme === 'dark' ? 'light' : 'dark';
+            localStorage.setItem('trs-theme', theme);
+            applyTheme();
+        }
+
+        function setLanguage(lang) {
+            currentLanguage = lang;
+            localStorage.setItem('trs-language', lang);
+            document.getElementById('langSelect').value = lang;
+            applyTranslations();
+            renderHistory();
+        }
+
+        function applyTranslations() {
+            document.getElementById('brandSuffix').textContent = t('history');
+            document.getElementById('navDashboard').innerHTML = `<i data-lucide="layout-dashboard"></i> ${t('dashboard')}`;
+            document.getElementById('navNewCalibration').innerHTML = `<i data-lucide="circle-dot"></i> ${t('newCalibration')}`;
+            document.getElementById('btnExportCsv').innerHTML = `<i data-lucide="download"></i> ${t('exportCsv')}`;
+            document.getElementById('themeLabel').textContent = theme === 'dark' ? t('dark') : t('light');
+            document.getElementById('pageTitle').textContent = t('measurementHistory');
+            document.getElementById('labelTotal').textContent = t('total');
+            document.getElementById('labelPass').textContent = t('pass');
+            document.getElementById('labelFail').textContent = t('fail');
+            document.getElementById('searchInput').placeholder = t('searchPlaceholder');
+            document.getElementById('optAllModes').textContent = t('allModes');
+            document.getElementById('optAllStatus').textContent = t('allStatus');
+            document.getElementById('optPass').textContent = t('pass');
+            document.getElementById('optFail').textContent = t('fail');
+            document.getElementById('btnRefresh').innerHTML = `<i data-lucide="refresh-cw"></i> ${t('refresh')}`;
+            document.getElementById('thDate').textContent = t('date');
+            document.getElementById('thUser').textContent = t('user');
+            document.getElementById('thMode').textContent = t('mode');
+            document.getElementById('thEnergy').textContent = t('energy');
+            document.getElementById('thMachine').textContent = t('machine');
+            document.getElementById('thStatus').textContent = t('status');
+            document.getElementById('thDeviation').textContent = t('deviation');
+            document.getElementById('thActions').textContent = t('actions');
+            if (window.lucide) lucide.createIcons();
+        }
+
+        async function loadHistory() {
+            try {
+                const resp = await fetch('/api/trs/measurements');
+                if (!resp.ok) throw new Error(`HTTP error! status: ${resp.status}`);
+                measurements = await resp.json();
+                renderHistory();
+                updateStats();
+            } catch (e) {
+                console.error('Error loading history:', e);
+                const tbody = document.getElementById('historyBody');
+                if (tbody) {
+                    tbody.innerHTML = `
+                        <tr><td colspan="8">
+                            <div class="empty-state">
+                                <i data-lucide="wifi-off"></i>
+                                <h3>${t('errorLoading')}</h3>
+                                <p>${t('tryAgain')}</p>
+                                <p style="font-size:11px;color:var(--text-muted);margin-top:6px;">${e.message}</p>
+                            </div>
+                        </td></tr>
+                    `;
+                    if (window.lucide) lucide.createIcons();
+                }
+            }
+        }
+
+        function updateStats() {
+            const total = measurements.length;
+            const pass = measurements.filter(m => {
+                const ecart = m.ecart !== undefined ? m.ecart : (m.Ecart !== undefined ? m.Ecart : 0);
+                return Math.abs(ecart) <= 2.0;
+            }).length;
+            const fail = total - pass;
+            document.getElementById('totalCount').textContent = total;
+            document.getElementById('passCount').textContent = pass;
+            document.getElementById('failCount').textContent = fail;
+        }
+
+        function renderHistory() {
+            const tbody = document.getElementById('historyBody');
+
+            if (!measurements || measurements.length === 0) {
+                tbody.innerHTML = `
+                    <tr><td colspan="8">
+                        <div class="empty-state">
+                            <i data-lucide="inbox"></i>
+                            <h3>${t('noMeasurements')}</h3>
+                            <p>${t('startCreating')}</p>
+                        </div>
+                    </td></tr>
+                `;
+                if (window.lucide) lucide.createIcons();
+                return;
+            }
+
+            const searchTerm = (document.getElementById('searchInput').value || '').toLowerCase().trim();
+            const modeFilter = document.getElementById('modeFilter').value;
+            const statusFilter = document.getElementById('statusFilter').value;
+
+            const filtered = measurements.filter(m => {
+                if (modeFilter !== 'all') {
+                    const mode = m.mode || m.Mode || 'photon';
+                    const isPhoton = !mode || mode === 'Photon' || mode.toLowerCase().includes('photon');
+                    if (modeFilter === 'Photon' && !isPhoton) return false;
+                    if (modeFilter === 'Electron' && isPhoton) return false;
+                }
+                const ecart = m.ecart !== undefined ? m.ecart : (m.Ecart !== undefined ? m.Ecart : 0);
+                const isPassing = Math.abs(ecart) <= 2.0;
+                if (statusFilter === 'pass' && !isPassing) return false;
+                if (statusFilter === 'fail' && isPassing) return false;
+                if (searchTerm) {
+                    const searchFields = [
+                        m.userName || m.UserName,
+                        m.energy || m.Energy,
+                        m.linacName || m.LinacName,
+                        m.mode || m.Mode,
+                        m.chamber || m.Chamber
+                    ].map(v => (v || '').toLowerCase());
+                    if (!searchFields.some(f => f.includes(searchTerm))) return false;
+                }
+                return true;
+            });
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = `
+                    <tr><td colspan="8">
+                        <div class="empty-state">
+                            <i data-lucide="search-x"></i>
+                            <h3>${t('noResults')}</h3>
+                            <p>${t('adjustFilters')}</p>
+                        </div>
+                    </td></tr>
+                `;
+                if (window.lucide) lucide.createIcons();
+                return;
+            }
+
+            tbody.innerHTML = filtered.map(m => {
+                const dateValue = m.date || m.Date;
+                const ecartValue = m.ecart !== undefined ? m.ecart : (m.Ecart !== undefined ? m.Ecart : 0);
+                const modeValue = m.mode || m.Mode || 'photon';
+                const userNameValue = m.userName || m.UserName || 'User';
+                const energyValue = m.energy || m.Energy || '-';
+                const linacNameValue = m.linacName || m.LinacName || '-';
+                const idValue = m.id || m.Id;
+
+                const date = new Date(dateValue);
+                const dateStr = date.toLocaleDateString(currentLanguage === 'fr' ? 'fr-FR' : 'en-US');
+                const timeStr = date.toLocaleTimeString(currentLanguage === 'fr' ? 'fr-FR' : 'en-US', { hour: '2-digit', minute: '2-digit' });
+                const isPassing = Math.abs(ecartValue) <= 2.0;
+                const isPhoton = !modeValue || modeValue === 'Photon' || modeValue.toLowerCase().includes('photon');
+                const userInitial = (userNameValue || 'U').charAt(0).toUpperCase();
+                const deviationColor = isPassing ? 'var(--success)' : 'var(--error)';
+
+                return `
+                    <tr>
+                        <td>
+                            <div class="date-main">${dateStr}</div>
+                            <div class="date-time">${timeStr}</div>
+                        </td>
+                        <td>
+                            <div class="user-cell">
+                                <div class="user-avatar">${userInitial}</div>
+                                <span>${userNameValue}</span>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="mode-badge ${isPhoton ? 'photon' : 'electron'}">
+                                <i data-lucide="${isPhoton ? 'zap' : 'activity'}"></i>
+                                ${isPhoton ? t('photon') : t('electron')}
+                            </span>
+                        </td>
+                        <td><span class="energy-val">${energyValue}</span></td>
+                        <td style="font-size:13px;">${linacNameValue}</td>
+                        <td>
+                            <span class="status-badge ${isPassing ? 'pass' : 'fail'}">
+                                <i data-lucide="${isPassing ? 'check-circle-2' : 'x-circle'}"></i>
+                                ${isPassing ? t('statusPass') : t('statusFail')}
+                            </span>
+                        </td>
+                        <td>
+                            <span class="deviation-val" style="color:${deviationColor}">
+                                ${ecartValue >= 0 ? '+' : ''}${ecartValue.toFixed(2)}%
+                            </span>
+                        </td>
+                        <td>
+                            <div class="actions-cell">
+                                <button class="icon-btn" onclick="exportPdf(${idValue})" title="Download PDF">
+                                    <i data-lucide="printer"></i>
+                                </button>
+                                <button class="icon-btn danger" onclick="deleteMeasurement(${idValue})" title="Delete">
+                                    <i data-lucide="trash-2"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+
+            if (window.lucide) lucide.createIcons();
+        }
+
+        async function deleteMeasurement(id) {
+            if (!confirm(t('deleteConfirm'))) return;
+            try {
+                await fetch(`/api/trs/measurements/${id}`, { method: 'DELETE' });
+                loadHistory();
+            } catch (e) {
+                alert('Error deleting measurement');
+            }
+        }
+
+        function exportPdf(id) {
+            window.open(`/api/trs/report/${id}`, '_blank');
+        }
+
+        function exportCSV() {
+            window.location.href = '/api/trs/export';
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.target.tagName === 'INPUT') return;
+            if (e.key === 't') toggleTheme();
+            if (e.key === 'n' || (e.ctrlKey && e.key === 'n')) {
+                e.preventDefault();
+                window.location.href = 'index.html';
+            }
+            if (e.ctrlKey && e.key === 'e') {
+                e.preventDefault();
+                exportCSV();
+            }
+        });
+
+        // ── CSV Import ──────────────────────────────────────────────────────
+        const CSV_COLUMNS = ['Date','Energy','LinacName','T','P','kQ','Ndw','M+1','M+2','M+3','M-1','M-2','M-3','M100V1','M100V2','M100V3','Notes'];
+        let csvRows = [];
+
+        function openImportModal() {
+            document.getElementById('importModal').style.display = 'block';
+            document.getElementById('importProgress').style.display = 'none';
+            document.getElementById('importSummary').style.display = 'none';
+            document.getElementById('csvFileName').textContent = 'No file selected';
+            document.getElementById('csvFileInput').value = '';
+            csvRows = [];
+            if (window.lucide) lucide.createIcons();
+        }
+
+        function closeImportModal() {
+            document.getElementById('importModal').style.display = 'none';
+        }
+
+        function onCsvFileSelected(input) {
+            const file = input.files[0];
+            if (!file) return;
+            document.getElementById('csvFileName').textContent = file.name;
+            const reader = new FileReader();
+            reader.onload = e => {
+                csvRows = parseCsv(e.target.result);
+                document.getElementById('csvFileName').textContent = `${file.name}  —  ${csvRows.length} row(s) ready`;
+            };
+            reader.readAsText(file);
+        }
+
+        function parseCsv(text) {
+            const lines = text.replace(/\r/g, '').split('\n').filter(l => l.trim());
+            if (lines.length < 2) return [];
+            const headers = lines[0].split(',').map(h => h.trim());
+            return lines.slice(1).map(line => {
+                const vals = line.split(',');
+                const row = {};
+                headers.forEach((h, i) => row[h] = (vals[i] || '').trim());
+                return row;
+            });
+        }
+
+        function rowToPayload(row) {
+            const dateStr = row['Date'] || '';
+            const parsedDate = dateStr ? new Date(dateStr) : null;
+            return {
+                Date: parsedDate && !isNaN(parsedDate) ? parsedDate.toISOString() : undefined,
+                Energy: row['Energy'] || '',
+                LinacName: row['LinacName'] || '',
+                T: parseFloat(row['T']) || 0,
+                P: parseFloat(row['P']) || 0,
+                kQ: parseFloat(row['kQ']) || 0,
+                Ndw: parseFloat(row['Ndw']) || 0.04789,
+                M_plus_1: parseFloat(row['M+1']) || 0,
+                M_plus_2: parseFloat(row['M+2']) || 0,
+                M_plus_3: parseFloat(row['M+3']) || 0,
+                M_minus_1: parseFloat(row['M-1']) || 0,
+                M_minus_2: parseFloat(row['M-2']) || 0,
+                M_minus_3: parseFloat(row['M-3']) || 0,
+                M100V_1: parseFloat(row['M100V1']) || 0,
+                M100V_2: parseFloat(row['M100V2']) || 0,
+                M100V_3: parseFloat(row['M100V3']) || 0,
+                Notes: row['Notes'] || '',
+                Mode: (row['Energy'] || '').toLowerCase().includes('e') ? 'electron' : 'photon'
+            };
+        }
+
+        async function startImport() {
+            if (!csvRows.length) { alert('Please select a CSV file first.'); return; }
+            const btn = document.getElementById('importBtn');
+            btn.disabled = true;
+            document.getElementById('importProgress').style.display = 'block';
+            document.getElementById('importSummary').style.display = 'none';
+
+            let imported = 0, errors = 0;
+            const errorDetails = [];
+
+            for (let i = 0; i < csvRows.length; i++) {
+                document.getElementById('importProgressText').textContent = `${i + 1} / ${csvRows.length}`;
+                document.getElementById('importProgressBar').style.width = `${((i + 1) / csvRows.length) * 100}%`;
+                try {
+                    const payload = rowToPayload(csvRows[i]);
+                    const resp = await fetch('/api/trs/save', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    if (resp.ok) { imported++; } else { errors++; errorDetails.push(`Row ${i + 2}: HTTP ${resp.status}`); }
+                } catch (e) { errors++; errorDetails.push(`Row ${i + 2}: ${e.message}`); }
+            }
+
+            btn.disabled = false;
+            const summary = document.getElementById('importSummary');
+            summary.style.display = 'block';
+            summary.style.background = errors === 0 ? 'rgba(34,197,94,0.1)' : 'rgba(245,158,11,0.1)';
+            summary.style.border = `1px solid ${errors === 0 ? 'var(--success)' : 'var(--warning)'}`;
+            summary.innerHTML = `<strong>${imported} imported successfully</strong>${errors ? `, <span style="color:var(--error)">${errors} errors</span>` : ''}` +
+                (errorDetails.length ? `<ul style="margin-top:8px;font-size:12px;color:var(--text-muted)">${errorDetails.map(d => `<li>${d}</li>`).join('')}</ul>` : '');
+            loadHistory();
+        }
+
+        // ── Template Download ────────────────────────────────────────────────
+        function downloadImportTemplate() {
+            const header = CSV_COLUMNS.join(',');
+            const example = '2023-06-15 09:30,6X,Linac1,22.0,1013.0,0.9990,0.04789,0.1234,0.1235,0.1234,0.1233,0.1234,0.1233,0.1200,0.1201,0.1200,Baseline check';
+            const blob = new Blob([header + '\n' + example + '\n'], { type: 'text/csv' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = 'trs398_import_template.csv';
+            a.click();
+            URL.revokeObjectURL(a.href);
+        }
+
+        // Initialize
+        document.getElementById('langSelect').value = currentLanguage;
+        applyTheme();
+        applyTranslations();
+        loadHistory();
+        lucide.createIcons();
+    </script>
+    <script src="sidebar.js"></script>
+</body>
+</html>

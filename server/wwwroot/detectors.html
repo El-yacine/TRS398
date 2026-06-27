@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TRS-398 Pro — Detector Library</title>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #0b1120; --surface: #131c2e; --card: #1a2540;
+      --border: rgba(148,163,184,0.1); --text: #e8edf4; --muted: #6b7fa3;
+      --accent: #E4572E; --success: #22c55e; --warning: #f59e0b; --error: #ef4444;
+      --sidebar-w: 220px;
+    }
+    body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); display: flex; min-height: 100vh; font-size: 14px; }
+
+    .sidebar { width: var(--sidebar-w); background:#1A1A1A; border-right: 1px solid rgba(148,163,184,0.08); display: flex; flex-direction: column; position: fixed; left: 0; top: 0; bottom: 0; z-index: 300; }
+    .sidebar-logo { display: flex; align-items: center; gap: 10px; padding: 18px 20px; border-bottom: 1px solid rgba(148,163,184,0.08); }
+    .logo-icon { width: 34px; height: 34px; } .logo-name { font-size: 14px; font-weight: 700; } .logo-name span { color: #E4572E; } .logo-ver { font-size: 10px; color: #6b7fa3; }
+    .sidebar-nav { flex: 1; padding: 10px 8px; display: flex; flex-direction: column; gap: 2px; }
+    .nav-item { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: 10px; color: #94a3b8; text-decoration: none; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.15s; background: none; border: none; width: 100%; text-align: left; }
+    .nav-item i { width: 16px; height: 16px; flex-shrink: 0; }
+    .nav-item:hover { background: rgba(56,189,248,0.08); color: #e8edf4; }
+    .nav-item.active { background: rgba(56,189,248,0.12); color: #E4572E; }
+    .sidebar-footer { padding: 10px 8px; border-top: 1px solid rgba(148,163,184,0.08); display: flex; flex-direction: column; gap: 2px; }
+    .sidebar-label { font-size: 10px; font-weight: 600; letter-spacing: 0.06em; color: #4a5a72; text-transform: uppercase; padding: 4px 12px 6px; }
+
+    .app-shell { flex: 1; margin-left: var(--sidebar-w); display: flex; flex-direction: column; }
+    .topbar { height: 56px; display: flex; align-items: center; justify-content: space-between; padding: 0 24px; background: var(--surface); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; }
+    .topbar-left { display: flex; align-items: center; gap: 10px; }
+    .topbar-title { font-size: 15px; font-weight: 600; }
+    .topbar-btn { display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px; border-radius: 10px; font-size: 13px; font-weight: 500; cursor: pointer; border: 1px solid var(--border); background: transparent; color: var(--muted); transition: all 0.15s; font-family: inherit; }
+    .topbar-btn:hover { background: var(--card); color: var(--text); border-color: var(--accent); }
+    .topbar-btn.primary { background: var(--accent); color: #0b1120; border-color: transparent; font-weight: 700; }
+    .topbar-btn.primary:hover { opacity: 0.9; }
+    .topbar-btn i { width: 14px; height: 14px; }
+    .topbar-btn.danger { background: rgba(239,68,68,0.1); color: var(--error); border-color: rgba(239,68,68,0.2); }
+    .topbar-btn.danger:hover { background: rgba(239,68,68,0.2); }
+
+    .content { padding: 24px; }
+
+    .toolbar { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+    .search-input { flex: 1; min-width: 240px; padding: 9px 14px; border-radius: 8px; border: 1px solid var(--border); background: var(--card); color: var(--text); font-size: 13px; font-family: inherit; outline: none; }
+    .search-input:focus { border-color: var(--accent); }
+    .count-badge { font-size: 12px; color: var(--muted); white-space: nowrap; }
+
+    /* Table */
+    .det-table-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+    .det-table { width: 100%; border-collapse: collapse; }
+    .det-table th { padding: 11px 14px; text-align: left; font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; background: rgba(0,0,0,0.2); border-bottom: 1px solid var(--border); }
+    .det-table td { padding: 10px 14px; border-bottom: 1px solid rgba(148,163,184,0.06); font-size: 13px; vertical-align: middle; }
+    .det-table tr:last-child td { border-bottom: none; }
+    .det-table tr:hover td { background: rgba(56,189,248,0.03); }
+    .det-name { font-weight: 600; }
+    .kq-range { font-family: 'Courier New', monospace; font-size: 12px; color: var(--accent); }
+    .tpr-range { font-size: 12px; color: var(--muted); }
+    .action-btns { display: flex; gap: 6px; }
+    .act-btn { display: inline-flex; align-items: center; gap: 5px; padding: 5px 10px; border-radius: 7px; font-size: 12px; font-weight: 500; cursor: pointer; border: 1px solid var(--border); background: transparent; color: var(--muted); transition: all 0.15s; font-family: inherit; }
+    .act-btn:hover { background: var(--card); color: var(--text); border-color: var(--accent); }
+    .act-btn.del:hover { border-color: var(--error); color: var(--error); background: rgba(239,68,68,0.08); }
+    .act-btn i { width: 12px; height: 12px; }
+
+    /* Modal */
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 1000; display: none; align-items: flex-start; justify-content: center; padding: 40px 20px; overflow-y: auto; }
+    .modal-overlay.open { display: flex; }
+    .modal-box { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 28px; width: 100%; max-width: 680px; box-shadow: 0 24px 48px rgba(0,0,0,0.6); }
+    .modal-title { font-size: 17px; font-weight: 700; margin-bottom: 20px; display: flex; align-items: center; gap: 8px; }
+    .form-row { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
+    .form-row label { font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
+    .form-input { padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--card); color: var(--text); font-size: 14px; font-family: inherit; outline: none; width: 100%; }
+    .form-input:focus { border-color: var(--accent); }
+    .form-hint { font-size: 11px; color: var(--muted); margin-top: 3px; }
+    .form-textarea { resize: vertical; min-height: 80px; font-family: 'Courier New', monospace; font-size: 12px; }
+    .modal-footer { display: flex; gap: 8px; margin-top: 24px; justify-content: flex-end; }
+    .btn-modal { padding: 10px 20px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; border: 1px solid var(--border); font-family: inherit; }
+    .btn-cancel { background: transparent; color: var(--muted); }
+    .btn-cancel:hover { background: var(--card); color: var(--text); }
+    .btn-save { background: var(--accent); color: #0b1120; border-color: transparent; }
+    .btn-save:hover { opacity: 0.9; }
+
+    .unsaved-bar { display: none; align-items: center; gap: 12px; background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.3); border-radius: 8px; padding: 10px 16px; margin-bottom: 16px; }
+    .unsaved-bar.show { display: flex; }
+    .unsaved-text { flex: 1; font-size: 13px; color: var(--warning); }
+  </style>
+  <link rel="stylesheet" href="dashboard-system.css">
+  <script>
+    (function () {
+      const theme = localStorage.getItem('trs-theme') || 'dark';
+      document.documentElement.setAttribute('data-theme', theme);
+      document.addEventListener('DOMContentLoaded', () => document.body.setAttribute('data-theme', theme));
+    })();
+  </script>
+    <link rel="stylesheet" href="theme-data-instrument.css">
+</head>
+<body>
+
+<nav class="sidebar">
+  <div class="sidebar-logo">
+    <svg class="logo-icon" viewBox="0 0 100 100" fill="none">
+      <circle cx="50" cy="50" r="46" stroke="#E4572E" stroke-width="4"/>
+      <circle cx="50" cy="50" r="8" fill="#E4572E"/>
+      <line x1="50" y1="4" x2="50" y2="24" stroke="#E4572E" stroke-width="4" stroke-linecap="round"/>
+      <line x1="50" y1="76" x2="50" y2="96" stroke="#E4572E" stroke-width="4" stroke-linecap="round"/>
+      <line x1="4" y1="50" x2="24" y2="50" stroke="#E4572E" stroke-width="4" stroke-linecap="round"/>
+      <line x1="76" y1="50" x2="96" y2="50" stroke="#E4572E" stroke-width="4" stroke-linecap="round"/>
+    </svg>
+    <div><div class="logo-name">TRS-398 <span>Pro</span></div><div class="logo-ver">v2.1.0</div></div>
+  </div>
+  <div class="sidebar-nav">
+    <a href="dashboard.html" class="nav-item"><i data-lucide="layout-dashboard"></i> Dashboard</a>
+    <a href="index.html"     class="nav-item"><i data-lucide="circle-dot"></i> Calibration</a>
+    <a href="history.html"   class="nav-item"><i data-lucide="history"></i> History</a>
+    <a href="control.html"   class="nav-item"><i data-lucide="activity"></i> Control Charts</a>
+    <a href="linacs.html"    class="nav-item"><i data-lucide="cpu"></i> Machines</a>
+    <a href="calendar.html"  class="nav-item"><i data-lucide="calendar"></i> QA Calendar</a>
+    <a href="detectors.html" class="nav-item active"><i data-lucide="zap"></i> Detectors</a>
+  </div>
+  <div class="sidebar-footer">
+    <div class="sidebar-label">System</div>
+    <button class="nav-item" onclick="location.href='backup.html'"><i data-lucide="database"></i> Backup</button>
+    <button class="nav-item" onclick="window.location='/api/trs/export?format=excel'"><i data-lucide="download"></i> Export</button>
+  </div>
+</nav>
+
+<div class="app-shell">
+  <div class="topbar">
+    <div class="topbar-left"><i data-lucide="zap"></i><span class="topbar-title">Detector Library</span></div>
+    <div style="display:flex;gap:8px">
+      <button class="topbar-btn danger" id="btnReset" onclick="resetToDefault()" style="display:none">
+        <i data-lucide="rotate-ccw"></i> Reset to Default
+      </button>
+      <button class="topbar-btn primary" onclick="saveLibrary()" id="btnSave" disabled>
+        <i data-lucide="save"></i> Save Changes
+      </button>
+      <button class="topbar-btn" onclick="openAddModal()">
+        <i data-lucide="plus-circle"></i> Add Detector
+      </button>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="unsaved-bar" id="unsavedBar">
+      <i data-lucide="alert-triangle" style="width:16px;height:16px;color:#f59e0b;flex-shrink:0"></i>
+      <span class="unsaved-text">You have unsaved changes. Click "Save Changes" to apply.</span>
+    </div>
+
+    <div class="toolbar">
+      <input class="search-input" id="searchInput" type="text" placeholder="Search detectors…" oninput="renderTable()">
+      <span class="count-badge" id="countBadge">Loading…</span>
+    </div>
+
+    <div class="det-table-wrap">
+      <table class="det-table">
+        <thead>
+          <tr>
+            <th>Detector Name</th>
+            <th>kQ range</th>
+            <th>TPR/R50 nodes</th>
+            <th style="width:130px">Actions</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Edit/Add modal -->
+<div class="modal-overlay" id="editModal">
+  <div class="modal-box">
+    <div class="modal-title"><i data-lucide="edit-3"></i> <span id="modalTitle">Edit Detector</span></div>
+
+    <div class="form-row">
+      <label>Detector Name</label>
+      <input class="form-input" id="detName" type="text" placeholder="e.g. PTW 30013 Farmer">
+    </div>
+    <div class="form-row">
+      <label>TPR/R50 nodes (comma-separated)</label>
+      <input class="form-input" id="detNodes" type="text" placeholder="0.50, 0.53, 0.56, …">
+      <div class="form-hint">For photons: TPR₂₀/₁₀ values (0.5–0.84). For electrons: R50 values (g/cm²).</div>
+    </div>
+    <div class="form-row">
+      <label>kQ values (comma-separated, same length)</label>
+      <textarea class="form-input form-textarea" id="detKq" placeholder="1.004, 1.003, 1.001, …"></textarea>
+      <div class="form-hint">One kQ per node. Must match the number of nodes exactly.</div>
+    </div>
+    <div id="editError" style="color:#fca5a5;font-size:13px;margin-top:8px;display:none"></div>
+
+    <div class="modal-footer">
+      <button class="btn-modal btn-cancel" onclick="closeEditModal()">Cancel</button>
+      <button class="btn-modal btn-save" onclick="saveDetector()">Save Detector</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  lucide.createIcons();
+
+  let library  = {};      // { detectorName: { tpr_nodes/r50_nodes: [], kq_values: [] } }
+  let editName = null;    // null = new, string = existing name being edited
+  let dirty    = false;
+
+  async function load() {
+    try {
+      // Prefer /api/detectors/list (checks custom first)
+      const res = await fetch('/api/detectors/list');
+      library   = await res.json();
+      // Check if custom library exists
+      const customRes = await fetch('/api/backup/config'); // just a probe — we'll detect via save button text
+      document.getElementById('btnReset').style.display = 'inline-flex';
+    } catch {
+      // fallback
+      const res = await fetch('/api/detectors');
+      library   = await res.json();
+    }
+    renderTable();
+  }
+
+  function renderTable() {
+    const q    = document.getElementById('searchInput').value.toLowerCase();
+    const keys = Object.keys(library).filter(k => k.toLowerCase().includes(q)).sort();
+    document.getElementById('countBadge').textContent = `${keys.length} of ${Object.keys(library).length} detectors`;
+
+    const tbody = document.getElementById('tableBody');
+    tbody.innerHTML = keys.map(name => {
+      const det  = library[name];
+      const nodes = det.tpr_nodes || det.r50_nodes || [];
+      const kqs   = det.kq_values || [];
+      const kqMin = kqs.length ? Math.min(...kqs).toFixed(4) : '—';
+      const kqMax = kqs.length ? Math.max(...kqs).toFixed(4) : '—';
+      const nodeLabel = det.r50_nodes ? `R50: ${nodes[0]}–${nodes[nodes.length-1]} g/cm²` : `TPR: ${nodes[0]}–${nodes[nodes.length-1]}`;
+      return `<tr>
+        <td class="det-name">${esc(name)}</td>
+        <td class="kq-range">${kqMin} – ${kqMax}</td>
+        <td class="tpr-range">${nodeLabel} (${nodes.length} pts)</td>
+        <td>
+          <div class="action-btns">
+            <button class="act-btn" onclick="openEditModal('${esc(name).replace(/'/g,"\\'")}')">
+              <i data-lucide="edit-3"></i> Edit
+            </button>
+            <button class="act-btn del" onclick="deleteDetector('${esc(name).replace(/'/g,"\\'")}')">
+              <i data-lucide="trash-2"></i>
+            </button>
+          </div>
+        </td>
+      </tr>`;
+    }).join('');
+    lucide.createIcons();
+  }
+
+  function esc(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+  function openAddModal() {
+    editName = null;
+    document.getElementById('modalTitle').textContent = 'Add Detector';
+    document.getElementById('detName').value  = '';
+    document.getElementById('detNodes').value = '';
+    document.getElementById('detKq').value    = '';
+    document.getElementById('editError').style.display = 'none';
+    document.getElementById('editModal').classList.add('open');
+  }
+
+  function openEditModal(name) {
+    editName = name;
+    const det   = library[name];
+    const nodes = (det.tpr_nodes || det.r50_nodes || []).join(', ');
+    const kqs   = (det.kq_values || []).join(', ');
+    document.getElementById('modalTitle').textContent = 'Edit Detector';
+    document.getElementById('detName').value  = name;
+    document.getElementById('detNodes').value = nodes;
+    document.getElementById('detKq').value    = kqs;
+    document.getElementById('editError').style.display = 'none';
+    document.getElementById('editModal').classList.add('open');
+  }
+
+  function closeEditModal() { document.getElementById('editModal').classList.remove('open'); }
+
+  function saveDetector() {
+    const name  = document.getElementById('detName').value.trim();
+    const rawN  = document.getElementById('detNodes').value.trim();
+    const rawKq = document.getElementById('detKq').value.trim();
+    const errEl = document.getElementById('editError');
+    errEl.style.display = 'none';
+
+    if (!name) { errEl.textContent = 'Detector name is required.'; errEl.style.display='block'; return; }
+
+    const nodes = rawN.split(',').map(s => parseFloat(s.trim())).filter(n => !isNaN(n));
+    const kqs   = rawKq.split(',').map(s => parseFloat(s.trim())).filter(n => !isNaN(n));
+    if (!nodes.length) { errEl.textContent = 'At least one node is required.'; errEl.style.display='block'; return; }
+    if (nodes.length !== kqs.length) { errEl.textContent = `Node count (${nodes.length}) ≠ kQ count (${kqs.length}).`; errEl.style.display='block'; return; }
+
+    if (editName && editName !== name) delete library[editName];
+    library[name] = { tpr_nodes: nodes, kq_values: kqs };
+    markDirty();
+    closeEditModal();
+    renderTable();
+  }
+
+  function deleteDetector(name) {
+    if (!confirm(`Delete "${name}"? This cannot be undone after saving.`)) return;
+    delete library[name];
+    markDirty();
+    renderTable();
+  }
+
+  function markDirty() {
+    dirty = true;
+    document.getElementById('unsavedBar').classList.add('show');
+    document.getElementById('btnSave').disabled = false;
+    lucide.createIcons();
+  }
+
+  async function saveLibrary() {
+    try {
+      const res  = await fetch('/api/detectors/save', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(library)
+      });
+      const data = await res.json();
+      if (data.success) {
+        dirty = false;
+        document.getElementById('unsavedBar').classList.remove('show');
+        document.getElementById('btnSave').disabled = true;
+        showToast('Detector library saved successfully.', 'success');
+      }
+    } catch { showToast('Save failed. Try again.', 'error'); }
+  }
+
+  async function resetToDefault() {
+    if (!confirm('Reset to the bundled factory detector library? All your edits will be lost.')) return;
+    try {
+      const res = await fetch('/api/detectors');
+      library   = await res.json();
+      markDirty(); renderTable();
+      showToast('Library reset to factory defaults. Click Save to apply.', 'warning');
+    } catch { showToast('Reset failed.', 'error'); }
+  }
+
+  function showToast(msg, type) {
+    const t = document.createElement('div');
+    t.style.cssText = `position:fixed;bottom:24px;right:24px;z-index:9999;padding:12px 18px;border-radius:8px;font-size:13px;font-weight:600;color:#fff;background:${type==='success'?'#166534':type==='error'?'#7f1d1d':'#78350f'};box-shadow:0 4px 12px rgba(0,0,0,0.4)`;
+    t.textContent = msg;
+    document.body.appendChild(t);
+    setTimeout(() => t.remove(), 3000);
+  }
+
+  load();
+</script>
+    <script src="sidebar.js"></script>
+</body>
+</html>

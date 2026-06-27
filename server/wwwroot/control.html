@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TRS-398 Pro — Control Charts</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:       #0b1120;
+      --surface:  #131c2e;
+      --card:     #1a2540;
+      --border:   rgba(148,163,184,0.1);
+      --text:     #e8edf4;
+      --muted:    #6b7fa3;
+      --accent:   #E4572E;
+      --success:  #22c55e;
+      --warning:  #f59e0b;
+      --error:    #ef4444;
+      --sidebar-w: 220px;
+    }
+
+    body {
+      font-family: 'Segoe UI', -apple-system, system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      min-height: 100vh;
+      font-size: 14px;
+    }
+
+    /* ── Sidebar ── */
+    .sidebar {
+      width: var(--sidebar-w);
+      background:#1A1A1A;
+      border-right: 1px solid rgba(148,163,184,0.08);
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      left: 0; top: 0; bottom: 0;
+      z-index: 300;
+    }
+    .sidebar-logo {
+      display: flex; align-items: center; gap: 10px;
+      padding: 18px 20px;
+      border-bottom: 1px solid rgba(148,163,184,0.08);
+    }
+    .logo-icon { width: 34px; height: 34px; flex-shrink: 0; }
+    .logo-name { font-size: 14px; font-weight: 700; color: #e8edf4; }
+    .logo-name span { color: #E4572E; }
+    .logo-ver  { font-size: 10px; color: #6b7fa3; }
+    .sidebar-nav { flex: 1; padding: 10px 8px; display: flex; flex-direction: column; gap: 2px; }
+    .nav-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 9px 12px; border-radius: 10px;
+      color: #94a3b8; text-decoration: none;
+      font-size: 13px; font-weight: 500;
+      cursor: pointer; transition: all 0.15s;
+      background: none; border: none; width: 100%; text-align: left;
+    }
+    .nav-item i { width: 16px; height: 16px; flex-shrink: 0; }
+    .nav-item:hover { background: rgba(56,189,248,0.08); color: #e8edf4; }
+    .nav-item.active { background: rgba(56,189,248,0.12); color: #E4572E; }
+    .sidebar-footer {
+      padding: 10px 8px;
+      border-top: 1px solid rgba(148,163,184,0.08);
+      display: flex; flex-direction: column; gap: 2px;
+    }
+    .sidebar-label {
+      font-size: 10px; font-weight: 600; letter-spacing: 0.06em;
+      color: #4a5a72; text-transform: uppercase; padding: 4px 12px 6px;
+    }
+
+    /* ── Main ── */
+    .app-shell { flex: 1; margin-left: var(--sidebar-w); display: flex; flex-direction: column; }
+    .topbar {
+      height: 56px; display: flex; align-items: center; justify-content: space-between;
+      padding: 0 24px; background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      position: sticky; top: 0; z-index: 100;
+    }
+    .topbar-left { display: flex; align-items: center; gap: 10px; }
+    .topbar-title { font-size: 15px; font-weight: 600; }
+    .topbar-right { display: flex; align-items: center; gap: 8px; }
+
+    .content { padding: 24px; }
+
+    /* ── Controls bar ── */
+    .controls {
+      display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 12px; padding: 14px 18px; margin-bottom: 20px;
+    }
+    .ctrl-label { font-size: 12px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
+    .ctrl-select, .ctrl-btn {
+      padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border);
+      background: var(--card); color: var(--text);
+      font-size: 13px; font-family: inherit; cursor: pointer; outline: none;
+      transition: border-color 0.15s;
+    }
+    .ctrl-select:focus, .ctrl-btn:focus { border-color: var(--accent); }
+    .ctrl-btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-weight: 500; color: var(--muted);
+    }
+    .ctrl-btn:hover { color: var(--text); background: rgba(56,189,248,0.08); }
+    .ctrl-btn.active { background: var(--accent); color: #0b1120; border-color: transparent; font-weight: 600; }
+    .ctrl-divider { width: 1px; height: 24px; background: var(--border); }
+
+    /* ── Stats row ── */
+    .stats-row {
+      display: grid; grid-template-columns: repeat(6, 1fr);
+      gap: 10px; margin-bottom: 20px;
+    }
+    .stat-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 10px; padding: 14px 16px;
+      display: flex; flex-direction: column; gap: 4px;
+    }
+    .stat-label { font-size: 10px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
+    .stat-value { font-size: 20px; font-weight: 700; color: var(--text); }
+    .stat-sub   { font-size: 11px; color: var(--muted); }
+    .stat-card.ok     { border-left: 3px solid var(--success); }
+    .stat-card.warn   { border-left: 3px solid var(--warning); }
+    .stat-card.action { border-left: 3px solid var(--error); }
+
+    /* ── Chart card ── */
+    .chart-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 12px; padding: 20px 24px; margin-bottom: 20px;
+    }
+    .chart-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+    .chart-title { font-size: 14px; font-weight: 600; }
+    .chart-subtitle { font-size: 12px; color: var(--muted); margin-top: 2px; }
+    .legend { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+    .legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted); }
+    .legend-dot { width: 10px; height: 10px; border-radius: 50%; }
+    .legend-line { width: 20px; height: 2px; border-radius: 1px; }
+    .chart-wrap { position: relative; height: 340px; }
+
+    /* ── Violations panel ── */
+    .violations-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 12px; padding: 20px 24px;
+    }
+    .violations-title { font-size: 14px; font-weight: 600; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+    .violation-list { display: flex; flex-direction: column; gap: 8px; }
+    .violation-item {
+      display: flex; align-items: flex-start; gap: 12px;
+      padding: 10px 14px; border-radius: 8px; border-left: 3px solid;
+    }
+    .violation-item.r1 { background: rgba(239,68,68,0.08); border-color: var(--error); }
+    .violation-item.r2 { background: rgba(245,158,11,0.08); border-color: var(--warning); }
+    .violation-item.r3 { background: rgba(59,130,246,0.08); border-color: #E4572E; }
+    .violation-rule { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; min-width: 50px; padding-top: 1px; }
+    .violation-item.r1 .violation-rule { color: var(--error); }
+    .violation-item.r2 .violation-rule { color: var(--warning); }
+    .violation-item.r3 .violation-rule { color: #E4572E; }
+    .violation-text { font-size: 12px; color: var(--text); }
+    .violation-date { font-size: 11px; color: var(--muted); margin-top: 2px; }
+    .no-violations { text-align: center; padding: 24px; color: var(--muted); font-size: 13px; }
+    .no-violations-icon { font-size: 24px; margin-bottom: 6px; color: var(--success); }
+
+    .empty-state { text-align: center; padding: 60px 24px; color: var(--muted); }
+    .empty-icon { margin-bottom: 12px; opacity: 0.4; }
+  </style>
+  <link rel="stylesheet" href="dashboard-system.css">
+  <script>
+    (function () {
+      const theme = localStorage.getItem('trs-theme') || 'dark';
+      document.documentElement.setAttribute('data-theme', theme);
+      document.addEventListener('DOMContentLoaded', () => document.body.setAttribute('data-theme', theme));
+    })();
+  </script>
+    <link rel="stylesheet" href="theme-data-instrument.css">
+</head>
+<body>
+
+<!-- ── Sidebar ── -->
+<nav class="sidebar">
+  <div class="sidebar-logo">
+    <svg class="logo-icon" viewBox="0 0 100 100" fill="none">
+      <circle cx="50" cy="50" r="46" stroke="#E4572E" stroke-width="4"/>
+      <circle cx="50" cy="50" r="8" fill="#E4572E"/>
+      <line x1="50" y1="4" x2="50" y2="24" stroke="#E4572E" stroke-width="4" stroke-linecap="round"/>
+      <line x1="50" y1="76" x2="50" y2="96" stroke="#E4572E" stroke-width="4" stroke-linecap="round"/>
+      <line x1="4" y1="50" x2="24" y2="50" stroke="#E4572E" stroke-width="4" stroke-linecap="round"/>
+      <line x1="76" y1="50" x2="96" y2="50" stroke="#E4572E" stroke-width="4" stroke-linecap="round"/>
+    </svg>
+    <div>
+      <div class="logo-name">TRS-398 <span>Pro</span></div>
+      <div class="logo-ver">v2.1.0</div>
+    </div>
+  </div>
+  <div class="sidebar-nav">
+    <a href="dashboard.html" class="nav-item"><i data-lucide="layout-dashboard"></i> Dashboard</a>
+    <a href="index.html"     class="nav-item"><i data-lucide="circle-dot"></i> Calibration</a>
+    <a href="history.html"   class="nav-item"><i data-lucide="history"></i> History</a>
+    <a href="control.html"   class="nav-item active"><i data-lucide="activity"></i> Control Charts</a>
+    <a href="linacs.html"    class="nav-item"><i data-lucide="cpu"></i> Machines</a>
+    <a href="calendar.html"  class="nav-item"><i data-lucide="calendar"></i> QA Calendar</a>
+    <a href="detectors.html" class="nav-item"><i data-lucide="zap"></i> Detectors</a>
+  </div>
+  <div class="sidebar-footer">
+    <div class="sidebar-label">System</div>
+    <button class="nav-item" onclick="location.href='backup.html'"><i data-lucide="database"></i> Backup</button>
+    <button class="nav-item" onclick="window.location='/api/trs/export?format=excel'"><i data-lucide="download"></i> Export</button>
+  </div>
+</nav>
+
+<!-- ── Main ── -->
+<div class="app-shell">
+  <div class="topbar">
+    <div class="topbar-left">
+      <i data-lucide="activity"></i>
+      <span class="topbar-title">Shewhart Control Chart</span>
+    </div>
+    <div class="topbar-right">
+      <a href="index.html" class="ctrl-btn" style="text-decoration:none">
+        <i data-lucide="plus-circle"></i> New Calibration
+      </a>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- Controls -->
+    <div class="controls">
+      <span class="ctrl-label">Beam</span>
+      <select class="ctrl-select" id="energySelect" onchange="load()">
+        <option value="">All energies</option>
+      </select>
+      <div class="ctrl-divider"></div>
+      <span class="ctrl-label">Machine</span>
+      <select class="ctrl-select" id="linacSelect" onchange="load()">
+        <option value="">All machines</option>
+      </select>
+      <div class="ctrl-divider"></div>
+      <span class="ctrl-label">Period</span>
+      <button class="ctrl-btn" id="btn6"  onclick="setPeriod(6)">6 mo</button>
+      <button class="ctrl-btn" id="btn12" onclick="setPeriod(12)">12 mo</button>
+      <button class="ctrl-btn active" id="btn24" onclick="setPeriod(24)">24 mo</button>
+    </div>
+
+    <!-- Stats row -->
+    <div class="stats-row" id="statsRow">
+      <div class="stat-card"><div class="stat-label">Points</div><div class="stat-value" id="sN">—</div></div>
+      <div class="stat-card"><div class="stat-label">Mean (Δ%)</div><div class="stat-value" id="sMean">—</div></div>
+      <div class="stat-card"><div class="stat-label">Std Dev (σ)</div><div class="stat-value" id="sSd">—</div></div>
+      <div class="stat-card ok"><div class="stat-label">In Control</div><div class="stat-value" id="sOk">—</div><div class="stat-sub">within ±1σ</div></div>
+      <div class="stat-card warn"><div class="stat-label">Warning Zone</div><div class="stat-value" id="sWarn">—</div><div class="stat-sub">1σ–2σ</div></div>
+      <div class="stat-card action"><div class="stat-label">Out of Control</div><div class="stat-value" id="sAction">—</div><div class="stat-sub">beyond ±2σ</div></div>
+    </div>
+
+    <!-- Chart -->
+    <div class="chart-card">
+      <div class="chart-header">
+        <div>
+          <div class="chart-title">Deviation from Reference (Δ%)</div>
+          <div class="chart-subtitle" id="chartSubtitle">Select a beam above to view the chart</div>
+        </div>
+        <div class="legend">
+          <div class="legend-item"><div class="legend-dot" style="background:#22c55e"></div> In control</div>
+          <div class="legend-item"><div class="legend-dot" style="background:#f59e0b"></div> Warning ±1σ</div>
+          <div class="legend-item"><div class="legend-dot" style="background:#ef4444"></div> Out ±2σ</div>
+          <div class="legend-item"><div class="legend-line" style="background:#E4572E"></div> Mean</div>
+          <div class="legend-item"><div class="legend-line" style="background:#f59e0b;border-top:1px dashed #f59e0b"></div> ±1σ</div>
+          <div class="legend-item"><div class="legend-line" style="background:#ef4444"></div> ±2σ / Limit</div>
+        </div>
+      </div>
+      <div id="emptyState" class="empty-state">
+        <div class="empty-icon"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg></div>
+        <div>No data yet. Run a calibration first.</div>
+      </div>
+      <div class="chart-wrap" id="chartWrap" style="display:none">
+        <canvas id="ctrlChart"></canvas>
+      </div>
+    </div>
+
+    <!-- Violations -->
+    <div class="violations-card">
+      <div class="violations-title">
+        <i data-lucide="alert-triangle"></i>
+        Nelson Rule Violations
+      </div>
+      <div id="violationList" class="violation-list">
+        <div class="no-violations">
+          <div class="no-violations-icon"><i data-lucide="check-circle-2"></i></div>
+          No violations detected.
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /app-shell -->
+
+<script>
+  lucide.createIcons();
+
+  let chart   = null;
+  let months  = 24;
+  let allData = null;
+
+  // Populate selectors from measurements
+  async function init() {
+    try {
+      const res  = await fetch('/api/trs/measurements');
+      const data = await res.json();
+
+      const energies = [...new Set(data.map(m => m.energy).filter(Boolean))].sort();
+      const linacs   = [...new Set(data.map(m => m.linacId || m.linacName).filter(Boolean))].sort();
+
+      const esel = document.getElementById('energySelect');
+      energies.forEach(e => { const o = document.createElement('option'); o.value = o.textContent = e; esel.appendChild(o); });
+
+      const lsel = document.getElementById('linacSelect');
+      linacs.forEach(l => { const o = document.createElement('option'); o.value = o.textContent = l; lsel.appendChild(o); });
+
+      // Auto-select first energy if only one machine
+      if (energies.length) { esel.value = energies[0]; }
+      load();
+    } catch(e) { console.error(e); }
+  }
+
+  function setPeriod(m) {
+    months = m;
+    [6,12,24].forEach(n => document.getElementById('btn'+n).classList.remove('active'));
+    document.getElementById('btn'+m).classList.add('active');
+    load();
+  }
+
+  async function load() {
+    const energy = document.getElementById('energySelect').value;
+    const linac  = document.getElementById('linacSelect').value;
+
+    const params = new URLSearchParams({ months });
+    if (energy) params.set('energy', energy);
+    if (linac)  params.set('linac',  linac);
+
+    try {
+      const res  = await fetch('/api/control-chart?' + params);
+      allData    = await res.json();
+      renderChart(allData);
+      renderStats(allData.stats);
+      renderViolations(allData.violations);
+    } catch(e) { console.error(e); }
+  }
+
+  function renderStats(s) {
+    if (!s) {
+      ['sN','sMean','sSd','sOk','sWarn','sAction'].forEach(id => document.getElementById(id).textContent = '—');
+      return;
+    }
+    document.getElementById('sN').textContent      = s.n;
+    document.getElementById('sMean').textContent   = (s.mean >= 0 ? '+' : '') + s.mean.toFixed(3) + '%';
+    document.getElementById('sSd').textContent     = s.sd.toFixed(4);
+    document.getElementById('sOk').textContent     = s.inControl;
+    document.getElementById('sWarn').textContent   = s.inWarning;
+    document.getElementById('sAction').textContent = s.outOfControl;
+  }
+
+  function renderChart(data) {
+    const points = data.points || [];
+    const s      = data.stats;
+
+    const empty = document.getElementById('emptyState');
+    const wrap  = document.getElementById('chartWrap');
+
+    if (!points.length) {
+      empty.style.display = 'block';
+      wrap.style.display  = 'none';
+      if (chart) { chart.destroy(); chart = null; }
+      return;
+    }
+    empty.style.display = 'none';
+    wrap.style.display  = 'block';
+
+    const energy = document.getElementById('energySelect').value || 'All';
+    const linac  = document.getElementById('linacSelect').value  || 'All machines';
+    document.getElementById('chartSubtitle').textContent =
+      `${energy} · ${linac} · last ${months} months · ${points.length} measurements`;
+
+    const labels = points.map(p => p.date);
+    const devs   = points.map(p => p.deviation);
+
+    const pointColors = points.map(p =>
+      p.zone === 'action'  ? 'rgba(239,68,68,1)' :
+      p.zone === 'warning' ? 'rgba(245,158,11,1)' :
+                             'rgba(34,197,94,1)'
+    );
+
+    const datasets = [
+      {
+        label: 'Deviation (%)',
+        data: devs,
+        borderColor: 'rgba(148,163,184,0.4)',
+        borderWidth: 1.5,
+        pointBackgroundColor: pointColors,
+        pointBorderColor: pointColors,
+        pointRadius: 5,
+        pointHoverRadius: 7,
+        tension: 0.2,
+        fill: false,
+        order: 1
+      }
+    ];
+
+    // Add control limit horizontal lines as datasets
+    const n = labels.length;
+    if (s) {
+      const line = (val, color, dash, label) => ({
+        label, data: Array(n).fill(val),
+        borderColor: color, borderWidth: dash ? 1.5 : 2,
+        borderDash: dash || [], pointRadius: 0,
+        fill: false, order: 10
+      });
+      datasets.push(
+        line(s.mean,   '#E4572E', [],      'Mean'),
+        line(s.warnHi, '#f59e0b', [5,4],  '+1σ'),
+        line(s.warnLo, '#f59e0b', [5,4],  '−1σ'),
+        line(s.ucl,    '#ef4444', [],      '+2σ (UCL)'),
+        line(s.lcl,    '#ef4444', [],      '−2σ (LCL)'),
+        line(2.0,  'rgba(239,68,68,0.3)', [3,6], '+2% Limit'),
+        line(-2.0, 'rgba(239,68,68,0.3)', [3,6], '−2% Limit'),
+      );
+    }
+
+    if (chart) chart.destroy();
+    const ctx = document.getElementById('ctrlChart').getContext('2d');
+    chart = new Chart(ctx, {
+      type: 'line',
+      data: { labels, datasets },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: { mode: 'index', intersect: false },
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            backgroundColor: '#1a2540',
+            borderColor: 'rgba(148,163,184,0.2)',
+            borderWidth: 1,
+            callbacks: {
+              label: ctx => {
+                if (ctx.datasetIndex > 0) return `${ctx.dataset.label}: ${ctx.parsed.y.toFixed(4)}%`;
+                const p = points[ctx.dataIndex];
+                return [`Δ = ${p.deviation >= 0 ? '+' : ''}${p.deviation}%`, `User: ${p.userName || '—'}`, `Zone: ${p.zone}`];
+              }
+            }
+          }
+        },
+        scales: {
+          x: {
+            ticks: { color: '#6b7fa3', maxTicksLimit: 12, maxRotation: 0 },
+            grid:  { color: 'rgba(148,163,184,0.06)' }
+          },
+          y: {
+            ticks: { color: '#6b7fa3', callback: v => v.toFixed(2) + '%' },
+            grid:  { color: 'rgba(148,163,184,0.08)' }
+          }
+        }
+      }
+    });
+  }
+
+  function renderViolations(viols) {
+    const el = document.getElementById('violationList');
+    if (!viols || !viols.length) {
+      el.innerHTML = `<div class="no-violations">
+        <div class="no-violations-icon"><i data-lucide="check-circle-2"></i></div>
+        No Nelson rule violations detected — process in statistical control.
+      </div>`;
+      lucide.createIcons();
+      return;
+    }
+    const ruleLabel = { 1: 'Rule 1 — Out of control', 2: 'Rule 2 — Run', 3: 'Rule 3 — Trend' };
+    el.innerHTML = viols.map(v => `
+      <div class="violation-item r${v.rule}">
+        <div class="violation-rule">Rule ${v.rule}</div>
+        <div>
+          <div class="violation-text">${v.desc}</div>
+          <div class="violation-date">${ruleLabel[v.rule]}</div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  init();
+</script>
+    <script src="sidebar.js"></script>
+</body>
+</html>

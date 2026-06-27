@@ -1,0 +1,78 @@
+{
+  "name": "trs398-pro",
+  "version": "2.1.0",
+  "description": "TRS-398 Pro — Medical Physics Dosimetry Desktop Application",
+  "main": "main.js",
+  "author": "TRS-398 Pro Team",
+  "license": "MIT",
+  "scripts": {
+    "dev": "electron .",
+    "build": "electron-builder --dir",
+    "publish:server:win":   "dotnet publish server/MyQC.WebAPI.csproj -c Release -r win-x64   --self-contained true -o server/publish",
+    "publish:server:linux": "dotnet publish server/MyQC.WebAPI.csproj -c Release -r linux-x64 --self-contained true -o server/publish",
+    "dist:win":   "npm run publish:server:win   && electron-builder --win   --x64",
+    "dist:linux": "npm run publish:server:linux && electron-builder --linux --x64"
+  },
+  "devDependencies": {
+    "electron": "^30.0.0",
+    "electron-builder": "^24.13.3"
+  },
+  "build": {
+    "appId": "com.trs398pro.app",
+    "productName": "TRS-398 Pro",
+    "asar": true,
+    "directories": {
+      "output": "dist-electron",
+      "buildResources": "build"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "splash.html",
+      "!server/**",
+      "!dist-electron/**",
+      "!node_modules/**"
+    ],
+    "extraResources": [
+      {
+        "from": "server/publish",
+        "to": "server-bin",
+        "filter": ["**/*"]
+      },
+      {
+        "from": "detector_library.json",
+        "to": "detector_library.json"
+      }
+    ],
+    "linux": {
+      "target": [
+        { "target": "AppImage", "arch": ["x64"] },
+        { "target": "dir",      "arch": ["x64"] }
+      ],
+      "icon": "build/icon.png",
+      "category": "Science",
+      "artifactName": "${productName}-${version}-linux.${ext}"
+    },
+    "win": {
+      "target": [
+        { "target": "nsis",     "arch": ["x64"] },
+        { "target": "portable", "arch": ["x64"] }
+      ],
+      "icon": "build/icon.png",
+      "artifactName": "${productName}-${version}-windows.${ext}"
+    },
+    "portable": {
+      "artifactName": "${productName}-${version}.${ext}"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "TRS-398 Pro",
+      "deleteAppDataOnUninstall": false,
+      "perMachine": false,
+      "runAfterFinish": true
+    }
+  }
+}

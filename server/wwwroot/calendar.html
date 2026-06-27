@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TRS-398 Pro — QA Calendar</title>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #0b1120; --surface: #131c2e; --card: #1a2540;
+      --border: rgba(148,163,184,0.1); --text: #e8edf4; --muted: #6b7fa3;
+      --accent: #E4572E; --success: #22c55e; --warning: #f59e0b;
+      --error: #ef4444; --sidebar-w: 220px;
+    }
+    body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); display: flex; min-height: 100vh; font-size: 14px; }
+
+    /* sidebar */
+    .sidebar { width: var(--sidebar-w); background:#1A1A1A; border-right: 1px solid rgba(148,163,184,0.08); display: flex; flex-direction: column; position: fixed; left: 0; top: 0; bottom: 0; z-index: 300; }
+    .sidebar-logo { display: flex; align-items: center; gap: 10px; padding: 18px 20px; border-bottom: 1px solid rgba(148,163,184,0.08); }
+    .logo-icon { width: 34px; height: 34px; }
+    .logo-name { font-size: 14px; font-weight: 700; } .logo-name span { color: #E4572E; }
+    .logo-ver { font-size: 10px; color: #6b7fa3; }
+    .sidebar-nav { flex: 1; padding: 10px 8px; display: flex; flex-direction: column; gap: 2px; }
+    .nav-item { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: 10px; color: #94a3b8; text-decoration: none; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.15s; background: none; border: none; width: 100%; text-align: left; }
+    .nav-item i { width: 16px; height: 16px; flex-shrink: 0; }
+    .nav-item:hover { background: rgba(56,189,248,0.08); color: #e8edf4; }
+    .nav-item.active { background: rgba(56,189,248,0.12); color: #E4572E; }
+    .sidebar-footer { padding: 10px 8px; border-top: 1px solid rgba(148,163,184,0.08); display: flex; flex-direction: column; gap: 2px; }
+    .sidebar-label { font-size: 10px; font-weight: 600; letter-spacing: 0.06em; color: #4a5a72; text-transform: uppercase; padding: 4px 12px 6px; }
+
+    /* main */
+    .app-shell { flex: 1; margin-left: var(--sidebar-w); display: flex; flex-direction: column; }
+    .topbar { height: 56px; display: flex; align-items: center; justify-content: space-between; padding: 0 24px; background: var(--surface); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; }
+    .topbar-left { display: flex; align-items: center; gap: 10px; }
+    .topbar-title { font-size: 15px; font-weight: 600; }
+    .topbar-right { display: flex; align-items: center; gap: 8px; }
+    .topbar-btn { display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px; border-radius: 10px; font-size: 13px; font-weight: 500; cursor: pointer; border: 1px solid var(--border); background: transparent; color: var(--muted); transition: all 0.15s; font-family: inherit; text-decoration: none; }
+    .topbar-btn:hover { background: var(--card); color: var(--text); border-color: var(--accent); }
+    .topbar-btn i { width: 14px; height: 14px; }
+
+    .content { padding: 24px; }
+
+    /* month nav */
+    .month-nav { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+    .month-title { font-size: 22px; font-weight: 700; }
+    .month-btns { display: flex; gap: 8px; }
+    .nav-btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; border-radius: 8px; border: 1px solid var(--border); background: var(--card); color: var(--muted); font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.15s; font-family: inherit; }
+    .nav-btn:hover { border-color: var(--accent); color: var(--text); }
+    .nav-btn i { width: 14px; height: 14px; }
+    .today-btn { background: var(--accent); color: #0b1120; border-color: transparent; font-weight: 700; }
+    .today-btn:hover { opacity: 0.9; color: #0b1120; }
+
+    /* legend */
+    .legend { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 20px; }
+    .legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted); }
+    .legend-dot { width: 10px; height: 10px; border-radius: 3px; }
+
+    /* calendar grid */
+    .cal-grid { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
+    .cal-header { display: grid; grid-template-columns: repeat(7, 1fr); }
+    .cal-header-cell { padding: 10px 0; text-align: center; font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; border-bottom: 1px solid var(--border); }
+    .cal-body { display: grid; grid-template-columns: repeat(7, 1fr); }
+    .cal-cell {
+      min-height: 100px; padding: 8px; border-right: 1px solid var(--border);
+      border-bottom: 1px solid var(--border); position: relative;
+      transition: background 0.1s;
+    }
+    .cal-cell:nth-child(7n) { border-right: none; }
+    .cal-cell.empty { background: rgba(0,0,0,0.1); }
+    .cal-cell.today { background: rgba(56,189,248,0.05); }
+    .cal-cell.today .day-num { color: var(--accent); font-weight: 700; }
+    .cal-cell:hover:not(.empty) { background: rgba(56,189,248,0.04); }
+
+    .day-num { font-size: 13px; font-weight: 600; color: var(--muted); margin-bottom: 6px; display: flex; align-items: center; justify-content: space-between; }
+    .today-badge { font-size: 9px; background: var(--accent); color: #0b1120; padding: 1px 5px; border-radius: 8px; font-weight: 700; }
+
+    .qa-event {
+      display: flex; align-items: center; gap: 5px;
+      padding: 3px 7px; border-radius: 5px; margin-bottom: 3px;
+      font-size: 11px; font-weight: 600; cursor: pointer;
+      transition: opacity 0.1s;
+    }
+    .qa-event:hover { opacity: 0.85; }
+    .qa-event.pass { background: rgba(34,197,94,0.15); color: #86efac; }
+    .qa-event.fail { background: rgba(239,68,68,0.15); color: #fca5a5; }
+    .qa-event .ev-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+    .qa-event.pass .ev-dot { background: var(--success); }
+    .qa-event.fail .ev-dot { background: var(--error); }
+
+    .due-event {
+      display: flex; align-items: center; gap: 5px;
+      padding: 3px 7px; border-radius: 5px; margin-bottom: 3px;
+      font-size: 11px; font-weight: 600; border: 1px dashed;
+    }
+    .due-event.due-ok      { border-color: rgba(56,189,248,0.4);  color: #7dd3fc; background: rgba(56,189,248,0.06); }
+    .due-event.due-overdue { border-color: rgba(239,68,68,0.4);   color: #fca5a5; background: rgba(239,68,68,0.06); }
+    .due-event i { width: 10px; height: 10px; }
+
+    /* tooltip / detail popup */
+    .detail-popup {
+      position: fixed; z-index: 9999;
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 10px; padding: 14px 16px; min-width: 220px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+      pointer-events: none;
+    }
+    .detail-popup.hidden { display: none; }
+    .popup-title { font-size: 13px; font-weight: 700; margin-bottom: 8px; }
+    .popup-row { display: flex; justify-content: space-between; gap: 16px; font-size: 12px; margin-bottom: 3px; }
+    .popup-label { color: var(--muted); }
+    .popup-val { font-weight: 600; }
+    .popup-val.pass { color: var(--success); }
+    .popup-val.fail { color: var(--error); }
+  </style>
+  <link rel="stylesheet" href="dashboard-system.css">
+  <script>
+    (function () {
+      const theme = localStorage.getItem('trs-theme') || 'dark';
+      document.documentElement.setAttribute('data-theme', theme);
+      document.addEventListener('DOMContentLoaded', () => document.body.setAttribute('data-theme', theme));
+    })();
+  </script>
+    <link rel="stylesheet" href="theme-data-instrument.css">
+</head>
+<body>
+
+<nav class="sidebar">
+  <div class="sidebar-logo">
+    <svg class="logo-icon" viewBox="0 0 100 100" fill="none">
+      <circle cx="50" cy="50" r="46" stroke="#E4572E" stroke-width="4"/>
+      <circle cx="50" cy="50" r="8" fill="#E4572E"/>
+      <line x1="50" y1="4" x2="50" y2="24" stroke="#E4572E" stroke-width="4" stroke-linecap="round"/>
+      <line x1="50" y1="76" x2="50" y2="96" stroke="#E4572E" stroke-width="4" stroke-linecap="round"/>
+      <line x1="4" y1="50" x2="24" y2="50" stroke="#E4572E" stroke-width="4" stroke-linecap="round"/>
+      <line x1="76" y1="50" x2="96" y2="50" stroke="#E4572E" stroke-width="4" stroke-linecap="round"/>
+    </svg>
+    <div><div class="logo-name">TRS-398 <span>Pro</span></div><div class="logo-ver">v2.1.0</div></div>
+  </div>
+  <div class="sidebar-nav">
+    <a href="dashboard.html" class="nav-item"><i data-lucide="layout-dashboard"></i> Dashboard</a>
+    <a href="index.html"     class="nav-item"><i data-lucide="circle-dot"></i> Calibration</a>
+    <a href="history.html"   class="nav-item"><i data-lucide="history"></i> History</a>
+    <a href="control.html"   class="nav-item"><i data-lucide="activity"></i> Control Charts</a>
+    <a href="linacs.html"    class="nav-item"><i data-lucide="cpu"></i> Machines</a>
+    <a href="calendar.html"  class="nav-item active"><i data-lucide="calendar"></i> QA Calendar</a>
+    <a href="detectors.html" class="nav-item"><i data-lucide="zap"></i> Detectors</a>
+  </div>
+  <div class="sidebar-footer">
+    <div class="sidebar-label">System</div>
+    <button class="nav-item" onclick="location.href='backup.html'"><i data-lucide="database"></i> Backup</button>
+    <button class="nav-item" onclick="window.location='/api/trs/export?format=excel'"><i data-lucide="download"></i> Export</button>
+  </div>
+</nav>
+
+<div class="app-shell">
+  <div class="topbar">
+    <div class="topbar-left">
+      <i data-lucide="calendar"></i>
+      <span class="topbar-title">QA Calendar</span>
+    </div>
+    <div class="topbar-right">
+      <a href="index.html" class="topbar-btn"><i data-lucide="plus-circle"></i> New Calibration</a>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="month-nav">
+      <div class="month-title" id="monthTitle">—</div>
+      <div class="month-btns">
+        <button class="nav-btn today-btn" onclick="goToday()"><i data-lucide="crosshair"></i> Today</button>
+        <button class="nav-btn" onclick="prevMonth()"><i data-lucide="chevron-left"></i> Prev</button>
+        <button class="nav-btn" onclick="nextMonth()"><i data-lucide="chevron-right"></i> Next</button>
+      </div>
+    </div>
+
+    <div class="legend">
+      <div class="legend-item"><div class="legend-dot" style="background:rgba(34,197,94,0.5)"></div> QA done — PASS</div>
+      <div class="legend-item"><div class="legend-dot" style="background:rgba(239,68,68,0.5)"></div> QA done — FAIL</div>
+      <div class="legend-item"><div class="legend-dot" style="background:rgba(56,189,248,0.3);border:1px dashed #E4572E"></div> QA scheduled (due)</div>
+      <div class="legend-item"><div class="legend-dot" style="background:rgba(239,68,68,0.2);border:1px dashed #ef4444"></div> QA overdue</div>
+    </div>
+
+    <div class="cal-grid">
+      <div class="cal-header">
+        <div class="cal-header-cell">Sun</div>
+        <div class="cal-header-cell">Mon</div>
+        <div class="cal-header-cell">Tue</div>
+        <div class="cal-header-cell">Wed</div>
+        <div class="cal-header-cell">Thu</div>
+        <div class="cal-header-cell">Fri</div>
+        <div class="cal-header-cell">Sat</div>
+      </div>
+      <div class="cal-body" id="calBody"></div>
+    </div>
+  </div>
+</div>
+
+<div class="detail-popup hidden" id="detailPopup"></div>
+
+<script>
+  lucide.createIcons();
+
+  const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  let curYear  = new Date().getFullYear();
+  let curMonth = new Date().getMonth() + 1;
+
+  function goToday()    { curYear = new Date().getFullYear(); curMonth = new Date().getMonth() + 1; load(); }
+  function prevMonth()  { curMonth--; if (curMonth < 1)  { curMonth = 12; curYear--; } load(); }
+  function nextMonth()  { curMonth++; if (curMonth > 12) { curMonth = 1;  curYear++; } load(); }
+
+  async function load() {
+    document.getElementById('monthTitle').textContent = `${MONTHS[curMonth-1]} ${curYear}`;
+    try {
+      const res  = await fetch(`/api/calendar?year=${curYear}&month=${curMonth}`);
+      const data = await res.json();
+      render(data);
+    } catch(e) { console.error(e); }
+  }
+
+  function render(data) {
+    const body   = document.getElementById('calBody');
+    const today  = new Date();
+    const todayY = today.getFullYear(), todayM = today.getMonth()+1, todayD = today.getDate();
+
+    // Build due-dates lookup by day
+    const dueLookup = {};
+    (data.nextDueDates || []).forEach(d => {
+      if (!dueLookup[d.dueDay]) dueLookup[d.dueDay] = [];
+      dueLookup[d.dueDay].push(d);
+    });
+
+    let html = '';
+    // Leading empty cells
+    for (let i = 0; i < data.firstDayOfWeek; i++)
+      html += '<div class="cal-cell empty"></div>';
+
+    for (let d = 1; d <= data.daysInMonth; d++) {
+      const isToday = d === todayD && curMonth === todayM && curYear === todayY;
+      const events  = data.byDay[d] || [];
+      const dues    = dueLookup[d]  || [];
+
+      let evHtml = '';
+      events.forEach(ev => {
+        const cls = ev.passed ? 'pass' : 'fail';
+        evHtml += `<div class="qa-event ${cls}" onmouseenter="showPopup(event,${JSON.stringify(ev).replace(/"/g,"'")},true)" onmouseleave="hidePopup()">
+          <div class="ev-dot"></div>
+          <span>${ev.energy}</span>
+        </div>`;
+      });
+      dues.forEach(du => {
+        // Don't show due indicator if we already have a measurement on this day for same linac+energy
+        const done = events.some(ev => ev.energy === du.energy && ev.linacName === du.linacName);
+        if (done) return;
+        const cls  = du.overdue ? 'due-overdue' : 'due-ok';
+        const icon = du.overdue ? 'alert-circle' : 'clock';
+        evHtml += `<div class="due-event ${cls}" onmouseenter="showDuePopup(event,${JSON.stringify(du).replace(/"/g,"'").replace(/\\/g,'\\\\')})" onmouseleave="hidePopup()">
+          <i data-lucide="${icon}"></i>
+          <span>${du.energy}</span>
+        </div>`;
+      });
+
+      html += `<div class="cal-cell${isToday?' today':''}">
+        <div class="day-num">
+          ${d}
+          ${isToday ? '<span class="today-badge">TODAY</span>' : ''}
+        </div>
+        ${evHtml}
+      </div>`;
+    }
+    body.innerHTML = html;
+    lucide.createIcons();
+  }
+
+  const popup = document.getElementById('detailPopup');
+
+  function showPopup(e, ev, isMeas) {
+    const passLabel = ev.passed ? 'PASS' : 'FAIL';
+    const passClass = ev.passed ? 'pass' : 'fail';
+    popup.innerHTML = `
+      <div class="popup-title">${ev.energy} — ${ev.linacName}</div>
+      <div class="popup-row"><span class="popup-label">Time</span><span class="popup-val">${ev.time}</span></div>
+      <div class="popup-row"><span class="popup-label">Deviation</span><span class="popup-val ${passClass}">${ev.deviation >= 0 ? '+' : ''}${ev.deviation}%</span></div>
+      <div class="popup-row"><span class="popup-label">Tolerance</span><span class="popup-val">±${ev.tolerance}%</span></div>
+      <div class="popup-row"><span class="popup-label">Result</span><span class="popup-val ${passClass}">${passLabel}</span></div>
+      <div class="popup-row"><span class="popup-label">Physicist</span><span class="popup-val">${ev.user || '—'}</span></div>
+    `;
+    positionPopup(e);
+  }
+
+  function showDuePopup(e, du) {
+    const overLabel = du.overdue ? 'OVERDUE' : 'Due this month';
+    const cls = du.overdue ? 'fail' : 'pass';
+    popup.innerHTML = `
+      <div class="popup-title">${du.energy} — ${du.linacName}</div>
+      <div class="popup-row"><span class="popup-label">Last QA</span><span class="popup-val">${du.lastDate}</span></div>
+      <div class="popup-row"><span class="popup-label">Due date</span><span class="popup-val ${cls}">${du.dueDate}</span></div>
+      <div class="popup-row"><span class="popup-label">Status</span><span class="popup-val ${cls}">${overLabel}</span></div>
+    `;
+    positionPopup(e);
+  }
+
+  function positionPopup(e) {
+    popup.classList.remove('hidden');
+    const r = popup.getBoundingClientRect();
+    let x = e.clientX + 12, y = e.clientY + 12;
+    if (x + r.width  > window.innerWidth)  x = e.clientX - r.width  - 12;
+    if (y + r.height > window.innerHeight) y = e.clientY - r.height - 12;
+    popup.style.left = x + 'px';
+    popup.style.top  = y + 'px';
+  }
+
+  function hidePopup() { popup.classList.add('hidden'); }
+
+  load();
+</script>
+    <script src="sidebar.js"></script>
+</body>
+</html>

@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TRS-398 Pro — Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    /* ── Tokens ── */
+    :root {
+      --font-ui:   'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-mono: 'JetBrains Mono', 'Cascadia Code', monospace;
+      /* dark default */
+      --bg:             #080e1a;
+      --bg-surface:     #111827;
+      --bg-card:        #182031;
+      --bg-card-hover:  #1e2a40;
+      --bg-input:       #0f1929;
+      --bg-highlight:   #1a3050;
+      --border-subtle:  #1a2540;
+      --border:         #1f2d45;
+      --border-strong:  #2d4060;
+      --text:           #e8edf4;
+      --text-secondary: #94a3b8;
+      --text-muted:     #4a5a72;
+      --text-accent:    #E4572E;
+      --accent:         #E4572E;
+      --accent-hover:   #E4572E;
+      --accent-subtle:  rgba(14,165,233,0.07);
+      --success:        #22c55e;
+      --success-subtle: rgba(34,197,94,0.08);
+      --warning:        #f59e0b;
+      --warning-subtle: rgba(245,158,11,0.08);
+      --danger:         #ef4444;
+      --danger-subtle:  rgba(239,68,68,0.08);
+      --sidebar-bg:     #0d1526;
+      --sidebar-border: rgba(255,255,255,0.06);
+      --sidebar-hover:  rgba(255,255,255,0.06);
+      --sidebar-active: rgba(14,165,233,0.12);
+      --sidebar-text:   #E4572E;
+      --shadow-sm:      0 1px 3px rgba(0,0,0,0.3);
+      --shadow-md:      0 4px 12px rgba(0,0,0,0.35);
+      --shadow-lg:      0 8px 24px rgba(0,0,0,0.45);
+      /* compat aliases for Chart.js getChartColors() */
+      --ink:    #e8edf4;
+      --muted:  #4a5a72;
+      --accent-2: #E4572E;
+    }
+    [data-theme="light"] {
+      --bg:             #f0f4f8;
+      --bg-surface:     #ffffff;
+      --bg-card:        #ffffff;
+      --bg-card-hover:  #f8fafc;
+      --bg-input:       #ffffff;
+      --bg-highlight:   #eff6ff;
+      --border-subtle:  #e8edf4;
+      --border:         #e2e8f0;
+      --border-strong:  #cbd5e1;
+      --text:           #0f172a;
+      --text-secondary: #475569;
+      --text-muted:     #94a3b8;
+      --text-accent:    #C8431F;
+      --accent:         #C8431F;
+      --accent-hover:   #C8431F;
+      --accent-subtle:  rgba(2,132,199,0.06);
+      --success:        #16a34a;
+      --success-subtle: rgba(22,163,74,0.06);
+      --warning:        #d97706;
+      --warning-subtle: rgba(217,119,6,0.06);
+      --danger:         #dc2626;
+      --danger-subtle:  rgba(220,38,38,0.06);
+      --sidebar-bg:     #1e293b;
+      --shadow-sm:      0 1px 3px rgba(0,0,0,0.08);
+      --shadow-md:      0 4px 12px rgba(0,0,0,0.1);
+      --ink:    #0f172a;
+      --muted:  #94a3b8;
+      --accent-2: #C8431F;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { -webkit-font-smoothing: antialiased; }
+
+    body {
+      font-family: var(--font-ui);
+      font-size: 13px;
+      color: var(--text);
+      background: var(--bg);
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* ── Sidebar ── */
+    .sidebar {
+      width: 240px;
+      flex-shrink: 0;
+      background: var(--sidebar-bg);
+      border-right: 1px solid var(--sidebar-border);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .sidebar-logo {
+      height: 56px;
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+      gap: 10px;
+      border-bottom: 1px solid var(--sidebar-border);
+      flex-shrink: 0;
+    }
+    .logo-icon { width: 32px; height: 32px; color: var(--accent); flex-shrink: 0; }
+    .logo-name { font-size: 14px; font-weight: 700; color: #e8edf4; letter-spacing: -0.01em; }
+    .logo-version { font-size: 11px; color: #4a5a72; font-family: var(--font-mono); margin-top: 1px; }
+
+    .sidebar-nav { flex: 1; padding: 8px 0; overflow-y: auto; }
+    .nav-group-label {
+      font-size: 11px; font-weight: 600; color: #4a5a72;
+      text-transform: uppercase; letter-spacing: 0.07em;
+      padding: 14px 16px 5px;
+    }
+    .nav-item {
+      display: flex; align-items: center; gap: 9px;
+      height: 36px; padding: 0 12px; margin: 1px 8px;
+      border-radius: 8px; cursor: pointer;
+      font-size: 13px; font-weight: 500; color: #94a3b8;
+      text-decoration: none; background: transparent; border: none;
+      width: calc(100% - 16px); text-align: left;
+      transition: background 120ms, color 120ms;
+    }
+    .nav-item:hover { background: var(--sidebar-hover); color: #e8edf4; }
+    .nav-item.active { background: var(--sidebar-active); color: var(--sidebar-text); }
+    .nav-item i { width: 16px; height: 16px; flex-shrink: 0; }
+    .nav-separator { height: 1px; background: var(--sidebar-border); margin: 6px 16px; }
+    .sidebar-bottom { padding: 8px; border-top: 1px solid var(--sidebar-border); flex-shrink: 0; }
+    .user-item {
+      display: flex; align-items: center; gap: 9px;
+      padding: 8px; border-radius: 8px; cursor: pointer;
+    }
+    .user-item:hover { background: var(--sidebar-hover); }
+    .user-avatar {
+      width: 28px; height: 28px; border-radius: 50%;
+      background: var(--accent);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 700; color: white; flex-shrink: 0;
+    }
+    .user-name { font-size: 13px; font-weight: 500; color: #e8edf4; }
+    .user-role { font-size: 11px; color: #4a5a72; }
+
+    /* ── Main ── */
+    .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+
+    .header {
+      height: 56px; background: var(--bg-surface);
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex; align-items: center;
+      padding: 0 24px; gap: 12px; flex-shrink: 0;
+    }
+    .header-left { flex: 1; }
+    .header-title { font-size: 16px; font-weight: 600; color: var(--text); letter-spacing: -0.01em; }
+    .header-sub { font-size: 12px; color: var(--text-muted); margin-top: 1px; }
+    .header-right { display: flex; align-items: center; gap: 4px; }
+
+    .icon-btn {
+      width: 32px; height: 32px; border-radius: 8px; border: none;
+      background: transparent; color: var(--text-secondary); cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 120ms, color 120ms; position: relative;
+    }
+    .icon-btn:hover { background: var(--bg-highlight); color: var(--text); }
+    .icon-btn i { width: 16px; height: 16px; }
+
+    .content { flex: 1; overflow-y: auto; padding: 24px; }
+
+    /* ── Buttons ── */
+    .btn {
+      display: inline-flex; align-items: center; gap: 7px;
+      height: 36px; padding: 0 14px; border-radius: 8px;
+      font-size: 13px; font-weight: 500; font-family: var(--font-ui);
+      cursor: pointer; border: none;
+      transition: filter 120ms, background 120ms, color 120ms;
+      white-space: nowrap;
+    }
+    .btn i { width: 14px; height: 14px; }
+    .btn-primary { background: var(--accent); color: #fff; }
+    .btn-primary:hover { filter: brightness(1.12); }
+    .btn-secondary { background: transparent; border: 1px solid var(--border-strong); color: var(--text-secondary); }
+    .btn-secondary:hover { background: var(--bg-highlight); color: var(--text); }
+    .btn-ghost { background: transparent; color: var(--text-secondary); }
+    .btn-ghost:hover { background: rgba(255,255,255,0.06); color: var(--text); }
+    .btn-danger { background: var(--danger); color: #fff; }
+    .btn-sm { height: 28px; padding: 0 10px; font-size: 12px; }
+    .btn-sm i { width: 12px; height: 12px; }
+
+    /* ── Page header ── */
+    .page-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 20px; }
+    .page-title { font-size: 20px; font-weight: 600; color: var(--text); letter-spacing: -0.02em; }
+    .page-subtitle { font-size: 13px; color: var(--text-muted); margin-top: 3px; }
+    .page-actions { display: flex; gap: 8px; }
+
+    /* ── KPI grid ── */
+    .kpi-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 16px; margin-bottom: 20px; }
+    .kpi-card {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: 12px; padding: 18px 20px; box-shadow: var(--shadow-sm);
+      transition: background 120ms, border-color 120ms, box-shadow 120ms;
+      position: relative;
+    }
+    .kpi-card:hover { background: var(--bg-card-hover); border-color: var(--border-strong); box-shadow: var(--shadow-md); }
+    .kpi-card-top { width: 3px; position: absolute; left: 0; top: 16px; bottom: 16px; border-radius: 0 2px 2px 0; }
+    .kpi-label {
+      font-size: 11px; font-weight: 600; color: var(--text-muted);
+      text-transform: uppercase; letter-spacing: 0.07em;
+      margin-bottom: 10px; display: flex; align-items: center; gap: 6px;
+    }
+    .kpi-label i { width: 13px; height: 13px; }
+    .kpi-value { font-family: var(--font-mono); font-size: 28px; font-weight: 600; color: var(--text); line-height: 1; margin-bottom: 8px; }
+    .kpi-trend { font-size: 12px; display: flex; align-items: center; gap: 4px; color: var(--text-muted); }
+    .kpi-trend i { width: 13px; height: 13px; }
+    .kpi-trend.up { color: var(--success); }
+    .kpi-trend.down { color: var(--danger); }
+
+    /* ── Layout grids ── */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+    .grid-3 { display: grid; grid-template-columns: 2fr 1fr; gap: 16px; margin-bottom: 16px; }
+
+    /* ── Cards ── */
+    .card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; box-shadow: var(--shadow-sm); }
+    .card-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px 20px; border-bottom: 1px solid var(--border-subtle);
+    }
+    .card-title { font-size: 14px; font-weight: 600; color: var(--text); }
+    .card-subtitle { font-size: 12px; color: var(--text-muted); margin-top: 1px; }
+    .card-body { padding: 20px; }
+    .chart-container { position: relative; height: 260px; }
+
+    /* ── Quick actions ── */
+    .quick-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; }
+
+    /* ── Badges ── */
+    .badge {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 2px 9px; border-radius: 999px;
+      font-size: 11px; font-weight: 600; letter-spacing: 0.02em;
+    }
+    .badge i { width: 12px; height: 12px; }
+    .badge-success { background: var(--success-subtle); color: var(--success); border: 1px solid rgba(34,197,94,0.25); }
+    .badge-danger  { background: var(--danger-subtle);  color: var(--danger);  border: 1px solid rgba(239,68,68,0.25); }
+    .badge-warning { background: var(--warning-subtle); color: var(--warning); border: 1px solid rgba(245,158,11,0.25); }
+
+    /* ── Notifications panel ── */
+    .notif-item {
+      display: flex; gap: 12px; padding: 12px;
+      border-radius: 8px; margin-bottom: 8px;
+      background: var(--bg-surface);
+      border-left: 3px solid var(--border);
+    }
+    .notif-item.warning { border-left-color: var(--warning); }
+    .notif-item.error   { border-left-color: var(--danger); }
+    .notif-item.success { border-left-color: var(--success); }
+    .notif-icon { width: 18px; height: 18px; flex-shrink: 0; margin-top: 1px; }
+    .notif-icon.warning { color: var(--warning); }
+    .notif-icon.error   { color: var(--danger); }
+    .notif-icon.success { color: var(--success); }
+    .notif-title { font-size: 13px; font-weight: 600; color: var(--text); }
+    .notif-msg   { font-size: 12px; color: var(--text-secondary); margin-top: 3px; }
+
+    /* ── Spinner ── */
+    .spinner-wrap { display: flex; align-items: center; justify-content: center; padding: 40px; color: var(--text-muted); gap: 12px; }
+    .spinner { width: 20px; height: 20px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Scrollbar ── */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 999px; }
+
+    /* ── Prediction cards ── */
+    .pred-card {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: 12px; padding: 16px; position: relative; overflow: hidden;
+    }
+    .pred-card::before {
+      content: ''; position: absolute; left: 0; top: 0; bottom: 0;
+      width: 3px; border-radius: 3px 0 0 3px;
+    }
+    .pred-card.pass::before  { background: var(--success); }
+    .pred-card.warn::before  { background: var(--warning); }
+    .pred-card.fail::before  { background: var(--danger); }
+    .pred-energy { font-size: 11px; font-weight: 600; color: var(--text-secondary); letter-spacing: .06em; text-transform: uppercase; margin-bottom: 4px; }
+    .pred-dw     { font-family: var(--font-mono); font-size: 26px; font-weight: 700; color: var(--text); line-height: 1; }
+    .pred-dev    { font-size: 12px; font-weight: 600; margin-top: 2px; }
+    .pred-row    { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; font-size: 11px; color: var(--text-muted); }
+    .pred-badge  { font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 999px; }
+    .pred-badge.pass { background: var(--success-subtle); color: var(--success); }
+    .pred-badge.warn { background: var(--warning-subtle); color: var(--warning); }
+    .pred-badge.fail { background: var(--danger-subtle);  color: var(--danger);  }
+    .pred-due    { font-size: 11px; color: var(--text-muted); margin-top: 6px; }
+
+    /* ── Email config modal ── */
+    .modal-overlay { position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:1000;display:flex;align-items:center;justify-content:center; }
+    .modal-box { background:var(--bg-surface);border:1px solid var(--border);border-radius:14px;padding:28px;width:420px;max-width:95vw; }
+    .modal-title { font-size:16px;font-weight:700;color:var(--text);margin-bottom:18px; }
+    .form-group { margin-bottom:14px; }
+    .form-label { font-size:12px;font-weight:600;color:var(--text-secondary);margin-bottom:5px;display:block; }
+    .form-input { width:100%;background:var(--bg-input);border:1px solid var(--border);color:var(--text);border-radius:7px;padding:8px 11px;font-size:13px;outline:none; }
+    .form-input:focus { border-color:var(--accent); }
+    .form-row { display:flex;gap:10px; }
+    .form-row .form-group { flex:1; }
+    .modal-actions { display:flex;gap:10px;justify-content:flex-end;margin-top:20px; }
+  </style>
+  <link rel="stylesheet" href="dashboard-system.css">
+    <link rel="stylesheet" href="theme-data-instrument.css">
+</head>
+
+<body>
+  <!-- SIDEBAR -->
+  <nav class="sidebar">
+    <div class="sidebar-logo">
+      <svg class="logo-icon" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="50" cy="50" r="8" fill="currentColor"/>
+        <path d="M50 42 L35 16 A36 36 0 0 1 65 16 Z" fill="currentColor"/>
+        <path d="M42.5 46 L15 55 A36 36 0 0 1 21 26 Z" fill="currentColor"/>
+        <path d="M57.5 46 L85 55 A36 36 0 0 1 79 26 Z" fill="currentColor"/>
+        <path d="M57.5 54 L73 79 A36 36 0 0 1 27 79 Z" fill="currentColor" opacity="0.4"/>
+      </svg>
+      <div>
+        <div class="logo-name">TRS-398 <span style="color:var(--accent)">Pro</span></div>
+        <div class="logo-version">v2.1</div>
+      </div>
+    </div>
+
+    <div class="sidebar-nav">
+      <div class="nav-group-label">Workspace</div>
+      <a href="dashboard.html" class="nav-item active">
+        <i data-lucide="layout-dashboard"></i> Dashboard
+      </a>
+      <a href="index.html" class="nav-item">
+        <i data-lucide="circle-dot"></i> Calibration
+      </a>
+      <a href="history.html" class="nav-item">
+        <i data-lucide="history"></i> History
+      </a>
+      <a href="control.html" class="nav-item">
+        <i data-lucide="activity"></i> Control Charts
+      </a>
+      <a href="linacs.html" class="nav-item">
+        <i data-lucide="cpu"></i> Machines
+      </a>
+      <a href="calendar.html" class="nav-item">
+        <i data-lucide="calendar"></i> QA Calendar
+      </a>
+      <a href="detectors.html" class="nav-item">
+        <i data-lucide="zap"></i> Detectors
+      </a>
+      <div class="nav-separator"></div>
+      <div class="nav-group-label">System</div>
+      <button class="nav-item" onclick="location.href='backup.html'">
+        <i data-lucide="database"></i> Backup
+      </button>
+      <button class="nav-item" onclick="exportData()">
+        <i data-lucide="download"></i> Export
+      </button>
+    </div>
+
+    <div class="sidebar-bottom">
+      <div class="user-item">
+        <div class="user-avatar">MP</div>
+        <div>
+          <div class="user-name">Medical Physicist</div>
+          <div class="user-role">TRS-398 Pro</div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- MAIN -->
+  <div class="main">
+    <header class="header">
+      <div class="header-left">
+        <div class="header-title">Dashboard</div>
+        <div class="header-sub">Analytics &amp; Overview</div>
+      </div>
+      <div class="header-right">
+        <button class="icon-btn" id="themeBtn" onclick="toggleTheme()" title="Toggle theme">
+          <i data-lucide="moon" id="themeIcon"></i>
+        </button>
+      </div>
+    </header>
+
+    <div class="content">
+      <!-- Page header -->
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">Analytics Dashboard</h1>
+          <p class="page-subtitle">TRS-398 calibration performance across all LINAC units</p>
+        </div>
+        <div class="page-actions">
+          <button class="btn btn-secondary" onclick="exportData()">
+            <i data-lucide="download"></i> Export
+          </button>
+          <button class="btn btn-primary" onclick="location.href='index.html'">
+            <i data-lucide="circle-dot"></i> New Calibration
+          </button>
+        </div>
+      </div>
+
+      <!-- Quick actions -->
+      <div class="quick-actions">
+        <button class="btn btn-secondary" onclick="downloadAllReportsPDF()">
+          <i data-lucide="printer"></i> All Reports PDF
+        </button>
+        <button class="btn btn-secondary" onclick="location.href='backup.html'">
+          <i data-lucide="database"></i> Backup Database
+        </button>
+        <button class="btn btn-secondary" onclick="exportExcel()">
+          <i data-lucide="file-spreadsheet"></i> Export Excel
+        </button>
+        <button class="btn btn-secondary" onclick="exportCSV()">
+          <i data-lucide="file-text"></i> Export CSV
+        </button>
+        <button class="btn btn-secondary" onclick="openEmailConfig()" title="Configure email alerts">
+          <i data-lucide="mail"></i> Email Setup
+        </button>
+      </div>
+
+      <!-- Email config modal -->
+      <div id="emailModal" class="modal-overlay" style="display:none" onclick="if(event.target===this)closeEmailConfig()">
+        <div class="modal-box">
+          <div class="modal-title">📧 Email Configuration</div>
+          <div style="font-size:12px;color:var(--text-muted);margin-bottom:16px;">
+            Use Gmail with an <b>App Password</b> (not your normal password).<br>
+            Go to Google Account → Security → 2-Step Verification → App Passwords.
+          </div>
+          <div class="form-group">
+            <label class="form-label">From Email Address</label>
+            <input class="form-input" id="em_from" type="email" placeholder="yourname@gmail.com">
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">SMTP Host</label>
+              <input class="form-input" id="em_host" value="smtp.gmail.com">
+            </div>
+            <div class="form-group" style="max-width:90px">
+              <label class="form-label">Port</label>
+              <input class="form-input" id="em_port" type="number" value="587">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Gmail App Password (16 characters)</label>
+            <input class="form-input" id="em_pass" type="password" placeholder="xxxx xxxx xxxx xxxx">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Test — send to</label>
+            <input class="form-input" id="em_test_to" type="email" placeholder="recipient@email.com">
+          </div>
+          <div id="em_status" style="font-size:12px;min-height:18px;margin-top:6px;"></div>
+          <div class="modal-actions">
+            <button class="btn btn-secondary" onclick="closeEmailConfig()">Cancel</button>
+            <button class="btn btn-secondary" onclick="testEmail()">Send Test</button>
+            <button class="btn" style="background:var(--accent);color:#fff" onclick="saveEmailConfig()">Save</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Prediction cards -->
+      <div id="predictionSection" style="margin-bottom:20px;">
+        <div style="font-size:13px;font-weight:600;color:var(--text-secondary);margin-bottom:10px;display:flex;align-items:center;gap:6px;">
+          <i data-lucide="brain-circuit" style="width:14px;height:14px;color:var(--accent)"></i>
+          Next QA Predictions
+        </div>
+        <div id="predictionGrid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;">
+          <div style="grid-column:1/-1;text-align:center;color:var(--text-muted);padding:16px;">Loading predictions…</div>
+        </div>
+      </div>
+
+      <!-- KPI cards -->
+      <div class="kpi-grid" id="statsGrid">
+        <div class="spinner-wrap" style="grid-column:1/-1">
+          <div class="spinner"></div> Loading statistics…
+        </div>
+      </div>
+
+      <!-- Charts -->
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Monthly Calibrations</div>
+              <div class="card-subtitle">Count per month</div>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="chart-container"><canvas id="monthlyChart"></canvas></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Deviation Trend</div>
+              <div class="card-subtitle">Last 50 measurements</div>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="chart-container"><canvas id="deviationChart"></canvas></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">By Energy</div>
+          </div>
+          <div class="card-body">
+            <div class="chart-container"><canvas id="energyChart"></canvas></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">By Machine</div>
+          </div>
+          <div class="card-body">
+            <div class="chart-container"><canvas id="machineChart"></canvas></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Notifications -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title" style="display:flex;align-items:center;gap:8px;">
+            <i data-lucide="bell" style="width:16px;height:16px;color:var(--accent)"></i>
+            Notifications &amp; Alerts
+          </div>
+        </div>
+        <div class="card-body">
+          <div id="notificationsList">
+            <div class="spinner-wrap"><div class="spinner"></div> Loading…</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    lucide.createIcons();
+
+    let theme = localStorage.getItem('trs-theme') || 'dark';
+    let charts = {};
+
+    function applyTheme() {
+      document.documentElement.setAttribute('data-theme', theme);
+      const icon = document.getElementById('themeIcon');
+      if (icon) { icon.setAttribute('data-lucide', theme === 'dark' ? 'sun' : 'moon'); lucide.createIcons(); }
+      updateChartColors();
+    }
+
+    function toggleTheme() {
+      theme = theme === 'dark' ? 'light' : 'dark';
+      localStorage.setItem('trs-theme', theme);
+      applyTheme();
+    }
+
+    function getChartColors() {
+      const s = getComputedStyle(document.documentElement);
+      return {
+        accent:  s.getPropertyValue('--accent').trim()   || '#E4572E',
+        accent2: s.getPropertyValue('--accent-2').trim() || '#E4572E',
+        muted:   s.getPropertyValue('--text-muted').trim()|| '#4a5a72',
+        text:    s.getPropertyValue('--text').trim()      || '#e8edf4',
+        grid:    s.getPropertyValue('--border').trim()    || '#1f2d45'
+      };
+    }
+
+    function updateChartColors() {
+      const c = getChartColors();
+      Object.values(charts).forEach(ch => {
+        if (!ch) return;
+        try {
+          ch.options.scales.x.ticks.color = c.muted;
+          ch.options.scales.y.ticks.color = c.muted;
+          ch.options.scales.x.grid.color  = c.grid;
+          ch.options.scales.y.grid.color  = c.grid;
+          ch.update();
+        } catch(e) {}
+      });
+    }
+
+    async function loadStats() {
+      try {
+        const data = await fetch('/api/stats/overview').then(r => r.json());
+        const passColor = data.passRate >= 95 ? 'var(--success)' : data.passRate >= 80 ? 'var(--warning)' : 'var(--danger)';
+        document.getElementById('statsGrid').innerHTML = `
+          <div class="kpi-card">
+            <div class="kpi-card-top" style="background:var(--accent)"></div>
+            <div class="kpi-label"><i data-lucide="activity"></i> Total Calibrations</div>
+            <div class="kpi-value">${data.total}</div>
+            <div class="kpi-trend"><i data-lucide="bar-chart-2"></i> All time</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-card-top" style="background:var(--accent)"></div>
+            <div class="kpi-label"><i data-lucide="calendar"></i> This Month</div>
+            <div class="kpi-value">${data.thisMonth}</div>
+            <div class="kpi-trend"><i data-lucide="trending-up"></i> Current period</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-card-top" style="background:${passColor}"></div>
+            <div class="kpi-label"><i data-lucide="check-circle"></i> Pass Rate</div>
+            <div class="kpi-value" style="color:${passColor}">${data.passRate}%</div>
+            <div class="kpi-trend ${data.passRate >= 95 ? 'up' : 'down'}">
+              <i data-lucide="${data.passRate >= 95 ? 'trending-up' : 'trending-down'}"></i>
+              ${data.passRate >= 95 ? 'Within target' : 'Below target'}
+            </div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-card-top" style="background:var(--text-muted)"></div>
+            <div class="kpi-label"><i data-lucide="percent"></i> Avg Deviation</div>
+            <div class="kpi-value" style="font-family:var(--font-mono)">${data.avgDeviation}%</div>
+            <div class="kpi-trend"><i data-lucide="minus"></i> Mean Ecart</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-card-top" style="background:var(--info,#E4572E)"></div>
+            <div class="kpi-label"><i data-lucide="radio-tower"></i> Photon</div>
+            <div class="kpi-value" style="font-family:var(--font-mono)">${data.photonCount}</div>
+            <div class="kpi-trend"><i data-lucide="zap"></i> Beams calibrated</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-card-top" style="background:var(--accent-2)"></div>
+            <div class="kpi-label"><i data-lucide="zap"></i> Electron</div>
+            <div class="kpi-value" style="font-family:var(--font-mono)">${data.electronCount}</div>
+            <div class="kpi-trend"><i data-lucide="activity"></i> Beams calibrated</div>
+          </div>
+        `;
+        lucide.createIcons();
+      } catch(e) {
+        document.getElementById('statsGrid').innerHTML = '<div class="kpi-card" style="grid-column:1/-1;color:var(--danger)">Error loading statistics</div>';
+      }
+    }
+
+    async function loadCharts() {
+      try {
+        const data = await fetch('/api/stats/trends?months=12').then(r => r.json());
+        const c = getChartColors();
+        const axisOpts = (axis) => ({ ticks: { color: c.muted }, grid: { color: c.grid }, ...axis });
+
+        charts.monthly = new Chart(document.getElementById('monthlyChart'), {
+          type: 'bar',
+          data: {
+            labels: data.monthly.map(m => m.month),
+            datasets: [{ label: 'Calibrations', data: data.monthly.map(m => m.count),
+              backgroundColor: c.accent + '55', borderColor: c.accent, borderWidth: 2, borderRadius: 5 }]
+          },
+          options: { responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}},
+            scales: { x: axisOpts({}), y: axisOpts({beginAtZero:true}) } }
+        });
+
+        charts.deviation = new Chart(document.getElementById('deviationChart'), {
+          type: 'line',
+          data: {
+            labels: data.deviationHistory.slice(-50).map(d => d.date),
+            datasets: [
+              { label: 'Deviation (%)', data: data.deviationHistory.slice(-50).map(d => d.deviation),
+                borderColor: c.accent, backgroundColor: c.accent+'18', fill:true, tension:0.4 },
+              { label: '+2%', data: Array(50).fill(2), borderColor:'#ef4444', borderDash:[5,5], pointRadius:0 },
+              { label: '-2%', data: Array(50).fill(-2), borderColor:'#ef4444', borderDash:[5,5], pointRadius:0 }
+            ]
+          },
+          options: { responsive:true, maintainAspectRatio:false,
+            plugins:{legend:{display:true, labels:{color:c.muted, boxWidth:12}}},
+            scales: { x: axisOpts({ticks:{color:c.muted,maxTicksLimit:8}}), y: axisOpts({}) } }
+        });
+
+        charts.energy = new Chart(document.getElementById('energyChart'), {
+          type: 'doughnut',
+          data: {
+            labels: data.byEnergy.map(e => e.energy||'Unknown'),
+            datasets: [{ data: data.byEnergy.map(e => e.count),
+              backgroundColor: ['#E4572E','#22c55e','#f59e0b','#ef4444','#8b5cf6','#06b6d4','#84cc16','#f97316'] }]
+          },
+          options: { responsive:true, maintainAspectRatio:false,
+            plugins:{legend:{position:'right', labels:{color:c.muted, boxWidth:12, font:{size:12}}}} }
+        });
+
+        charts.machine = new Chart(document.getElementById('machineChart'), {
+          type: 'bar',
+          data: {
+            labels: data.byMachine.map(m => m.machine),
+            datasets: [{ label:'Calibrations', data: data.byMachine.map(m => m.count),
+              backgroundColor: c.accent2+'55', borderColor: c.accent2, borderWidth:2, borderRadius:5 }]
+          },
+          options: { responsive:true, maintainAspectRatio:false, indexAxis:'y',
+            plugins:{legend:{display:false}},
+            scales: { x: axisOpts({beginAtZero:true}), y: axisOpts({}) } }
+        });
+      } catch(e) { console.error('Charts error:', e); }
+    }
+
+    async function loadNotifications() {
+      try {
+        const data = await fetch('/api/notifications').then(r => r.json());
+        const iconMap = { warning:'alert-triangle', error:'x-circle', success:'check-circle' };
+        if (!data.notifications.length) {
+          document.getElementById('notificationsList').innerHTML = `
+            <div class="notif-item success">
+              <i data-lucide="check-circle" class="notif-icon success"></i>
+              <div><div class="notif-title">All Clear</div><div class="notif-msg">No pending notifications or alerts.</div></div>
+            </div>`;
+        } else {
+          document.getElementById('notificationsList').innerHTML = data.notifications.map(n => `
+            <div class="notif-item ${n.type}">
+              <i data-lucide="${iconMap[n.type]||'info'}" class="notif-icon ${n.type}"></i>
+              <div><div class="notif-title">${n.title}</div><div class="notif-msg">${n.message}</div></div>
+            </div>`).join('');
+        }
+        lucide.createIcons();
+      } catch(e) {
+        document.getElementById('notificationsList').innerHTML = '<div class="notif-item error">Error loading notifications</div>';
+      }
+    }
+
+    async function backupDatabase() {
+      try {
+        const blob = await fetch('/api/backup').then(r => r.blob());
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = `trs398_backup_${new Date().toISOString().slice(0,10)}.db`;
+        a.click(); URL.revokeObjectURL(a.href);
+      } catch(e) { alert('Backup error: ' + e.message); }
+    }
+
+    function exportExcel() { window.location.href = '/api/trs/export?format=excel'; }
+    function exportCSV()   { window.location.href = '/api/trs/export'; }
+
+    async function downloadAllReportsPDF() {
+      try {
+        const blob = await fetch('/api/trs/report/all').then(r => { if(!r.ok) throw new Error('Failed'); return r.blob(); });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = `trs398_summary_${new Date().toISOString().slice(0,10)}.pdf`;
+        a.click(); URL.revokeObjectURL(a.href);
+      } catch(e) { alert('Error: ' + e.message); }
+    }
+
+    function exportData() {
+      if (confirm('Export as Excel? (Cancel for CSV)')) exportExcel(); else exportCSV();
+    }
+
+    document.addEventListener('keydown', e => {
+      if ((e.ctrlKey||e.metaKey) && e.key==='b') { e.preventDefault(); backupDatabase(); }
+      if ((e.ctrlKey||e.metaKey) && e.key==='e') { e.preventDefault(); exportData(); }
+      if ((e.ctrlKey||e.metaKey) && e.key==='n') { e.preventDefault(); location.href='index.html'; }
+    });
+
+    applyTheme();
+    loadStats();
+    loadCharts();
+    loadNotifications();
+    loadPredictions();
+  </script>
+
+  <script>
+  // ── Predictions ────────────────────────────────────────────────────────────
+  async function loadPredictions() {
+    try {
+      const { predictions } = await fetch('/api/predictions').then(r => r.json());
+      const grid = document.getElementById('predictionGrid');
+      if (!predictions || predictions.length === 0) {
+        grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:var(--text-muted);padding:16px;">No data available for predictions.</div>';
+        return;
+      }
+      grid.style.gridTemplateColumns = `repeat(${Math.min(predictions.length,3)},1fr)`;
+      grid.innerHTML = predictions.map(p => {
+        const daysText = p.daysUntil < 0
+          ? `<span style="color:var(--danger);font-weight:600">Overdue ${Math.abs(p.daysUntil)}d</span>`
+          : p.daysUntil === 0
+          ? `<span style="color:var(--warning);font-weight:600">Due today</span>`
+          : `<span style="color:var(--text-muted)">Due in <b style="color:var(--text)">${p.daysUntil}</b> days</span>`;
+
+        const trendIcon = p.trend === 'rising'  ? '↑' : p.trend === 'falling' ? '↓' : '→';
+        const trendCol  = p.trend === 'rising'  ? 'var(--warning)'
+                        : p.trend === 'falling' ? 'var(--success)' : 'var(--text-muted)';
+
+        const devSign  = p.predictedEcart >= 0 ? '+' : '';
+        const cardCls  = p.likelyPass ? 'pass' : Math.abs(p.predictedEcart) < 2.5 ? 'warn' : 'fail';
+        const devColor = p.likelyPass ? 'var(--success)' : Math.abs(p.predictedEcart) < 2.5 ? 'var(--warning)' : 'var(--danger)';
+        const badge    = p.likelyPass ? '<span class="pred-badge pass">LIKELY PASS</span>'
+                       : Math.abs(p.predictedEcart) < 2.5 ? '<span class="pred-badge warn">BORDERLINE</span>'
+                       : '<span class="pred-badge fail">LIKELY FAIL</span>';
+
+        return `
+          <div class="pred-card ${cardCls}">
+            <div class="pred-energy">${p.linac} — ${p.energy}</div>
+            <div class="pred-dw">${p.predictedDw.toFixed(5)}</div>
+            <div class="pred-dev" style="color:${devColor}">${devSign}${p.predictedEcart.toFixed(3)} %  predicted</div>
+            <div class="pred-row">
+              ${badge}
+              <span style="color:${trendCol}">${trendIcon} ${p.trend}</span>
+            </div>
+            <div class="pred-due">📅 ${daysText} &nbsp;·&nbsp; ${p.nextDue}</div>
+            <div style="font-size:10px;color:var(--text-muted);margin-top:4px;">
+              Last: ${p.lastDw.toFixed(5)} (${p.lastEcart >= 0 ? '+' : ''}${p.lastEcart.toFixed(3)}%) &nbsp;·&nbsp; ${p.pointsUsed} pts
+            </div>
+          </div>`;
+      }).join('');
+      lucide.createIcons();
+    } catch(e) { console.error('Predictions error', e); }
+  }
+
+  // ── Email config ───────────────────────────────────────────────────────────
+  async function openEmailConfig() {
+    const cfg = await fetch('/api/email/config').then(r => r.json());
+    document.getElementById('em_from').value = cfg.fromAddress || '';
+    document.getElementById('em_host').value = cfg.host || 'smtp.gmail.com';
+    document.getElementById('em_port').value = cfg.port || 587;
+    document.getElementById('em_pass').value = cfg.password || '';
+    document.getElementById('em_status').textContent = '';
+    document.getElementById('emailModal').style.display = 'flex';
+  }
+
+  function closeEmailConfig() {
+    document.getElementById('emailModal').style.display = 'none';
+  }
+
+  async function saveEmailConfig() {
+    const cfg = {
+      fromAddress: document.getElementById('em_from').value.trim(),
+      username:    document.getElementById('em_from').value.trim(),
+      host:        document.getElementById('em_host').value.trim(),
+      port:        parseInt(document.getElementById('em_port').value),
+      password:    document.getElementById('em_pass').value.trim(),
+      useTls:      true,
+      fromName:    'TRS-398 Pro',
+    };
+    await fetch('/api/email/config', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(cfg) });
+    const st = document.getElementById('em_status');
+    st.style.color = 'var(--success)'; st.textContent = '✓ Saved';
+    setTimeout(() => closeEmailConfig(), 1200);
+  }
+
+  async function testEmail() {
+    const to = document.getElementById('em_test_to').value.trim();
+    if (!to) { document.getElementById('em_status').textContent = 'Enter a recipient email first.'; return; }
+    await saveEmailConfig();
+    const st = document.getElementById('em_status');
+    st.style.color = 'var(--text-muted)'; st.textContent = 'Sending…';
+    const res = await fetch('/api/email/test', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ to })
+    }).then(r => r.json());
+    if (res.sent) { st.style.color='var(--success)'; st.textContent='✓ Test email sent!'; }
+    else { st.style.color='var(--danger)'; st.textContent='✗ ' + (res.error || 'Failed'); }
+  }
+  </script>
+    <script src="sidebar.js"></script>
+</body>
+</html>
