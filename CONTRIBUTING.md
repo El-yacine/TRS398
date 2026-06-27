@@ -139,7 +139,7 @@ Before submitting a PR:
 ## 👥 Contributors
 
 - **Yacine El Attaoui** — Medical Physicist (creator & maintainer)
-- **Aziz Oustous** — Contributor
+- **Aziz Oustous** — Medical Physicist
 
 ## 🎉 Thank You!
 
