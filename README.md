@@ -382,6 +382,8 @@ See [DEVELOPMENT_OPPORTUNITIES.md](docs/DEVELOPMENT_OPPORTUNITIES.md) for a comp
 
 Created and maintained by **Yacine El Attaoui — Medical Physicist**
 
+**Contributors:** Aziz Oustous
+
 [⭐ Star this repo](https://github.com/El-yacine/TRS398) if you find it useful!
 
 </div>

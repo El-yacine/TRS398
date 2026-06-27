@@ -136,6 +136,11 @@ Before submitting a PR:
 - [ ] No console errors
 - [ ] Works on target platforms
 
+## 👥 Contributors
+
+- **Yacine El Attaoui** — Medical Physicist (creator & maintainer)
+- **Aziz Oustous** — Contributor
+
 ## 🎉 Thank You!
 
 Your contributions make TRS-398 Pro better for everyone. Thank you for taking the time to contribute!
