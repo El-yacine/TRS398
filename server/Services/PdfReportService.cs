@@ -441,14 +441,20 @@ public class PdfReportService
     // ── Footer ───────────────────────────────────────────────────────────────
     private static void Footer(IContainer c, string reportId, DateTime date)
     {
-        c.BorderTop(1).BorderColor(Black).PaddingTop(6).Row(row =>
+        c.BorderTop(1).BorderColor(Black).PaddingTop(6).Column(col =>
         {
-            row.RelativeItem()
-               .Text($"{reportId}  ·  IAEA TRS-398  ·  TRS-398 Pro")
-               .FontSize(7.5f).FontColor(Label);
-            row.AutoItem()
-               .Text($"{date:dd MMM yyyy  HH:mm}  ·  Page 1 of 1")
-               .FontSize(7.5f).FontColor(Label);
+            col.Item().Row(row =>
+            {
+                row.RelativeItem()
+                   .Text($"{reportId}  ·  IAEA TRS-398  ·  TRS-398 Pro")
+                   .FontSize(7.5f).FontColor(Label);
+                row.AutoItem()
+                   .Text($"{date:dd MMM yyyy  HH:mm}  ·  Page 1 of 1")
+                   .FontSize(7.5f).FontColor(Label);
+            });
+            col.Item().PaddingTop(3).AlignCenter()
+               .Text($"© {DateTime.Now:yyyy} Yacine El Attaoui — Medical Physicist  ·  TRS-398 Pro")
+               .FontSize(7f).FontColor(Label);
         });
     }
 
@@ -633,14 +639,20 @@ public class PdfReportService
 
     private static void SummaryFooter(IContainer c, DateTime now)
     {
-        c.BorderTop(1).BorderColor(Black).PaddingTop(6).Row(row =>
+        c.BorderTop(1).BorderColor(Black).PaddingTop(6).Column(col =>
         {
-            row.RelativeItem()
-               .Text("TRS-398 Pro  ·  Calibration Summary Report  ·  IAEA TRS-398")
-               .FontSize(7.5f).FontColor(Label);
-            row.AutoItem()
-               .Text($"Generated: {now:dd MMM yyyy  HH:mm}  ·  Page 1 of 1")
-               .FontSize(7.5f).FontColor(Label);
+            col.Item().Row(row =>
+            {
+                row.RelativeItem()
+                   .Text("TRS-398 Pro  ·  Calibration Summary Report  ·  IAEA TRS-398")
+                   .FontSize(7.5f).FontColor(Label);
+                row.AutoItem()
+                   .Text($"Generated: {now:dd MMM yyyy  HH:mm}  ·  Page 1 of 1")
+                   .FontSize(7.5f).FontColor(Label);
+            });
+            col.Item().PaddingTop(3).AlignCenter()
+               .Text($"© {now:yyyy} Yacine El Attaoui — Medical Physicist  ·  TRS-398 Pro")
+               .FontSize(7f).FontColor(Label);
         });
     }
 
