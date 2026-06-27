@@ -354,9 +354,22 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🙏 Acknowledgments
 
-- **IAEA TRS-398**: Based on the IAEA Technical Reports Series No. 398
+- **IAEA TRS-398**: This software implements the methodology of, and the bundled
+  ion-chamber `kQ` / `TPR` data is derived from, the **IAEA Technical Reports
+  Series No. 398** (© IAEA). "TRS-398" is an IAEA publication designation, used
+  here only to describe the protocol implemented; this project is not affiliated
+  with or endorsed by the IAEA.
 - **QuestPDF**: For PDF generation capabilities
 - **.NET Community**: For excellent tools and libraries
+
+---
+
+## ⚠️ Disclaimer
+
+This software is provided for educational and workflow-support purposes. It is
+**not a certified medical device**. Any value used for clinical dosimetry must be
+independently verified by a qualified medical physicist against the official
+IAEA TRS-398 code of practice. The authors accept no liability for clinical use.
 
 ---
 

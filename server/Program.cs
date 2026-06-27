@@ -78,32 +78,7 @@ app.Use(async (ctx, next) =>
     await next();
 });
 
-// License gate: redirect unlicensed users to /activate.html.
-// Static assets (.js/.css/.ico/.png/.woff*) are always served so activate.html loads.
-app.Use(async (ctx, next) =>
-{
-    var p = ctx.Request.Path.Value ?? "";
-    bool isAsset = p.EndsWith(".js") || p.EndsWith(".css") || p.EndsWith(".ico")
-                || p.EndsWith(".png") || p.EndsWith(".svg") || p.EndsWith(".woff")
-                || p.EndsWith(".woff2") || p.EndsWith(".ttf");
-    bool isExempt = isAsset
-                 || p.StartsWith("/activate")
-                 || p.StartsWith("/api/license")
-                 || p.StartsWith("/api/health");
-
-    if (!isExempt && !IsLicensed(dataDir))
-    {
-        if (p.StartsWith("/api/"))
-        {
-            ctx.Response.StatusCode = 401;
-            await ctx.Response.WriteAsJsonAsync(new { error = "License required" });
-            return;
-        }
-        ctx.Response.Redirect("/activate.html");
-        return;
-    }
-    await next();
-});
+// Open-source build: no license gate — the app is free to run after cloning.
 
 app.MapGet("/", () => Results.Redirect("/index.html"));
 app.UseStaticFiles(new StaticFileOptions {
@@ -175,44 +150,7 @@ app.MapGet("/api/health", () => Results.Ok(new {
 // ============================================================================
 // LICENSE
 // ============================================================================
-app.MapGet("/api/license/status", () =>
-{
-    bool ok = IsLicensed(dataDir);
-    string? partial = null;
-    if (ok)
-    {
-        var licPath = Path.Combine(dataDir, "license.json");
-        try
-        {
-            var doc = JsonDocument.Parse(File.ReadAllText(licPath));
-            var key = doc.RootElement.GetProperty("key").GetString() ?? "";
-            partial = key.Length > 10 ? key[..10] + "..." : key;
-        }
-        catch { }
-    }
-    return Results.Ok(new { licensed = ok, key = partial });
-});
-
-app.MapPost("/api/license/activate", async (HttpContext ctx) =>
-{
-    JsonElement body;
-    try { body = await JsonSerializer.DeserializeAsync<JsonElement>(ctx.Request.Body); }
-    catch { return Results.BadRequest(new { error = "Invalid request" }); }
-
-    var key = (body.TryGetProperty("key", out var kp) ? kp.GetString() : null) ?? "";
-    if (!ValidateLicenseKey(key))
-        return Results.BadRequest(new { error = "Invalid license key. Check for typos." });
-
-    var licPath = Path.Combine(dataDir, "license.json");
-    var json = JsonSerializer.Serialize(new
-    {
-        key = key.Trim().ToUpper(),
-        valid = true,
-        activatedAt = DateTime.Now.ToString("o")
-    });
-    await File.WriteAllTextAsync(licPath, json);
-    return Results.Ok(new { success = true });
-});
+app.MapGet("/api/license/status", () => Results.Ok(new { licensed = true, key = (string?)null }));
 
 // ============================================================================
 // TRS CALCULATIONS & MEASUREMENTS
@@ -1184,7 +1122,7 @@ app.MapPost("/api/demo/seed", async (HttpContext ctx, MyQCDbContext db, TRSServi
         new { Id = "TB1",  Name = "TrueBeam",  Energies = new[] { "6X", "10X", "6FFF" } },
     };
 
-    string[] physicists = { "Dr. Martin", "Dr. Benali", "Dr. Rousseau" };
+    string[] physicists = { "Physicist A", "Physicist B", "Physicist C" };
 
     // Day-type weights: 0=Saturday, 1=Sunday, 2=Friday-evening, 3=Monday-post
     int[] weights = { 55, 25, 12, 8 };
@@ -2153,38 +2091,6 @@ static double GetToleranceFromDoc(JsonElement? doc, string? linacId, string? ene
 
 static double GetTolerance(string? linacId, string? energy, string dir)
     => GetToleranceFromDoc(LoadToleranceDoc(dir), linacId, energy);
-
-// ── License helpers ───────────────────────────────────────────────────────────
-
-static bool IsLicensed(string dir)
-{
-    var licPath = Path.Combine(dir, "license.json");
-    if (!File.Exists(licPath)) return false;
-    try
-    {
-        var doc = JsonDocument.Parse(File.ReadAllText(licPath));
-        return doc.RootElement.TryGetProperty("valid", out var v) && v.GetBoolean();
-    }
-    catch { return false; }
-}
-
-// Key format: TRS-AAAAA-BBBBB-CCCCC-DDDDD
-// Groups A/B/C are random from [A-Z2-9]; group D is the first 5 hex chars
-// of HMACSHA256(A+B+C, secret), uppercase. Offline validation, no server needed.
-static bool ValidateLicenseKey(string key)
-{
-    var k = (key ?? "").Trim().ToUpper().Replace(" ", "").Replace("\t", "");
-    if (!k.StartsWith("TRS-")) return false;
-    var parts = k[4..].Split('-');
-    if (parts.Length != 4 || parts.Any(p => p.Length != 5)) return false;
-
-    var data = Encoding.UTF8.GetBytes(parts[0] + parts[1] + parts[2]);
-    var secret = Encoding.UTF8.GetBytes("TRS398PRO!2026");
-    using var hmac = new HMACSHA256(secret);
-    var hash = hmac.ComputeHash(data);
-    var checksum = Convert.ToHexString(hash)[..5].ToUpper();
-    return checksum == parts[3];
-}
 
 // Request/Response classes
 record LoginRequest(string Username, string Password);

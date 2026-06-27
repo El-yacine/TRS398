@@ -78,10 +78,9 @@ function startServer() {
     };
 
     if (isDev) {
-      // Development: spawn dotnet run (ASPNETCORE_URLS env var sets the port)
-      const dotnetBin = process.platform === 'linux'
-        ? '/home/marcine/dotnet/dotnet'
-        : 'dotnet';
+      // Development: spawn dotnet run (ASPNETCORE_URLS env var sets the port).
+      // Uses `dotnet` from PATH; override with the DOTNET_PATH env var if needed.
+      const dotnetBin = process.env.DOTNET_PATH || 'dotnet';
 
       serverProc = spawn(dotnetBin, ['run'], {
         cwd:   path.join(__dirname, 'server'),
