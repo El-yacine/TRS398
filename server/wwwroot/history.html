@@ -479,7 +479,7 @@
     <link rel="stylesheet" href="dashboard-system.css">
     <script>
         (function () {
-            const theme = localStorage.getItem('trs-theme') || 'dark';
+            const theme = localStorage.getItem('trs-theme') || 'light';
             document.documentElement.setAttribute('data-theme', theme);
         })();
     </script>
@@ -565,10 +565,6 @@
                     <i data-lucide="sun-moon"></i>
                     <span id="themeLabel">Dark</span>
                 </button>
-                <select class="select-sm" id="langSelect" onchange="setLanguage(this.value)">
-                    <option value="en">EN</option>
-                    <option value="fr">FR</option>
-                </select>
             </div>
         </header>
 
@@ -687,7 +683,7 @@
 
     <script>
         let measurements = [];
-        let theme = localStorage.getItem('trs-theme') || 'dark';
+        let theme = localStorage.getItem('trs-theme') || 'light';
         let currentLanguage = localStorage.getItem('trs-language') || 'en';
 
         const translations = {
@@ -784,7 +780,8 @@
         function setLanguage(lang) {
             currentLanguage = lang;
             localStorage.setItem('trs-language', lang);
-            document.getElementById('langSelect').value = lang;
+            const _ls = document.getElementById('langSelect');
+            if (_ls) _ls.value = lang;
             applyTranslations();
             renderHistory();
         }
@@ -1123,7 +1120,7 @@
         }
 
         // Initialize
-        document.getElementById('langSelect').value = currentLanguage;
+        currentLanguage = 'en';   // English only (language switcher removed)
         applyTheme();
         applyTranslations();
         loadHistory();

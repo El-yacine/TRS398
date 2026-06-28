@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -126,7 +126,7 @@
   <link rel="stylesheet" href="dashboard-system.css">
   <script>
     (function () {
-      const theme = localStorage.getItem('trs-theme') || 'dark';
+      const theme = localStorage.getItem('trs-theme') || 'light';
       document.documentElement.setAttribute('data-theme', theme);
       document.addEventListener('DOMContentLoaded', () => document.body.setAttribute('data-theme', theme));
     })();
@@ -275,7 +275,7 @@
   </main>
 
   <script>
-    let theme = localStorage.getItem('trs-theme') || 'dark';
+    let theme = localStorage.getItem('trs-theme') || 'light';
     document.documentElement.setAttribute('data-theme', theme);
     document.body.setAttribute('data-theme', theme);
     document.getElementById('themeLabel').textContent = theme === 'dark' ? 'Dark' : 'Light';

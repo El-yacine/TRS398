@@ -1,29 +1,23 @@
 /* ============================================================
    TRS-398 Pro — "DATA INSTRUMENT" theme
    editorial · ruled · vermillion signal
-   Direction 2 from TRS Restyle.dc.html
 
-   Loaded LAST (right before </head>) so it wins the cascade.
-   Re-skins the whole app by overriding the shared --dash-*
-   design tokens, the short page tokens, fonts and shape.
+   Light (cream paper) = default.  Dark = data-theme="dark".
+   Loaded LAST (before </head>) so it wins the cascade.
+   Component rules use tokens so both modes adapt.
    ============================================================ */
 
 @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap');
 
-/* ---- 1. Palette tokens ------------------------------------ */
-/* !important on custom properties beats every non-important
-   :root in the per-page inline styles and both light/dark
-   theme variants in dashboard-system.css.                     */
+/* ---- 1a. LIGHT palette (default) --------------------------- */
+/* :root applies the cream theme always; the dark block below has higher
+   specificity (html[data-theme="dark"]) so it overrides only in dark mode. */
 :root,
 html[data-theme="light"],
-body[data-theme="light"],
-html[data-theme="dark"],
-body[data-theme="dark"] {
-  /* fonts */
+body[data-theme="light"] {
   --font-ui: 'Space Grotesk', 'Segoe UI', system-ui, sans-serif !important;
   --font-mono: 'Space Grotesk', 'Segoe UI', system-ui, sans-serif !important;
 
-  /* shared dashboard-system tokens (the dominant layer) */
   --dash-bg: #F6F4EE !important;
   --dash-surface: #FCFBF7 !important;
   --dash-card: #FCFBF7 !important;
@@ -44,7 +38,10 @@ body[data-theme="dark"] {
   --dash-sidebar-text: #F0A58E !important;
   --dash-shadow-sm: none !important;
 
-  /* short page tokens (used by per-page inline components) */
+  --di-thead-bg: #1A1A1A !important;   /* table header bar  */
+  --di-thead-fg: #F6F4EE !important;
+
+  /* short page tokens */
   --bg: #F6F4EE !important;
   --surface: #FCFBF7 !important;
   --surface2: #FFFFFF !important;
@@ -71,7 +68,6 @@ body[data-theme="dark"] {
   --error: #C0392B !important;
   --info: #E4572E !important;
 
-  /* second token family used by dashboard/linacs KPI cards etc. */
   --bg-dark: #F6F4EE !important;
   --bg-surface: #F6F4EE !important;
   --bg-card: #FCFBF7 !important;
@@ -84,21 +80,76 @@ body[data-theme="dark"] {
   --danger: #C0392B !important;
   --danger-subtle: rgba(192,57,43,0.10) !important;
 
-  /* sharp, editorial corners */
-  --radius-sm: 2px !important;
-  --radius-md: 2px !important;
-  --radius-lg: 2px !important;
-  --radius-xl: 3px !important;
-
-  /* flat — no glow */
-  --shadow-sm: none !important;
-  --shadow-md: none !important;
-  --shadow-lg: none !important;
-  --shadow-xl: none !important;
-
-  /* gradients collapse to the flat vermillion signal */
+  --radius-sm: 2px !important; --radius-md: 2px !important;
+  --radius-lg: 2px !important;  --radius-xl: 3px !important;
+  --shadow-sm: none !important; --shadow-md: none !important;
+  --shadow-lg: none !important; --shadow-xl: none !important;
   --gradient-primary: linear-gradient(135deg, #E4572E, #C8431F) !important;
   --gradient-subtle: none !important;
+}
+
+/* ---- 1b. DARK palette (data-theme="dark") ------------------ */
+html[data-theme="dark"] {
+  --dash-bg: #16130F !important;
+  --dash-surface: #1E1A15 !important;
+  --dash-card: #1E1A15 !important;
+  --dash-card-hover: #272118 !important;
+  --dash-input: #14110C !important;
+  --dash-border-subtle: #2A251E !important;
+  --dash-border: #332E26 !important;
+  --dash-border-strong: #C9C1AE !important;
+  --dash-text: #F1ECE1 !important;
+  --dash-text-secondary: #BDB5A4 !important;
+  --dash-text-muted: #8C8473 !important;
+  --dash-accent: #F2663F !important;
+  --dash-accent-hover: #E4572E !important;
+  --dash-sidebar-bg: #0E0C09 !important;
+  --dash-sidebar-border: rgba(255,255,255,0.07) !important;
+  --dash-sidebar-hover: rgba(255,255,255,0.05) !important;
+  --dash-sidebar-active: rgba(242,102,63,0.18) !important;
+  --dash-sidebar-text: #F0A58E !important;
+  --dash-shadow-sm: none !important;
+
+  --di-thead-bg: #2A251E !important;
+  --di-thead-fg: #F1ECE1 !important;
+
+  --bg: #16130F !important;
+  --surface: #1E1A15 !important;
+  --surface2: #14110C !important;
+  --card: #1E1A15 !important;
+  --card-hover: #272118 !important;
+  --panel: #1E1A15 !important;
+  --glass: #1E1A15 !important;
+  --glass-border: #332E26 !important;
+  --header-bg: #16130F !important;
+  --border: #332E26 !important;
+  --border-subtle: #2A251E !important;
+  --border-strong: #C9C1AE !important;
+  --border-accent: rgba(242,102,63,0.35) !important;
+  --text: #F1ECE1 !important;
+  --ink: #F1ECE1 !important;
+  --text-secondary: #BDB5A4 !important;
+  --muted: #8C8473 !important;
+  --text-muted: #8C8473 !important;
+  --accent: #F2663F !important;
+  --accent-2: #E4572E !important;
+  --accent-glow: rgba(242,102,63,0.16) !important;
+  --success: #4FB477 !important;
+  --warning: #D9A441 !important;
+  --error: #E0685A !important;
+  --info: #F2663F !important;
+
+  --bg-dark: #16130F !important;
+  --bg-surface: #16130F !important;
+  --bg-card: #1E1A15 !important;
+  --bg-card-hover: #272118 !important;
+  --bg-elevated: #14110C !important;
+  --bg-input: #14110C !important;
+  --bg-highlight: rgba(242,102,63,0.12) !important;
+  --text-primary: #F1ECE1 !important;
+  --text-accent: #F2663F !important;
+  --danger: #E0685A !important;
+  --danger-subtle: rgba(224,104,90,0.14) !important;
 }
 
 /* ---- 2. Typography ---------------------------------------- */
@@ -110,8 +161,6 @@ h1, h2, h3, h4, h5, h6,
 .settings-section-title, .settings-panel-head h4 {
   font-family: 'Space Grotesk', 'Segoe UI', system-ui, sans-serif !important;
 }
-
-/* tabular figures everywhere numbers matter */
 .num, .metric-value, .kpi-value, .sum-val, .stat-value,
 .value-large, table td, table th, .mono, [class*="mono"] {
   font-feature-settings: "tnum" 1, "lnum" 1 !important;
@@ -134,97 +183,73 @@ input, select, textarea, .search-box, .search-input,
   box-shadow: none !important;
 }
 
-/* ---- 4. Ruled, editorial accents -------------------------- */
-/* table headers: black ink bar, paper-white type (the mockup signature) */
-table th,
-.det-table th,
-.cal-header-cell {
-  background: #1A1A1A !important;
-  color: #F6F4EE !important;
+/* ---- 4. Ruled, editorial accents (token-driven) ----------- */
+table th, .det-table th, .cal-header-cell {
+  background: var(--di-thead-bg) !important;
+  color: var(--di-thead-fg) !important;
   letter-spacing: 0.10em !important;
   text-transform: uppercase !important;
 }
-
-/* the colored left rule on stat / metric cards → vermillion */
-.stat-card::before,
-.sum-card::before,
-.stats-row > *::before,
+.stat-card::before, .sum-card::before, .stats-row > *::before,
 .metric-card::after {
-  background: #E4572E !important;
+  background: var(--dash-accent) !important;
   border-radius: 0 !important;
 }
-
-/* primary buttons: solid vermillion, crisp */
 .topbar-btn.primary, .btn-primary, .btn.primary,
 .ctrl-btn.active, .today-btn, .btn-save {
-  background: #E4572E !important;
+  background: var(--dash-accent) !important;
   color: #fff !important;
 }
-
-/* secondary buttons: 1.5px ink frame (editorial) */
 .topbar-btn:not(.primary), .btn-secondary, .btn-ghost,
 .btn.ghost, .btn.soft, .ctrl-btn, .nav-btn, .act-btn {
   border-width: 1.5px !important;
-  border-color: #1A1A1A !important;
-  color: #1A1A1A !important;
+  border-color: var(--dash-border-strong) !important;
+  color: var(--dash-text) !important;
 }
-
-/* input focus ring → vermillion */
 input:focus, select:focus, textarea:focus,
 .search-box:focus, .search-input:focus, .filter-select:focus,
 .select-sm:focus, .ctrl-select:focus, .form-input:focus {
-  border-color: #E4572E !important;
-  box-shadow: 0 0 0 3px rgba(228,87,46,0.12) !important;
+  border-color: var(--dash-accent) !important;
+  box-shadow: 0 0 0 3px var(--accent-glow) !important;
 }
-
-/* PASS / success affordances → editorial green */
 .measure-mean {
-  background: rgba(47,122,77,0.10) !important;
-  border: 1px solid rgba(47,122,77,0.22) !important;
-  color: #1A1A1A !important;
+  background: rgba(47,122,77,0.12) !important;
+  border: 1px solid rgba(47,122,77,0.25) !important;
+  color: var(--dash-text) !important;
 }
-
-/* highlighted result block: ink panel, paper figure */
 .result-card.enhanced {
-  background: rgba(228,87,46,0.06) !important;
-  border: 1.5px solid #1A1A1A !important;
+  background: var(--bg-highlight) !important;
+  border: 1.5px solid var(--dash-border-strong) !important;
 }
-.value-large {
-  color: #1A1A1A !important;
-}
-
-/* badges keep the sharp instrument look */
+.value-large { color: var(--dash-text) !important; }
 .status-badge, .mode-badge, .badge {
   border-radius: 2px !important;
   letter-spacing: 0.06em !important;
   text-transform: uppercase !important;
 }
-
-/* measurement card header tint (was amber) → vermillion wash */
 #measurementCard > div:first-child {
-  background: rgba(228,87,46,0.07) !important;
+  background: var(--bg-highlight) !important;
 }
-
-/* sidebar: ink slab with vermillion active bar */
-.sidebar .nav-item.active,
-.sidebar .sidebar-nav-item.active,
+.sidebar .nav-item.active, .sidebar .sidebar-nav-item.active,
 .settings-nav-item.active {
-  box-shadow: inset 3px 0 0 #E4572E !important;
+  box-shadow: inset 3px 0 0 var(--dash-accent) !important;
 }
-.sidebar .logo-icon {
-  color: #E4572E !important;
+.sidebar .logo-icon { color: var(--dash-accent) !important; }
+.eyebrow { color: var(--dash-accent) !important; }
+.pill.accent {
+  background: var(--bg-highlight) !important;
+  color: var(--dash-accent-hover) !important;
+  border-color: var(--border-accent) !important;
 }
 
-/* hero eyebrow → vermillion label */
-.eyebrow {
-  color: #E4572E !important;
-}
+/* ---- 5. Recolor any leftover cyan logo/icons → accent ----- */
+.logo-name span { color: var(--dash-accent) !important; }
+.logo-version, .logo-ver { color: var(--dash-text-muted) !important; }
+[stroke="#38bdf8"], [stroke="#0ea5e9"] { stroke: var(--dash-accent) !important; }
+[fill="#38bdf8"],   [fill="#0ea5e9"]   { fill:   var(--dash-accent) !important; }
 
 /* ---- 6. Shared sidebar: identical items on every page ----- */
-/* neutralizes per-page <a>/<button> styling so the injected
-   sidebar (sidebar.js) looks the same everywhere. */
-.sidebar .sidebar-nav-item,
-.sidebar .nav-item {
+.sidebar .sidebar-nav-item, .sidebar .nav-item {
   text-decoration: none !important;
   border: none !important;
   background: transparent !important;
@@ -233,32 +258,14 @@ input:focus, select:focus, textarea:focus,
   cursor: pointer !important;
   font-family: 'Space Grotesk', system-ui, sans-serif !important;
 }
-.sidebar .sidebar-nav-item:hover,
-.sidebar .nav-item:hover {
+.sidebar .sidebar-nav-item:hover, .sidebar .nav-item:hover {
   background: rgba(255,255,255,0.06) !important;
   color: #EAEEF7 !important;
 }
-.sidebar .sidebar-nav-item.active,
-.sidebar .nav-item.active {
-  background: rgba(228,87,46,0.16) !important;
+.sidebar .sidebar-nav-item.active, .sidebar .nav-item.active {
+  background: var(--dash-sidebar-active) !important;
   color: #F0A58E !important;
-  box-shadow: inset 3px 0 0 #E4572E !important;
+  box-shadow: inset 3px 0 0 var(--dash-accent) !important;
 }
-/* logo crosshair uses currentColor → vermillion */
-.sidebar .logo-icon { color: #E4572E !important; width: 34px !important; height: 34px !important; }
+.sidebar .logo-icon { width: 34px !important; height: 34px !important; }
 .sidebar .logo-name { color: #EAEEF7 !important; }
-
-/* accent pills */
-.pill.accent {
-  background: rgba(228,87,46,0.10) !important;
-  color: #C8431F !important;
-  border-color: rgba(228,87,46,0.28) !important;
-}
-
-/* ---- 5. Recolor hardcoded cyan logo/icons → vermillion ---- */
-/* CSS overrides SVG presentation attributes, so this catches the
-   crosshair logo (and any leftover old-accent glyphs) on every page. */
-.logo-name span { color: #E4572E !important; }
-.logo-version, .logo-ver { color: #9A958A !important; }
-[stroke="#38bdf8"], [stroke="#0ea5e9"] { stroke: #E4572E !important; }
-[fill="#38bdf8"],   [fill="#0ea5e9"]   { fill:   #E4572E !important; }

@@ -2046,7 +2046,7 @@
     <link rel="stylesheet" href="dashboard-system.css">
     <script>
         (function () {
-            const theme = localStorage.getItem('trs-theme') || 'dark';
+            const theme = localStorage.getItem('trs-theme') || 'light';
             document.documentElement.setAttribute('data-theme', theme);
         })();
     </script>
@@ -3048,7 +3048,7 @@
         const electronKqPP = [1.000, 0.999, 0.998, 0.997, 0.996, 0.995, 0.994];
         let detectorLibrary = {};
         let chambersLoaded = false;
-        let theme = localStorage.getItem('trs-theme') || 'dark';
+        let theme = localStorage.getItem('trs-theme') || 'light';
         let historyData = [];
         let logoData = localStorage.getItem('trs-logo') || '';
         let currentMode = 'photon';
